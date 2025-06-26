@@ -1,0 +1,26 @@
+<wj-flex-grid #gridChild style="height:300px; border-radius:5px;">
+    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+        <i *ngIf="cell.item.ApproveSend == true" class="fa fa-folder-open" style="font-size:16px;color:goldenrod;" (click)="openGridChild(gridChild,['/main', 'approvedsettlementclaim', 'detail'])"></i>
+    </template>
+    <!-- <wj-flex-grid-column [header]="'id'" [binding]="'id'" [isReadOnly]="true">       
+    </wj-flex-grid-column>
+    <wj-flex-grid-column [header]="'Country'" [binding]="'country'" [isReadOnly]="true"></wj-flex-grid-column>
+    <wj-flex-grid-column [header]="'Sales'" [binding]="'sales'" [isReadOnly]="true"></wj-flex-grid-column>
+    <wj-flex-grid-column [header]="'Download'" [binding]="'downloads'" [isReadOnly]="true"></wj-flex-grid-column> -->
+</wj-flex-grid>
+
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+  <div class="box" style="height: 400px;overflow-y: auto;">
+    <div class="box-header with-border" style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+      <h3 class="box-title" style="color: white;">Ý kiến</h3>
+      <div class="box-tools pull-right">
+        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool" (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body" style="margin-top: 35px;">
+      <p #contentPopupTooltip></p>
+    </div>
+  </div>
+</wj-popup>

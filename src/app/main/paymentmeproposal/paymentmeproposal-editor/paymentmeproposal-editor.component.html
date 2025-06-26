@@ -1,0 +1,254 @@
+<!-- Main content -->
+<section class="content">
+    <!-- Default box -->
+    <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+        <div class="box" id="box-content">
+            <div class="box-header with-border">
+                <h3 class="box-title" id="titleName">Đề xuất thanh toán hàng kỳ - ME</h3>
+                <div class="box-tools pull-right">
+                    <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
+                        <i class="fa fa-times"></i>
+                    </button> -->
+                    <!-- <button class="btn btn-warning dropdown-toggle" title="In" type="button" [disabled]="parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint"
+            (click)="exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath)">
+            Mẫu in
+          </button> -->
+
+                    <!-- <button class="btn btn-warning dropdown-toggle" title="In, kết xuất" type="button" data-toggle="dropdown" [disabled]="parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">
+            Mẫu in
+            <span class="caret"></span>
+          </button>
+                    <ul class="dropdown-menu" style="margin-left: 10%;border-color: antiquewhite;background-color: antiquewhite;width: 100%;">
+                        <li>
+                            <a class="dropdown-item" style="height: 39px;" *ngFor="let layout of listLayoutPrint"> {{layout.Name}}
+                <button class="btn " type="button" (click)="exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath)" style="color:white;float: right;margin-left:5px;background-color:orange;height: 100%;">
+                  <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </button>
+                <button class="btn " type="button" (click)="exportWord(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath)" style="color:white;float: right;margin-left:5px;background-color:rgb(7, 104, 201);height: 100%;">
+                  <i class="fa fa-file-word-o" aria-hidden="true"></i>
+                </button>
+              </a>
+                        </li>
+                    </ul> -->
+
+                    <!-- <button class="btn btn-warning" type="button" (click)="showPrintVoucher(parentData?.Id)" [disabled]="parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">Mẫu in</button> -->
+                    <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)"
+                        [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true || parentData?.Id < 0"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
+                    <button class="btn btn-success" type="submit"
+                        [disabled]="!editorFrm.valid  || showLoading==true"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
+                    <a class="btn btn-default" [routerLink]="['/main','paymentmeproposal','index']">Thoát</a>
+                    <!-- (click)="closeWindow()" -->
+                </div>
+            </div>
+            <div class="box-body">
+                <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                    <strong>{{editorFrm.errors['error']}}</strong>
+                </div>
+                <div *ngFor="let panel of _layoutDeclare.panels" class="form-row" [ngStyle]="setDisplayPanel()">
+                    <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                    </df-panel>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div style="clear:both"></div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+
+                <button class="btn btn-info fa fa-refresh" type="button"
+                    style="margin-bottom:10px;" (click)="confirmDialog()">
+                    <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tải dữ liệu</span>
+                </button>
+                <button title="Ẩn/ Hiện đầu phiếu" class="btn btn-info fa fa-arrows-v" type="button"
+                    style="margin-bottom:10px;"
+                    (click)=onclickCollapsablePanel([grid,grid1])>
+                    <span style="font-size:12pt;"></span>
+                </button>
+
+                <!-- <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
+          <button class="btn btn-info" type="button" [disabled]="!editorFrm.valid" style="height: 30px;">Nhập dữ liệu từ excel</button>
+          <input type="file" id="importControl" [disabled]="!editorFrm.valid" (change)="import('B30CCMBudgetDetailImport',indexPage[1])" />
+        </div> -->
+
+        <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
+        style="margin-bottom:10px;" (click)="onClick_2()">
+        <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Cập nhật lại Tỷ lệ chi tiền</span>
+      
+      </button>
+
+                <div class="form-row" style="border:1px solid #ddd;">
+                    <!-- <div class="nav-tabs-custom">
+            <ul class="nav nav-tabs" >
+              <li class="active">
+                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)" style="background-color:#ffe3e3;">
+                  <b>Chi tiết</b>
+                </a>
+              </li>
+              <li>
+                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)" style="background-color:#c7ffc7;">
+                  <b>Bước duyệt kế hoạch</b>
+                </a>
+              </li>
+            </ul>
+          </div> -->
+                    <div id='cssmenu'>
+                        <ul>
+                            <li class='active'>
+                                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">BCH đề xuất</a>
+                            </li>
+                            <!-- <li>
+                                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">Công nợ phải thu</a>
+                            </li>
+                            <li>
+                                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">BP.Mua hàng đề xuất</a>
+                            </li> -->
+                            <!-- <li>
+                                <a href="#tab6" data-toggle="tab" (click)="onTabClick(grid5)">WORKDONE</a>
+                            </li> -->
+                            <li>
+                                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Bước duyệt</a>
+                            </li>
+                            <li>
+                                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">WorkFlow</a>
+                            </li>
+                            <!-- <li>
+                                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">Mua sắm, chọn thầu</a>
+                            </li> -->
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane active" id="tab1">
+                            <h4 style="color: red; font-weight: bold;">Lưu ý: Nếu đề xuất thanh toán trước thời hạn phải ghi rõ lý do ở ô "Ghi Chú"</h4>
+                         
+                            <section id="new">
+                                <!-- [ngStyle]="setHeightGrid()" -->
+                                <wj-flex-grid class="grid" #grid style="height:650px;">
+                                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <button type="button" class="btn"
+                                            style="margin:auto;width:100%;background-color:aliceblue;"
+                                            (click)=deleteSelectedRows(grid)>
+                                            <a class="fa fa-trash-o" style="color:red;"></a>
+                                        </button>
+                                    </template>
+
+                                    <!-- <wj-flex-grid-filter #filter></wj-flex-grid-filter> -->
+                                </wj-flex-grid>
+                                <!-- lưới hỗ trợ in detail -->
+                                <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+                        <div class="tab-pane" id="tab2">
+                            <section id="new">
+                                <wj-flex-grid class="grid1" #grid1 [ngStyle]="setHeightGrid()">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        <label>{{cell.row.index + 1}}</label>
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <!-- <button class="btn fa fa-trash" (click)=deleteSelectedRows(grid1)></button>               -->
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+                        <div class="tab-pane" id="tab3">
+                            <section id="new">
+                                <wj-flex-grid class="grid2" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <button type="button" class="btn"
+                                            style="margin:auto;width:100%;background-color:rgb(245, 170, 9);"
+                                            (click)="exportHtmlWorkFlow(parentData?.Id,parentData?.DocCode)">
+                                            <!-- showPrintVoucher_WorklFlow(parentData?.Id,grid2,parentData?.DocCode) -->
+                                            <a class="fa fa-print" style="color:white;"></a>
+                                        </button>
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+                       
+                        <!-- <div class="tab-pane" id="tab6">
+                            <h4 style="color: red; font-weight: bold;"> Từ đầu dự án tính tới hôm nay: Giá trị công việc đã thi công lũy kế (Chưa VAT)</h4>
+                            <h4 style="color: red; font-weight: bold;"> Ghi chú: Các PLHĐ do PS BCH trình thì nằm mục 2, Các PLHĐ còn lại (CĐT giao thêm scope, ..) nằm mục 1</h4>
+                            <section id="new">
+                                <wj-flex-grid class="grid5" #grid5 [ngStyle]="setHeightGrid()">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        <label>{{cell.row.index + 1}}</label>
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                       
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                            
+                        </div> -->
+                        <!-- <div class="tab-pane active" id="glyphicons">
+                            <section id="new">
+                            </section>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- /.box-footer-->
+        </div>
+    </form>
+    <!-- /.box -->
+</section>
+<!-- /.content -->
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+    <img src="/assets/img/gears.svg" style="width:50%">
+    <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+
+<!-- Thêm dialog -->
+<app-dialog [(visible)]="showDialog" #dialogFrm>
+    <div class="headerConfirm">
+        <b style="color: red;">Tải dữ liệu!</b>
+    </div>
+    <div class="titleConfirm">
+        <br />
+        <p>
+            <b>Thao tác này sẽ thay thế dữ liệu chi tiết đã tồn tại trước đó (nếu có), xác nhận thao tác</b>
+        </p>
+    </div>
+    <div class="btnConfirm">
+        <button (click)="onClick()" class="btn btn-success">Đồng ý</button>
+        <button (click)="closeDialog()" class="btn">Hủy bỏ</button>
+    </div>
+</app-dialog>
+<!-- Hết Thêm dialog -->
+
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+    <div class="box" style="height: 400px;overflow-y: auto;">
+        <div class="box-header with-border"
+            style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+            <h3 class="box-title" style="color: white;">Ý kiến</h3>
+            <div class="box-tools pull-right">
+                <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+                    (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="box-body" style="margin-top: 35px;">
+            <p #contentPopupTooltip></p>
+        </div>
+    </div>
+</wj-popup>

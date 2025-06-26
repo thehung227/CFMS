@@ -1,0 +1,5385 @@
+import { Component, HostListener, ElementRef, EventEmitter, Output, OnDestroy, ViewChild } from '@angular/core';
+import { FormGroup, Validators } from '@angular/forms';
+import * as wjcGridXlsx from 'wijmo/wijmo.grid.xlsx';
+import * as wjcXlsx from 'wijmo/wijmo.xlsx';
+
+// SERVICE
+import { BaseEditorService } from './../../base/base.service-editor';
+
+// CONTRACTS
+import { ParameterContract } from './../../contracts/parameter.contract';
+import { DataSetContract } from './../../contracts/dataset.contract';
+import { ColumnContract } from './../../contracts/column.contract';
+import { RowContract } from './../../contracts/row.contract';
+import { TableContract } from './../../contracts/table.contract';
+
+import { DataRowState } from './../../core/enum/type.enum';
+
+// WIJMO
+import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
+import { WjInputModule } from 'wijmo/wijmo.angular2.input';
+
+import * as wjcCore from 'wijmo/wijmo';
+import * as wjcGrid from 'wijmo/wijmo.grid';
+import * as wjcInput from 'wijmo/wijmo.angular2.input';
+
+import { Global } from './../../shared/global';
+import { BravoCtorEnum } from './../../core/enum/type.enum';
+
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { InputBase } from './../../ui/input/InputBase';
+import { TextBoxInput } from './../../ui/input/TextBoxInput';
+import { DateBoxInput } from './../../ui/input/DateBoxInput';
+import { CheckBoxInput } from './../../ui/input/CheckBoxInput';
+import { LookupBoxInput } from './../../ui/input/LookupBoxInput';
+import { ButtonInput } from './../../ui/input/ButtonInput';
+import { UploadInput } from './../../ui/input/UploadInput';
+
+import { PanelControlService } from './../../ui/panel/PanelControlService';
+
+import { DynamicFormPanelComponent } from './../../ui/form/dynamic-form-panel.component';
+import { PanelBase } from './../../ui/panel/PanelBase';
+import { TablePanel } from './../../ui/panel/TablePanel';
+import { DynamicFormEditorInputComponent } from './../../ui/form/editor/dynamic-form-editor-input.component';
+
+import { SystemConstants } from './../../core/common/system.constants';
+import { BravoSiteStorage } from './../../core/domain/bravo.site.storage';
+import { NumberBoxInput } from '../../ui/input/NumberBoxInput';
+import { InputDate, InputNumber, AutoComplete, InputDateTime, MultiAutoComplete, MultiSelect, Popup } from 'wijmo/wijmo.input';
+import { CollectionView, SortDescription, DataType } from 'wijmo/wijmo';
+import { Observable } from 'rxjs/Observable';
+import { RequestOptions } from '@angular/http';
+import { MultiSelectInput } from '../../ui/input/MultiSelectInput';
+import { Console } from '@angular/core/src/console';
+import { Subscription } from 'rxjs/Subscription';
+import { saveAs as importedSaveAs } from "file-saver";
+import { Title } from '@angular/platform-browser';
+import { UploadImage } from '../../ui/input/UploadImage';
+import { UrlConstants } from '../../core/common/url.constants';
+import { invalid } from 'moment';
+import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
+import { CryptoExtension } from '../../core/extensions/crypto.extension';
+import { CKEDITOR, CKEditorExtension } from '../../core/extensions/ckeditor.extension';
+import { remove } from 'daterangepicker';
+
+declare var $: any;
+// @Component({
+//   selector: 'base-editor-form',
+//   templateUrl: './base-editor-form.component.html',
+//   styleUrls: ['./base-editor-form.component.css']
+// })
+
+export abstract class BaseEditorComponent implements OnDestroy {
+
+  // initialCompleted = new EventEmitter();
+  protected isSysAdmin: string;
+  protected id: number = -1;
+  protected gridArray: wjcGrid.FlexGrid[];
+  protected dfpanel: DynamicFormPanelComponent;
+  protected editorFrm: FormGroup;
+  protected parentData = {};
+  protected _layoutDeclare: any;
+  protected filesUpload: File[] = [];
+  protected imageUpload: File[] = [];
+  protected deleteRows: string[];
+  protected _rowIdex;
+  protected errorMessage: string;
+  protected indexPage;
+  protected folderName;
+  protected folderNameSendMail;
+  showLoading = false;
+
+  subscription: Subscription;
+  protected paramsDefault: {};
+  protected paramsRoute: any;
+  protected zCommandKey: string;
+
+  protected inputs: InputBase<any>[] = [];
+
+  protected dataItem: Array<Object>;
+  protected zItemTableName: string;
+  protected zItemFilterKey: string;
+  protected pageNumber: number = 1;
+  protected rowItem: number;
+  protected orderBy: string;
+
+  protected searchItemText: string;
+
+  //Khoannt: Thêm dialog
+  protected showDialog = false;
+  protected dialogAgree = false;
+  protected titleConfirmDialog: string;
+  //Khoannt: Hết Thêm dialog
+
+  //Kit: In ấn
+  protected dataPrint: wjcCore.CollectionView;
+  protected outputPrint: Array<Object>;
+  protected gridPrint: wjcGrid.FlexGrid;
+  protected _layoutPrinter: any;
+
+  protected _layoutPrinter_WordFlow: any;
+  protected listLayoutPrint: Array<Object>;
+  protected layoutPrint: any;
+
+  protected isPermisionEdiAll_isSave: boolean;
+  protected isPermisionEdiAll_isApprove: boolean;
+  protected isPermisionEdiAll_isExport: boolean;
+  protected isPermisionEdiAll_isPrint: boolean;
+
+
+  //// Dương: url img
+  protected urlImg: string = Global.ImgEndpoint;
+
+  protected listlinkCommandPopup: Array<Object>;
+
+  richtextMail: CKEDITOR.editor;
+
+  SendMailObject = {
+    from: '',
+    nameSend: '',
+    to: '',
+    cc: '',
+    bcc: '',
+    subject: '',
+    plainTextMessage: '',
+    htmlMessage: null,
+    files: [],
+    mailToken: '',
+    smtpOptions: { server: '', user: '', password: '', port: 25, useSsl: true, requiresAuthentication: true },
+    //replacement: null,
+    exportOption: null,
+    mailType: ''
+  }
+
+  protected allowSendMail: boolean = true;
+  protected _errAmount: boolean = false;
+  protected _errMess: any;
+
+  constructor(protected _service: BaseEditorService,
+    protected route: ActivatedRoute,
+    protected pcs: PanelControlService,
+    protected elRef: ElementRef,
+    protected router: Router,
+    protected titleService: Title
+  ) {
+
+    localStorage.removeItem(SystemConstants.RETURN_URL);
+
+    let permission = this.route.snapshot.data['permission'];
+    let permission2 = <Array<Object>>JSON.parse(localStorage.getItem(SystemConstants.PERMISSION_DATA));
+
+    const sub = this.route.params.subscribe(param => {
+      // if (params.indexOf('id') >= 0)
+      this.id = param['id'];
+      let _value = param['params'];
+      if (_value) {
+        this.paramsRoute = CryptoExtension.decrypt(decodeURIComponent(_value));
+      }
+      else { this.paramsRoute = _value; }
+
+      if (this.id == -1) {
+        this.id = undefined;
+      }
+    });
+    this.subscription = new Subscription();
+
+    this.subscription.add(sub);
+
+    this.zCommandKey = router.url.split('/')[2] + '-' + router.url.split('/')[3].replace('detail', 'editor');
+
+    this.setPermission(permission, permission2);
+
+    if (Global.getPermissionAll(permission, permission2, this.zCommandKey, 'IsDisplay') == false && localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN) == 'false') {
+      alert('Người sử dụng hiện thời không có quyền truy cập!');
+      this.router.navigate([UrlConstants.HOME]);
+    }
+
+    if (this.paramsRoute) {
+      if (this.paramsRoute == 'copy') {
+        console.log('NewAsCopy');
+      }
+      else if (this.paramsRoute == 'split') {
+        console.log('Split ProposedPurchase');
+      }
+      else {
+        let dataPara = <Array<string>>JSON.parse(this.paramsRoute);
+        if (dataPara != undefined && dataPara != null) {
+          if (dataPara['Commandkey'] == this.zCommandKey)
+            this.paramsDefault = dataPara;
+        }
+      }
+    }
+  }
+
+  public setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle);
+  }
+
+  handleKeyDown(event: any) {
+    if (event.keyCode == 13) {
+      event.preventDefault();
+    }
+  }
+
+  onTabClick(gridtmp: wjcGrid.FlexGrid) {
+    // // if(gridtmp.columns.length<2)
+    gridtmp.columns.clear();
+    switch (this.gridArray.indexOf(gridtmp)) {
+      case 0:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns, 0);
+        break;
+      case 1:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns1, 0);
+        break;
+      case 2:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns2, 0);
+        break;
+      case 3:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns3, 0);
+        break;
+      case 4:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns4, 0);
+        break;
+      case 5:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns5, 0);
+        break;
+      case 6:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns6, 0);
+        break;
+      case 7:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns7, 0);
+        break;
+      case 8:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns8, 0);
+        break;
+      case 9:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns9, 0);
+        break;
+    }
+
+  }
+
+  async init() {
+
+    if (document.getElementById("titleName"))
+      this.setTitle('Newtecons - ' + document.getElementById("titleName").innerText);
+
+    this.isSysAdmin = localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN);
+    this.showLoading = true;
+
+    for (let i in this.gridArray) {
+
+      this.gridArray[i].columns.clear();
+      this.gridArray[i].autoGenerateColumns = false;
+      switch (Number(i)) {
+        case 0:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns);
+          break;
+        case 1:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns1);
+          break;
+        case 2:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns2);
+          break;
+        case 3:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns3);
+          break;
+        case 4:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns4);
+          break;
+        case 5:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns5);
+          break;
+        case 6:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns6);
+          break;
+        case 7:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns7);
+          break;
+        case 8:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns8);
+          break;
+        case 9:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns9);
+          break;
+      }
+      this.gridArray[i].columnHeaders.rows[0].height = 42;
+      this.gridArray[i].rowHeaders.columns[0].width = 45;
+      this.gridArray[i].rows.defaultSize = 25;
+      this.gridArray[i].selectionMode = wjcGrid.SelectionMode.CellRange;
+    }
+
+    if (this.gridPrint) {
+      this.gridPrint.autoGenerateColumns = false;
+      this.gridPrint.isReadOnly = true;
+      this.createColumnGroups(this.gridPrint, this._layoutDeclare.layout.PrintDocument.PrintGrid, 0);
+      this.mergeColumnGroups(this.gridPrint);
+    }
+
+    if (this._layoutDeclare.layout.PrintDocument != undefined) {
+      this.listLayoutPrint = this._layoutDeclare.layout.PrintDocument.LayoutPrint;
+
+      this.layoutPrint = this.listLayoutPrint[0];
+    }
+
+    if (this._layoutDeclare.layout.LinkCommand != undefined) {
+      this.listlinkCommandPopup = this._layoutDeclare.layout.LinkCommand;
+    }
+
+    // this.initialCompleted.subscribe((mess)=>this.onInitialComplete(mess));
+    // this.initialCompleted.next('Completed')
+    await this.setupDataSource().then();
+    this.onInitialComplete();
+    await this.dfpanel.set_Visible_Expr();
+
+    await this.dfpanel.set_Disabled_Expr();
+
+    await this.dfpanel.set_Readonly_Expr();
+
+    // await this.dfpanel.set_Format_Expr(this.paramsDefault);
+
+
+    // if (this.paramsDefault !=undefined && (this.id == -1 || this.id == undefined)) {
+    //   for (let control in this.paramsDefault) {
+    //     if (this.paramsDefault[control]) {
+    //       this.parentData[control] = this.paramsDefault[control];
+    //       this.dfpanel.parentData[control] = this.paramsDefault[control];
+    //     }
+    //   }
+    //   await this.dfpanel.updateValueForm(this.paramsDefault);
+
+    // }
+
+    //Khoa replace code, chạy evaluator khi truyền tham số sang Editor
+    if (this.paramsDefault != undefined && (this.id == -1 || this.id == undefined)) {
+      await this.inputParams();
+
+
+      for (let control in this.paramsDefault) {
+        if (this.paramsDefault[control]) {
+          this.parentData[control] = this.paramsDefault[control];
+          this.dfpanel.parentData[control] = this.paramsDefault[control];
+        }
+      }
+
+      await this.dfpanel.updateValueForm(this.paramsDefault);
+
+      for (let i in this.inputs) {
+        if (this.paramsDefault[this.inputs[i].key]) {
+          await this.dfpanel.onValueChanged(this.inputs[i]);
+          // console.log('****************' + this.inputs[i].key);
+        }
+      }
+
+    }
+
+    if (this.paramsRoute == 'copy') {
+      await this.resetValueForm().then(() => {
+        console.log('resetValueForm success!');
+      });
+      this.parentData['Status'] = 'copy';
+      this.dfpanel.parentData['Status'] = 'copy';
+      this.parentData['FilePath'] = '';
+      this.dfpanel.parentData['FilePath'] = '';
+    }
+
+    if (this.paramsRoute == 'split') {
+      this.parentData['IsSplitVoucher'] = true;
+      this.dfpanel.parentData['IsSplitVoucher'] = true;
+      this.parentData['DocStatus'] = 4;
+      this.dfpanel.parentData['DocStatus'] = 4;
+      this.parentData['Status'] = 'split';
+      this.dfpanel.parentData['Status'] = 'split';
+    }
+
+    if (this._layoutDeclare['menu']) {
+      await this.fetchDataItem();
+      for (let i = 0; i < this.dataItem.length; i++) {
+        let value: number = 0;
+
+        for (let j = 0; j < this.gridArray[0].itemsSource.items.length; j++) {
+
+          if (this.dataItem[i][this._layoutDeclare['menu'].PrimaryField] == this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].DuplicationField]) {
+            value += Number(this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].ColumnEdit]);
+            this.dataItem[i][this._layoutDeclare['menu'].ColumnInput] = this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].ColumnEdit];
+          }
+        }
+
+        this.dataItem[i][this._layoutDeclare['menu'].ColumnShow] = value.toString();
+
+      }
+    }
+
+    this.showLoading = false;
+
+  }
+
+
+  async fetchDataItem() {
+    this.zItemFilterKey = this.dfpanel.translate_expr_Filter_sql(this.zItemFilterKey, this.paramsDefault, this.parentData);
+
+    let _data = await this._service.fetchDataSelect(Global.DataEditorEndpoint, this.zItemTableName, this.zItemFilterKey, this.pageNumber, this.rowItem, this.orderBy).toPromise().then();
+    this.dataItem = await <Array<Object>>(_data);
+
+  }
+
+
+  async resetValueForm() {
+    if (this._layoutDeclare.layout.Structure.Parent.ResetValueForm != undefined) {
+      let _resetValue = this._layoutDeclare.layout.Structure.Parent.ResetValueForm;
+
+      await this.inputParams();
+
+      for (let control in _resetValue) {
+        if (_resetValue[control]) {
+          this.parentData[control] = _resetValue[control];
+          this.dfpanel.parentData[control] = _resetValue[control];
+        }
+      }
+
+      await this.dfpanel.updateValueForm(_resetValue);
+
+      for (let i in this.inputs) {
+        if (_resetValue[this.inputs[i].key]) {
+          await this.dfpanel.onValueChanged(this.inputs[i]);
+          // console.log('****************' + this.inputs[i].key);
+        }
+      }
+    }
+  }
+
+
+  async exportHtml(name: string, fileName: string, folderPath: string, _idTT?: number) {
+    this.showLoading = true;
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    if (_idTT != undefined && _idTT != null && _idTT > 0)
+      param1.ParameterValue = _idTT
+    else
+      param1.ParameterValue = this.id
+    params.push(param1);
+
+    let ctor1 = CryptoExtension.encrypt(_command);
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    this._service.exportHtml(folderPath + name, body).subscribe(data => {
+
+      //     let _htmlDetail = ''
+      //     if (this.gridPrint) {
+      //         this.dataPrint = new wjcCore.CollectionView(data['data']);
+      //         this.gridPrint.itemsSource = new wjcCore.CollectionView(data['data']);
+      //         _htmlDetail = this.renderTable(this.gridPrint);
+      //     }
+
+      let _title = fileName;
+
+      if (_title == '' || _title == null || _title == undefined) {
+        _title = this._layoutDeclare.layout.PrintDocument.Text;
+      }
+
+      let _html = `<html>
+    <head>
+    <title>`+ Global.translateAutoText(_title, this.parentData) + `</title>
+        </head>`;
+      _html += '<body onload="window.print();window.close()">';
+
+      _html += Global.translateImageOutput(data['html'], data['output']);
+      
+      if (_html.toString().indexOf('_______________________') > -1) {
+        _html = _html.replace(/_______________________/gi, data['output']['@_Comment']);
+      }
+
+      if (_html.toString().indexOf('______________________') > -1) {
+        _html = _html.replace(/______________________/gi, data['output']['@_Description']);
+      }
+
+      if (_html.toString().indexOf('____________________') > -1) {
+        _html = _html.replace(/____________________/gi, '<img src="' + this.urlImg + data['output']['@_ChuKyLCVien'] + '" alt="image not available" style="width: 100px;height: 100px;"/>');
+      }
+
+      if (_html.toString().indexOf('___________________') > -1) {
+        _html = _html.replace(/___________________/gi, '<img src="' + this.urlImg + data['output']['@_ChuKyTeo'] + '" alt="image not available" style="width: 100px;height: 100px;"/>');
+      }
+      
+      _html += '</body></html>'
+
+      this.showLoading = false;
+
+      let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+
+      popupWin.document.write(_html);
+
+      popupWin.document.close();
+    });
+  }
+
+
+  async showHtmlEditor(name: string, fileName: string, folderPath: string, input: any) {
+    let _command = this._layoutDeclare.layout.PrintDocument.Command;
+
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    param1.ParameterValue = input;
+    params.push(param1);
+
+    let ctor1 = CryptoExtension.encrypt(_command);
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    let _data = await this._service.exportHtml(folderPath + name, body).toPromise().then();
+
+    if (_data['html'].toString().indexOf('____________________') > -1) {
+      _data['html'] = _data['html'].replace(/____________________/gi, '<img src="' + this.urlImg + _data['output']['@_ChuKyLCVien'] + '" alt="image not available" style="width: 100px;height: 100px;"/>');
+    }
+
+    if (_data['html'].toString().indexOf('___________________') > -1) {
+      _data['html'] = _data['html'].replace(/___________________/gi, '<img src="' + this.urlImg + _data['output']['@_ChuKyTeo'] + '" alt="image not available" style="width: 100px;height: 100px;"/>');
+    }
+
+    return _data['html'];
+  }
+
+  async exportWord(name: string, fileName: string, folderPath: string) {
+    this.showLoading = true;
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    param1.ParameterValue = this.id;
+    params.push(param1);
+
+    let ctor1 = CryptoExtension.encrypt(_command);
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    fileName = Global.translateAutoText(fileName, this.parentData);
+    this._service.exportWord(folderPath, name, body).subscribe(blob => {
+      let extension = name.endsWith(".docx") ? ".docx" : ".doc";
+      importedSaveAs(blob, fileName + extension);
+      this.showLoading = false;
+    });
+  }
+
+  async exportExcel(name: string, fileName: string, folderPath: string) {
+    this.showLoading = true;
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    param1.ParameterValue = this.id;
+    params.push(param1);
+
+    let ctor1 = CryptoExtension.encrypt(_command);
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    try {
+      fileName = Global.translateAutoText(fileName, this.parentData);
+    }
+    catch (ex) {
+      console.log('Global.translateAutoText: ' + ex);
+    }
+
+    this._service.exportExcel(folderPath, name, body).subscribe(blob => {
+      let extension = name.endsWith(".xlsx") ? ".xlsx" : ".xls";
+      importedSaveAs(blob, fileName + extension);
+      this.showLoading = false;
+    });
+  }
+
+
+
+  onInitialComplete() {
+    console.log('########################## onInitialComplete');
+    this.elRef.nativeElement.querySelector('.form-group-custom input').focus();
+    this.dfpanel.columnChanged = this._layoutDeclare.columnChanged;
+    this.dfpanel.columnChangedChild = this._layoutDeclare.columnChangedChild;
+    this.dfpanel.evaluators = this._layoutDeclare.evaluators;
+    this.dfpanel.serverConstraint = this._layoutDeclare.serverConstraint;
+    this.dfpanel.serverUpdating = this._layoutDeclare.serverUpdating;
+    this.dfpanel.serverUpdated = this._layoutDeclare.serverUpdated;
+    this.dfpanel.buttonCommand = this._layoutDeclare.buttonCommand;
+    this.dfpanel.parentData = this.parentData;
+    this.dfpanel.gridArray = this.gridArray;
+    this.dfpanel.isUsingEvaluator = true;
+    this.dfpanel.isUsingBinding = true;
+    this.dfpanel.linkReporter = this._layoutDeclare.linkReporter;
+
+    if (this._layoutDeclare.approveGrid != undefined) {
+      let _i = this._layoutDeclare.approveGrid;
+      let data = this.gridArray[_i].itemsSource.sourceCollection;
+      for (let r of data) {
+        if (r['Id'] == this.parentData['Id']) {
+          this._rowIdex = r;
+        }
+      }
+    }
+
+    for (let i in this.gridArray) {
+      // this.sort('BuiltinOrder', Number(i), true);
+      let ds: CollectionView = this.gridArray[i].itemsSource;
+      ds.trackChanges = true;
+
+      this.gridArray[i].cellEditEnded.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+        let column = this.gridArray[i].columns[e.col].binding;
+        this.cellValueChanged(i, column, e);
+        if (s.columns[e.col].wordWrap) {
+          this.autoSizeVisibleRows(s, true);
+        }
+
+      })
+      // console.log(this.gridArray[i]);
+    }
+
+    for (let control of this.dfpanel.panel.controls) {
+      if (control.key == 'FilePath') {
+        if (control instanceof UploadInput) {
+          control.folderName = this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + control.command;
+
+          if (!control.folderId && control.folderId == null)
+            control.parentId = this.id;
+          else
+            control.parentId = this.translate_expr(control.folderId);
+          break;
+        }
+      }
+      if (control.key == 'ImagePath') {
+        if (control instanceof UploadImage) {
+          control.src = this.urlImg + '4.img\\' + this.zCommandKey + '\\' + this.editorFrm.controls['ImagePath'].value.toString();
+          break;
+        }
+      }
+    }
+
+
+    if (this._layoutDeclare['menu']) {
+      this.zItemTableName = this._layoutDeclare['menu'].Table;
+      this.zItemFilterKey = this._layoutDeclare['menu'].Filter;
+      this.rowItem = this._layoutDeclare['menu'].RowItem;
+      this.orderBy = this._layoutDeclare['menu'].OrderBy;
+    }
+  }
+
+  protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
+    if (flex) {
+      // get list of selected items
+      var selected = [];
+
+      //let _idrowdel = flex.selectedRows[0]._idx;
+
+      for (let k in flex.selectedRows) {
+        let _idrowdel = flex.selectedRows[k]._idx;
+        for (var i = 0; i < flex.rows.length; i++) {
+          if (i == _idrowdel) {
+            selected.push(flex.rows[i].dataItem);
+            break;
+          }
+        }
+      }
+
+      for (var i = 0; i < selected.length; i++) {
+        //deleteRowFromDatabase(selected[i]);
+        flex.itemsSource.remove(selected[i]);
+      }
+    }
+  }
+
+  protected async cellValueChanged(index: string, column: string, e: wjcGrid.FormatItemEventArgs) {
+    await this.dfpanel.onCellValueChanged(index, column, e);
+    if (this.dataItem) {
+      for (let i = 0; i < this.dataItem.length; i++) {
+        let value: number = 0;
+
+        for (let j = 0; j < this.gridArray[0].itemsSource.items.length; j++) {
+
+          if (this.dataItem[i][this._layoutDeclare['menu'].PrimaryField] == this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].DuplicationField]) {
+            value += Number(this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].ColumnEdit]);
+            this.dataItem[i][this._layoutDeclare['menu'].ColumnInput] = this.gridArray[0].itemsSource.items[j][this._layoutDeclare['menu'].ColumnEdit];
+          }
+        }
+
+        this.dataItem[i][this._layoutDeclare['menu'].ColumnShow] = value.toString();
+
+      }
+    }
+  }
+
+  resizeWidthControls() {
+
+    let _elements = this.elRef.nativeElement.querySelectorAll('.form-group-custom');
+    let _elementsInput = this.elRef.nativeElement.querySelectorAll('.form-group-custom .wj-control');
+    let _elementsButton = this.elRef.nativeElement.querySelectorAll('.form-group-custom button');
+
+
+    let _j = 0;
+    _elementsButton.forEach(item => {
+
+      _elementsButton[_j].style.width = item.offsetWidth - 40 + 'px';
+
+      for (let pn of this._layoutDeclare.panels) {
+        for (let ct of pn.controls) {
+          if (ct['key'] == item['id'])
+            _elementsButton[_j].style = ct['style'];
+        }
+
+      }
+
+      _j++;
+
+    })
+
+    let _i = 0;
+    _elements.forEach(item => {
+
+      // khoa set style panel đầu phiếu
+      if (item.children[1])
+        if (item.children[1].children[0]) {
+          for (let pn of this._layoutDeclare.panels) {
+            for (let ct of pn.controls)
+              if (item.children[1]['id'] == ct['key'] && ct['style'] != undefined) {
+                item.children[1].children[0]['style'] = ct['style'];
+              }
+          }
+        }
+    })
+  }
+
+  afterViewInit() {
+    this.resizeWidthControls();
+  }
+
+  public async setupDataSource() {
+    this.editorFrm = this.pcs.toFormGroup(this._layoutDeclare.panels);
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(control => {
+        if (control instanceof LookupBoxInput) {
+          control.controlCollection = this.controlCollection;
+        } else if (control instanceof UploadInput) {
+          control.command = this.folderName;
+
+          if (!control.folderId && control.folderId == null)
+            control.parentId = this.id;
+          else
+            control.parentId = this.translate_expr(control.folderId);
+        }
+      })
+    })
+
+
+    if (this.id && this.id != -1 && this._layoutDeclare.layout) {
+      let filterKey = 'Id=' + this.id;
+
+      let tableParentName = this._layoutDeclare.layout.Structure.Parent.Name;
+      if (!tableParentName) {
+        alert('Parent Table Name is not declare');
+        return;
+      }
+
+      let data = await this._service.fetchData(Global.DataEditorEndpoint, this._layoutDeclare.layout.Structure, filterKey)
+        .toPromise();
+
+      let _parent = data[this._layoutDeclare.layout.Structure.Parent.Name][0];
+      this.dfpanel.updateValueForm(_parent);
+      for (let key in _parent) {
+        this.parentData[key] = _parent[key];
+      }
+      if (this._layoutDeclare.layout.Structure.Child != undefined) {
+        let childs = this._layoutDeclare.layout.Structure.Child;
+        for (let i = 0; i < childs.length; i++) {
+          this.gridArray[i].itemsSource = new CollectionView(data[childs[i].Name]);
+          
+          if (childs[i].frozenColumns)
+            this.gridArray[i].frozenColumns = Number(childs[i].frozenColumns);
+
+          //Khoa fix boom 24.01.2018
+          let datadefault = await this._service.getDefaultSchema(Global.DataEditorEndpoint, this._layoutDeclare.layout.Structure, childs[i].Name).toPromise();
+          this.gridArray[i].itemsSource['defaultRow'] = datadefault[0];
+        }
+      }
+    }
+    else {
+      let tableParentName = this._layoutDeclare.layout.Structure.Parent.Name;
+      let data = await this._service.getDefaultSchema(Global.DataEditorEndpoint, this._layoutDeclare.layout.Structure, tableParentName)
+        .toPromise();
+      for (let key in data[0]) {
+        this.parentData[key] = data[0][key];
+      }
+
+      let _defaultValues = this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+      for (let key in _defaultValues) {
+        let _value = _defaultValues[key];
+        if (typeof (_value) == 'string') {
+          this.parentData[key] = Global.convertConfig(_value);
+        } else {
+          this.parentData[key] = _defaultValues[key];
+        }
+      }
+
+      this.dfpanel.updateValueForm(this.parentData);
+
+      // console.log(this.editorFrm);
+
+      if (this._layoutDeclare.layout.Structure.Child != undefined) {
+        let childs = this._layoutDeclare.layout.Structure.Child;
+        for (let i = 0; i < childs.length; i++) {
+          this.gridArray[i].itemsSource = new CollectionView();
+          this.gridArray[i].itemsSource.trackChanges = true;
+
+          if (childs[i].frozenColumns)
+            this.gridArray[i].frozenColumns = Number(childs[i].frozenColumns);
+
+          //Khoa fix boom 24.01.2018
+          let datadefault = await this._service.getDefaultSchema(Global.DataEditorEndpoint, this._layoutDeclare.layout.Structure, childs[i].Name).toPromise();
+          this.gridArray[i].itemsSource['defaultRow'] = datadefault[0];
+        }
+      }
+    }
+
+
+  }
+
+  destroy() {
+    if (this.gridArray && this.gridArray.length > 0) {
+      for (let grid of this.gridArray) {
+        if (grid.itemsSource != null) {
+          grid.itemsSource = null;
+        }
+      }
+    }
+  }
+  _checkErrGrid: number;
+  bindColumnGroups(flex: wjcGrid.FlexGrid, columnGroups: any): void {
+    this._checkErrGrid = 0;
+    if (this.paramsDefault != undefined) {
+
+      let lenghtGroup = columnGroups.length;
+      let controls: string[] = [];
+
+      for (let pn of this._layoutDeclare.panels) {
+        for (let ct of pn.controls)
+          controls.push(ct['key']);
+      }
+
+      controls.sort((a, b) => b.length - a.length);
+
+      let spliceColumns = [];
+
+      for (let i in columnGroups) {
+        if (columnGroups[i]['hiden']) {
+
+          let _expr = columnGroups[i]['hiden'];
+
+          for (const control of controls) {
+            let patern = '{EXPR=' + control + '}';
+            if (_expr.indexOf(patern) > -1) {
+              let value = this.paramsDefault[control];
+
+              if (value instanceof Date) {
+                if (value != null)
+                  value = value.toISOString();
+              }
+
+              do {
+                _expr = _expr.replace(patern, value);
+              }
+              while (_expr.indexOf(patern) > -1)
+            }
+          }
+          if (eval(_expr)) {
+            spliceColumns.push(i);
+          }
+        }
+
+        if (columnGroups[i]['exprFormat'] != undefined) {
+
+          let _expr = columnGroups[i]['exprFormat'];
+
+          _expr = Global.translateAutoText(_expr, this.paramsDefault);
+
+          let fomatEnd = 'n0';
+          fomatEnd = eval(_expr);
+          columnGroups[i]['format'] = fomatEnd;
+
+        }
+      }
+
+      for (let i in spliceColumns) {
+
+        if (columnGroups.length == lenghtGroup)
+          columnGroups.splice(spliceColumns[i], 1);
+        else {
+          let _diff = lenghtGroup - columnGroups.length;
+          columnGroups.splice(spliceColumns[i] - _diff, 1);
+        }
+      }
+    }
+
+    // create the columns
+    flex.allowAddNew = true;
+    flex.allowSorting = false;
+    this.createColumnGroups(flex, columnGroups, 0);
+    this.mergeColumnGroups(flex);
+
+    var colHdrs = flex.columnHeaders;
+    for (var nRow = 0; nRow < colHdrs.rows.length - 1; nRow++)
+      for (var nCol = 0; nCol < colHdrs.columns.length; nCol++) {
+        var data = colHdrs.getCellData(nRow, nCol, false);
+        if (!data && (nRow - 1) >= 0)
+          colHdrs.setCellData(nRow, nCol, colHdrs.getCellData(nRow - 1, nCol, true));
+      }
+
+    let _formatItem = (s, e: wjcGrid.FormatItemEventArgs) => {
+      if (e.panel.cellType === wjcGrid.CellType.TopLeft) {
+        // e.cell.innerHTML = '<div><button style="width: 30px;height: 30px;" title="Thêm mới"><i class="fa fa-plus-square" aria-hidden="true"></i></button></div>';
+        // wjcCore.setCss(e.cell, {
+        //   display: 'table',
+        //   tableLayout: 'fixed',
+        //   fontSize: '12px',
+        // });
+
+        // wjcCore.setCss(e.cell.children[0], {
+        //   display: 'table-cell',
+        //   verticalAlign: 'middle',
+        //   textAlign: 'center',
+        //   fontSize: '12px',
+        // });
+
+      }
+
+      if (e.panel.cellType === wjcGrid.CellType.ColumnHeader) {
+        //// e.cell.innerHTML = '<div><input type="text" style="width:100%;"></input></br><div>' + e.cell.innerHTML + '</div></div>';
+        //e.cell.innerHTML = '<div>' + e.cell.innerHTML + '</div>';
+
+        // //Khoa fix checkbox all column 20.04
+        let column = flex.columns[e.col];
+        let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
+
+        if (_col != undefined && column.dataType == wjcCore.DataType.Boolean && _col['checkAll']) {
+          e.cell.innerHTML = '<div><input type="checkbox">' + e.cell.innerHTML + '</div>';
+
+          var cnt = 0;
+          for (var i = 0; i < flex.rows.length - 1; i++) {
+            if (s.getCellData(i, e.col) == true) cnt++;
+          }
+
+          var cb = e.cell.getElementsByTagName('input')[0];
+          cb.checked = cnt > 0;
+          cb.indeterminate = cnt > 0 && cnt < flex.rows.length - 1;
+
+          // apply checkbox value to cells
+          cb.addEventListener('click', function (e) {
+            flex.beginUpdate();
+            for (var i = 0; i < flex.rows.length - 1; i++) {
+              flex.setCellData(i, column.index, cb.checked);
+            }
+            flex.endUpdate();
+          });
+
+        }
+        else {
+          e.cell.innerHTML = '<div>' + e.cell.innerHTML + '</div>';
+        }
+        //////////
+
+
+        wjcCore.setCss(e.cell, {
+          display: 'table',
+          tableLayout: 'fixed',
+          // fontSize: '12px',
+        });
+
+        wjcCore.setCss(e.cell.children[0], {
+          display: 'table-cell',
+          verticalAlign: 'middle',
+          textAlign: 'center',
+          // fontSize: '12px',
+        });
+      }
+
+      let editRange = flex.editRange;
+      if (e.panel.cellType === wjcGrid.CellType.Cell && editRange && editRange.row === e.row && editRange.col === e.col) {
+        let column = flex.columns[e.col];
+        let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
+        let expr = _col['exprReadOnly'];
+        try {
+
+          if (_col['exprReadOnly']) {
+            let ds = flex.itemsSource.sourceCollection[e.row];
+            expr = this.dfpanel.fn_translate_expr_grid(expr, ds)
+            if (eval(expr)) {
+              flex.endUpdate();
+              return;
+            }
+            // else
+            // {
+            //   e.cell.setAttribute("class","none");
+            // }
+          }
+        } catch (ex) { }
+        this.createEditor(flex, column, columnGroups, e);
+
+      }
+      if (e.panel.cellType === wjcGrid.CellType.Cell) {
+        let column = flex.columns[e.col];
+
+        let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
+        let exprValidators = _col['validators']
+        try {
+          if (_col['validators']) {
+            let ds = flex.itemsSource.sourceCollection[e.row];
+            exprValidators = this.dfpanel.fn_translate_expr_grid(exprValidators, ds);
+            if (eval(exprValidators)) {
+              e.cell.classList.add('wj-state-invalid');
+              if (_col['validatorMessage']) {
+                e.cell.setAttribute('title', _col['validatorMessage']);
+              }
+              if (_col['ignoreError'] == 0) {
+                this.editorFrm.setErrors({ "error": _col['validatorMessage'] });
+                //this._checkErrGrid += 1;
+              }
+            } else {
+              //this._checkErrGrid -= 1;
+              e.cell.setAttribute('title', '');
+            }
+          }
+
+               if (_col["isButton"]) {
+                  let btnLink = document.createElement('button');
+                  if (btnLink instanceof HTMLButtonElement) {
+                     btnLink.type = 'button'
+                     btnLink.classList.add('btn', 'btn-primary');
+                     btnLink.textContent = _col['textButton'] || '...'
+                     btnLink.style.width = "100%";
+                     btnLink.style.height = "100%";
+                     btnLink.style.padding = "inherit";
+
+                     btnLink.addEventListener("click", () => { 
+                      this.ButtonGridClick(flex, _col) });
+                  }
+
+                  e.cell.textContent = "";
+                  e.cell.appendChild(btnLink);
+                  e.cell.style.padding = "1px";
+               }
+        } catch (ex) { }
+
+        let exprReadOnly = _col['exprReadOnly']
+        try {
+          if (_col['exprReadOnly']) {
+            let ds = flex.itemsSource.sourceCollection[e.row];
+            exprReadOnly = this.dfpanel.fn_translate_expr_grid(exprReadOnly, ds);
+
+            if (eval(exprReadOnly)) {
+              e.cell.classList.add('wj-state-disabled');
+            }
+          }
+        } catch (ex) { }
+
+        // // if (_col['dataType'] === 'Array') {
+        // //   let i = flex.itemsSource.sourceCollection[e.row];
+        // //   if (i != undefined) {
+        // //     if (i["DisplayMember"] && i["ValueMember"]) {
+        // //       let display = _col['hideValueMember'] ? i[_col['DisplayMember']] : i[_col['binding']] + ": " + i[_col['DisplayMember']];
+
+        // //       e.cell.innerText = display;
+        // //     }
+        // //   }
+        // // }
+      }
+      // console.log(this._checkErrGrid);
+    };
+
+    flex.formatItem.removeHandler(_formatItem);
+    flex.formatItem.addHandler(_formatItem);
+
+    // set autosize row header
+
+    let _itemsSourceChanged = (s: wjcGrid.FlexGrid, e) => {
+      setTimeout(function () {
+        for (var n = 0; n < s.columnHeaders.rows.length; n++) {
+          // enable wrapping on first header row
+          var row = s.columnHeaders.rows[n];
+          row.wordWrap = true;
+        }
+      });
+    }
+
+    flex.itemsSourceChanged.removeHandler(_itemsSourceChanged);
+    flex.itemsSourceChanged.addHandler(_itemsSourceChanged);
+
+    // let _pasting = (s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs) => {
+    //   let clip = s.getClipString();
+    //   let rows = s._clipToRows(clip);
+    //   let data: CollectionView = s.itemsSource;
+
+    //   if (s.selection.row == s.rows.length - 1) {
+    //   } else {
+    //     e.cancel = true;
+    //   }
+    // }
+
+    // let _pasted = (s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs) => {
+    //   this.rowAddedEvent(s);
+    // }
+
+    // flex.pasting.removeHandler(_pasting);
+    // flex.pasting.addHandler(_pasting);
+    // flex.pasted.removeHandler(_pasted);
+    // flex.pasted.addHandler(_pasted);
+  }
+
+   async ButtonGridClick(grid: wjcGrid.FlexGrid, column: any) {
+      let host = grid.hostElement;
+      let self = this;
+      let key = grid.selectedItems[0]['Id'];
+      let data: any = grid.selectedItems[0];
+      let linkCommand = column['linkCommand'];
+
+      if (key && linkCommand) {
+         let navigateUrl = [];
+         navigateUrl.push('#/main');
+
+         let _dic = linkCommand['directory'];
+
+         if (_dic.indexOf('{EXPR=') > -1) {
+
+            _dic = Global.translate_expr_control(_dic, data, this.parentData);
+        console.log(eval(_dic))
+            if (eval(_dic) == '') {
+               alert('Không xác định được thông tin điều hướng. Vui lòng kiểm tra lại dữ liệu!');
+               return;
+            }
+            navigateUrl.push(eval(_dic));
+         }
+         else {
+            navigateUrl.push(linkCommand['directory']);
+         }
+         
+         if (linkCommand['command'] != undefined) {
+            let _cmd = linkCommand['command'];
+
+            if (_cmd.indexOf('{EXPR=') > -1) {
+
+               _cmd = Global.translate_expr_control(_cmd, data, this.parentData);
+
+               try {
+                  if (eval(_cmd) != '')
+                     navigateUrl.push(eval(_cmd));
+               }
+               catch (e) {
+
+               }
+            }
+            else
+               navigateUrl.push(linkCommand['command']);
+         }
+         else
+            navigateUrl.push(linkCommand['type']);
+
+
+         if (linkCommand['type'] == 'view') {
+            navigateUrl.push(linkCommand['key']);
+         }
+         else {
+            if (data[linkCommand['key']] == '0' || data[linkCommand['key']] == null) {
+               navigateUrl.push('-1');
+            }
+            else {
+               navigateUrl.push(data[linkCommand['key']]);
+            }
+         }
+         let paramsReport: any[];
+      
+         paramsReport = linkCommand['parameter'];
+         
+         for (let control in paramsReport) {
+            if (paramsReport[control].toString().indexOf('{EXPR=') > -1) {
+            
+               paramsReport[control] = Global.translate_Parameter_linkCommand(paramsReport[control], data, this.parentData);
+               if (paramsReport[control].toString().indexOf('?') > -1) {
+                  paramsReport[control] = eval(paramsReport[control]);
+               }
+                
+            }
+            if (paramsReport[control].toString().indexOf('{VAR=') > -1)
+               paramsReport[control] = Global.convertConfig(paramsReport[control]);
+
+            paramsReport[control] = this.replaceString(paramsReport[control], "'");
+            
+         }
+
+         localStorage.removeItem(SystemConstants.PARAMETER_LINKREPORT);
+         localStorage.setItem(SystemConstants.PARAMETER_LINKREPORT, JSON.stringify(paramsReport));
+
+         if (paramsReport != undefined && paramsReport != null && (this.parentData[linkCommand['key']] == '0' || this.parentData[linkCommand['key']] == null)) {
+            let _value = encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(paramsReport)));
+            navigateUrl.push(_value);
+         }
+
+         window.open(navigateUrl.join('/'));
+      }
+   }
+
+  async createEditor(flex: wjcGrid.FlexGrid, column: any, columnGroups: any, e: wjcGrid.FormatItemEventArgs) {
+    let _lookup;
+    let editorRoot = document.createElement('div');
+    let input;
+    let filelabel: HTMLLabelElement;
+    let fileinput;
+    var _row = e.row;
+
+      let button: HTMLButtonElement;
+
+    let _value = flex.itemsSource.sourceCollection[_row][column['binding']];
+    let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
+
+    if (_col.dataType === 'Date') {
+      if (column.format.includes('HH:mm:ss')) {
+        input = new InputDateTime(editorRoot);
+        // input.mask = '99/99/9999';
+        input.format = column.format;
+        input.hostElement.style.width = '100%';
+        input.isAnimated = true;
+        input.isRequired = _col.isRequired;
+        if(_col.isRequired)
+        {
+          let d = <InputDateTime>input;
+
+          d.valueChanged.addHandler(() => {
+            if (d.value != undefined && d.value != null) {
+              let date = d.value;
+              let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+              d.value = _value;
+            }
+          });
+        }
+
+      } else {
+        input = new InputDate(editorRoot);
+        // input.mask = '99/99/9999';
+        input.format = column.format;
+        input.isRequired = _col.isRequired;
+        input.hostElement.style.width = '100%';
+        input.isAnimated = true;
+        if(_col.isRequired)
+        {
+          let d = <InputDateTime>input;
+
+          d.valueChanged.addHandler(() => {
+            if (d.value != undefined && d.value != null) {
+              let date = d.value;
+              let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+              d.value = _value;
+            }
+          });
+        }
+      }
+      if (_value != undefined)
+        input.value = _value;
+    } else if (_col.dataType === 'Number') {
+
+      // let fomatEnd = 'n0';
+      // if (columnGroups[column.index].exprFormat){
+      //   let _exprFommat = columnGroups[column.index].exprFormat;
+      //   _exprFommat = Global.translateAutoText(_exprFommat, flex.itemsSource.sourceCollection[_row], this.parentData);
+
+      //   fomatEnd = eval(_exprFommat);
+      // }
+
+      input = new InputNumber(editorRoot);
+      input.format = column.format;
+      input.step = columnGroups[column.index].step;
+      input.min = columnGroups[column.index].min;
+      input.max = columnGroups[column.index].max;
+      if (_value != undefined)
+        input.value = _value;
+    } else if (_col.dataType === 'Array') {
+
+      if (_col['multiSelection'] == true) {
+        input = new MultiSelect(editorRoot);
+      } else {
+        input = new AutoComplete(editorRoot);
+      }
+
+      if (input instanceof AutoComplete) {
+        _lookup = new LookupBoxInput({
+          key: column.name,
+          lookupKey: _col['lookupKey'],
+          binding: _col['bindingList'],
+          lookupfilter: _col['lookupfilter'],
+          hideValueMember: _col['hideValueMember'],
+          col: 6
+        }, this._service, flex.itemsSource.sourceCollection[_row]);
+
+        input.itemsSource = _lookup.options;
+        input.displayMemberPath = 'DisplayMember';
+        input.selectedValuePath = 'ValueMember';
+        input.isContentHtml = true;
+        input.isRequired = false;
+        input.autoExpandSelection = true;
+        input.hostElement.style.width = '100%';
+        input.isAnimated = true;
+        input.listBox.formatItem.addHandler((s, e: any) => {
+
+          if (e.data) {
+            e.item.innerHTML = '<strong>' + e.data.ValueMember + '</strong>' + ': ' + e.data.DisplayMember;
+          } else {
+            e.item.innerHTML = '';
+
+          }
+        });
+        input.isDroppedDownChanging.addHandler(async () => {
+          let _valueFirst = '';
+          try {
+            if (input.itemsSource.items[0])
+              _valueFirst = input.itemsSource.items[0]['ValueMember'];
+          }
+          finally { }
+
+          let tmp = input.text || '';
+          if (input.itemsSource.items.length <= 1 && !_valueFirst && tmp == _valueFirst) {
+            // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
+
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            await _lookup.getLookupData('').then();
+            if (input.itemsSource.items.length != _lookup.options.items.length)
+              input.itemsSource = _lookup.options;
+          }
+          else if (input.itemsSource.items.length == 1 && _valueFirst && input.text.indexOf(_valueFirst) == 0) {
+            // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            await _lookup.getLookupData('#' + _valueFirst, true).then();
+          }
+        });
+        input.itemsSourceFunction = async (query, max, callback) => {
+          if (input.text) {
+            // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            await _lookup.getLookupData(input.text, false, callback).then();
+          }
+        }
+
+        if (_value) {
+          _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+          await _lookup.getLookupData('#' + _value, true).then();
+        }
+      } else if (input instanceof MultiSelect) {
+        _lookup = new MultiSelectInput({
+          key: column.name,
+          lookupKey: _col['lookupKey'],
+          binding: _col['bindingList'],
+          lookupfilter: _col['lookupfilter'],
+          hideValueMember: true,
+          col: 6
+        }, this._service);
+        input.itemsSource = _lookup.options;
+        input.displayMemberPath = 'DisplayMember';
+        input.selectedValuePath = 'ValueMember';
+        input.checkedMemberPath = 'State';
+        input.maxHeaderItems = 10;
+        input.isContentHtml = true;
+        input.isRequired = false;
+        input.autoExpandSelection = true;
+        input.hostElement.style.width = '100%';
+        input.isAnimated = true;
+        input.inputElement.id = "alterInput" + _lookup.key;
+        input.inputElement.outerHTML += '<input wj-part="input" type="text" class="wj-form-control" style="display:none;" readonly="">';
+
+        input.gotFocus.addHandler(() => {
+          input.removeEventListener(input.hostElement, 'keypress');
+          input.removeEventListener(input.hostElement, 'keydown');
+          input.removeEventListener(input.inputElement, 'click');
+
+          let alterInput = <HTMLInputElement>document.getElementById("alterInput" + _lookup.key);
+          input.listBox.gotFocus.addHandler(() => {
+            alterInput.focus();
+          });
+          var tid;
+
+          alterInput.addEventListener('keyup', () => {
+            if (input.isDroppedDown == false)
+              input.isDroppedDown = true;
+            let arr = [];
+            for (let i = 0; i < input.checkedItems.length; i++) {
+              arr.push(input.checkedItems[i]['ValueMember']);
+            }
+            if (tid != undefined) {
+              clearTimeout(tid);
+            }
+            tid = setTimeout(() => {
+              _lookup.getLookupData('^' + arr.join(',') + '?' + alterInput.value, true).then(() => {
+              });
+            }, 500);
+
+          });
+          alterInput.removeAttribute("readonly");
+          alterInput.select();
+        })
+
+        input.listBox.gotFocus.addHandler(() => {
+          let alterInput = <HTMLInputElement>document.getElementById("alterInput" + _lookup.key);
+          alterInput.focus();
+        })
+
+        input.listBox.formatItem.addHandler((s, e: any) => {
+          // console.log(e.item.innerHTML);
+          if (e.data) {
+            let display = '<strong>' + e.data.ValueMember + '</strong>' + ': ' + e.data.DisplayMember;
+            let checked = e.data.State ? ' checked ' : ' ';
+            let html = '<label><input type="checkbox"' + checked + '> ' + display + ' </label>';
+            e.item.innerHTML = html;
+          }
+        });
+
+        if (!_value) _value = '';
+        _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[e.row], this.parentData);
+        await _lookup.getLookupData('^' + _value, true).then(
+          () => { }
+        );
+      }
+
+    } else if (_col.dataType === 'Object') {
+         if (_col['isButton']) {
+            input = document.createElement('button');
+            if (input instanceof HTMLButtonElement) {
+               input.type = 'button'
+               input.classList.add('btn', 'btn-primary');
+               input.textContent = "Bấm"
+               input.style.width = "100%";
+               input.style.height = "100%";
+               input.style.padding = "inherit";
+
+               button = input;
+            }
+            //editorRoot = input;
+         }
+         else {
+      let fileData = flex.itemsSource.sourceCollection[_row]['Data'];
+      let filePath = flex.itemsSource.sourceCollection[_row]['FilePath'];
+      let fileLink = flex.itemsSource.sourceCollection[_row]['LinkFile'];
+
+   
+      
+      let _idLinkFile, _fileLinkFolder;
+            if (!wjcCore.isNullOrWhiteSpace(fileLink)) {
+               _idLinkFile = fileLink.substring(fileLink.lastIndexOf('\\') + 1);
+               _fileLinkFolder = fileLink.replace(_idLinkFile, '');
+            }
+      input = document.createElement('div');
+
+      if (input instanceof HTMLElement) {
+        input.className = 'wj-input';
+        if (!_value) _value = 'Nhấn để chọn file'
+
+        let iconUpload = _col['allowUpload'] ? `<i class="fa fa-upload" aria-hidden="true"></i> ` : ''
+
+        input.innerHTML = `<div class="wj-input-group " >
+        
+         <span wj-part="btn-dec" class="wj-input-group-btn" tabindex="-1">
+         <button class="wj-btn wj-btn-default" type="button" tabindex="-1"><i class="fa fa-times" aria-hidden="true"></i><\/button><\/span>
+         <span wj-part="btn-inc" class="wj-input-group-btn" tabindex="-1" >
+         <button class="wj-btn wj-btn-default" type="button" tabindex="-1"><i class="fa fa-download" aria-hidden="true"></i><\/button><\/span>
+         <span wj-part="btn-inc" class="wj-input-group-btn" tabindex="-1" >
+         <button class="wj-btn wj-btn-default" type="button" tabindex="-1"><i class="fa fa-file-pdf-o" aria-hidden="true"></i><\/button><\/span>
+         <label class="wj-form-control btn">
+         <input type="file" id="inputChildFile" wj-part="input" class="wj-form-control btn" style="width:0;opacity: 0;" />
+         `+ iconUpload + _value + `</label><\/div>`;
+
+        filelabel = input.getElementsByTagName('label').item(0);
+        fileinput = input.getElementsByTagName('input').item(0);
+        if (fileData != undefined && fileData != null && filePath) {
+          filelabel.setAttribute('title', 'file chờ upload.');
+          filelabel.style.border = '1px solid green';
+        }
+        if (_col['allowUpload'] == false)
+          fileinput.addEventListener('click', (e) => {
+            e.preventDefault();
+          });
+        fileinput.addEventListener('change', (e) => {
+          filelabel.textContent = fileinput.files[0].name;
+        });
+
+        let btns = input.getElementsByTagName('button');
+        let filebtn1 = btns.item(0);
+        if (_col['allowRemove'] == false) {
+          filebtn1.style.display = 'none';
+          filebtn1.parentElement.style.display = 'none';
+        }
+
+        filebtn1.addEventListener('click', (e) => {
+          filelabel.textContent = 'Nhấn để chọn file';
+          flex.endUpdate();
+        });
+
+        let clicked = (e: any, b: boolean) => {
+          let _file: string = filelabel.textContent != 'Nhấn để chọn file' ? filelabel.textContent.trim() : '';
+          let _folderName;
+          if (!wjcCore.isNullOrWhiteSpace(_fileLinkFolder)) {
+            _folderName = _fileLinkFolder;
+         }
+         else {
+            _folderName = this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName;
+
+        
+         }
+
+          if (_folderName && this.id > 0 && _file) {
+            let child_FolderId: string;
+            if (!wjcCore.isNullOrWhiteSpace(_idLinkFile)) {
+               child_FolderId = _idLinkFile;
+            }
+            else if (!_col['folderId'] && _col['folderId'] == null) {
+              child_FolderId = this.id.toString();
+              
+            } else {
+              child_FolderId = this.translate_expr(_col['folderId']);
+              console.log([child_FolderId])
+            }
+
+            let name = b ? _file + '.pdf' : _file;
+            if (name.endsWith('.pdf.pdf')) {
+              name.replace('.pdf.pdf', '.pdf');
+            }
+            
+            let _div = document.createElement('div');
+            _div.innerHTML = `<div style="height:25px;position: fixed;bottom: 45%;left: 20%;right: 20%;background-color:transparent;"><div class='childProgressBar' style="position: relative;text-align:center;    
+            height:100%;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #ffffff;
+            padding: 5px 10px;
+            background: -moz-linear-gradient(
+              top,
+              #bbff7a 0%,
+              #a8e56d 50%,
+              #95cc61 92%,
+              #82b255);
+            background: -webkit-gradient(
+              linear, left top, left bottom,
+              from(#bbff7a),
+              color-stop(0.50, #a8e56d),
+              color-stop(0.92, #95cc61),
+              to(#82b255));
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+            border-radius: 6px;
+            border: 1px solid #12190C;
+            -moz-box-shadow:
+              0px 1px 1px rgba(000,000,000,0.5),
+              inset 1px 2px 0px rgba(255,255,255,0.4);
+            -webkit-box-shadow:
+              0px 1px 1px rgba(000,000,000,0.5),
+              inset 1px 2px 0px rgba(255,255,255,0.4);
+            box-shadow:
+              0px 1px 1px rgba(000,000,000,0.5),
+              inset 1px 2px 0px rgba(255,255,255,0.4);
+            text-shadow:
+              1px 1px 2px rgba(000,000,000,0.7),
+              0px 1px 0px rgba(255,255,255,0.4);"><\/div><\/div>`
+            document.getElementsByTagName('section').item(0).appendChild(_div);
+            let _bar = <HTMLDivElement>document.getElementsByClassName('childProgressBar').item(0);
+            let prosub = this._service.downloadProgress.subscribe(
+              data => {
+                let childProgress = (Math.round(data * 100) / 100).toString() + '%';
+                _bar.style.width = childProgress;
+                _bar.innerText = childProgress;
+                if (data == 100) {
+                  setTimeout(() => {
+                    _div.remove();
+                    flex.endUpdate();
+
+                  }, 300);
+                }
+              }, error => {
+                _div.remove();
+              });
+            this.subscription.add(prosub);
+           console.log(_folderName)
+           console.log(child_FolderId)
+           console.log(name)
+            const sub = this._service.dowload(_folderName, child_FolderId, name).subscribe(blob => {
+
+              if (name.toUpperCase().endsWith('PDF') == false || (blob.size / 1024) > 10240)
+                importedSaveAs(blob, name);
+              else {
+                //let url = window.URL.createObjectURL(blob);
+                
+                console.log("&&&&&&&&&&&&&&&&&&&&&&&&&&& Mobile:", this.isMobileMenu())
+                if(this.isMobileMenu()){
+                  window.open(window.URL.createObjectURL(blob));
+                }
+                else{
+                  let params = { 'folderName': _folderName, 'id': child_FolderId, 'name': name }
+                  let navigateUrl: any = ['#/main', 'documentview', 'detail', encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(params)))];
+                  window.open(navigateUrl.join('/'));
+                }
+                
+
+                //window.open(url);
+              }
+            });
+            this.subscription.add(sub);
+          }
+          flex.endUpdate();
+          return;
+        }
+
+        let filebtn2 = btns.item(1);
+        if (_col['allowDownload'] == false || (fileData != undefined && fileData != null) || !filePath) {
+          filebtn2.style.display = 'none';
+          filebtn2.parentElement.style.display = 'none';
+
+        }
+        filebtn2.addEventListener('click', (e) => clicked(e, false));
+        let filebtn3 = btns.item(2);
+        if ((_col['allowView'] == false ||
+          _value.toUpperCase().indexOf('.DOC') <= 0 && _value.toUpperCase().indexOf('.XLS') <= 0 && _value.toUpperCase().indexOf('.PDF') <= 0)
+          || (fileData != undefined && fileData != null) || !filePath) {
+          filebtn3.style.display = 'none';
+          filebtn3.parentElement.style.display = 'none';
+        }
+        filebtn3.addEventListener('click', (e) => clicked(e, true));
+      }
+      editorRoot = input;
+         }
+
+
+    } else return;
+
+    e.cell.appendChild(editorRoot);
+    editorRoot.focus();
+    input.focus();
+    if (fileinput) {
+      filelabel.focus();
+    }
+
+    if (e.cell.firstChild) {
+      e.cell.firstElementChild.setAttribute('style', 'display:none');
+    }
+    // cellEditEnding that updates cell with user's input
+    let editEndingEH = (s, args) => {
+      flex.cellEditEnding.removeHandler(editEndingEH);
+    
+      if (!args.cancel) {
+        args.cancel = true;
+        let _c = flex.columns[args.col];
+        let _col = columnGroups.find(c => c['binding'] == _c['binding']);
+
+        if (_col.dataType == 'Array') {
+          let arr = [];
+          if (input instanceof MultiSelect) {
+            let arr = [];
+            for (let i = 0; i < input.checkedItems.length; i++) {
+              arr.push(input.checkedItems[i]['ValueMember']);
+            }
+            flex.itemsSource.sourceCollection[args.row][column['binding']] = arr.join(',');
+            let alterInput = <HTMLInputElement>document.getElementById("alterInput" + _lookup.key);
+            alterInput.setAttribute("readonly", "");
+            for (const source in _lookup.binding) {
+              let arrBind = [];
+              for (let i = 0; i < input.checkedItems.length; i++) {
+                arrBind.push(input.checkedItems[i][source]);
+              }
+              let des = _lookup.binding[source];
+              flex.itemsSource.sourceCollection[args.row][des] = arrBind.join(',');
+            }
+           
+          }
+          else { //Dương fix ngày 13.04
+            if (input.text)
+              _value = input.selectedValue;
+            else
+              _value = '';
+ 
+            if (_value != undefined) {
+              flex.itemsSource.sourceCollection[args.row][column['binding']] = _value;
+              for (const source in _lookup.binding) {
+                let des = _lookup.binding[source];
+                if (_value != '')
+                  flex.itemsSource.sourceCollection[args.row][des] = input.itemsSource.items[input.itemsSource._idx][source];
+                else
+                  flex.itemsSource.sourceCollection[args.row][des] = '';
+              }
+            }
+          }
+           
+          flex.itemsSource.refresh();
+        } else if (_col.dataType == 'Object') {
+               if (!_col['isButton']) {
+          let name = '';
+          let _fileData = flex.itemsSource.sourceCollection[args.row]['Data']
+          if (!filelabel.textContent.includes('Nhấn để chọn file')) {
+            name = filelabel.textContent.trim();
+          }
+          
+          if (name) {
+            if (_fileData != null) {
+              if (_fileData.name == name) return;
+            }
+            else {
+              flex.setCellData(args.row, args.col, name);
+              flex.itemsSource.sourceCollection[args.row]['Data'] = fileinput.files[0];
+            }
+            
+          }
+          else {
+            flex.setCellData(args.row, args.col, '');
+          }
+               }
+
+        } 
+        else if (_col.dataType == 'Date')
+          flex.setCellData(args.row, args.col, input.value);
+        else if (input.value != undefined)
+          flex.setCellData(args.row, args.col, input.value);
+        // this.filesUpload.i
+      }
+    };
+    flex.cellEditEnding.removeHandler(editEndingEH);
+
+    // subscribe the handler to the cellEditEnding event
+    flex.cellEditEnding.addHandler(editEndingEH);
+
+  }
+
+  createColumnGroups(flex: wjcGrid.FlexGrid, columnGroups: any, level: number) {
+    // prepare to generate columns
+    var colHdrs = flex.columnHeaders;
+
+    // add an extra header row if necessary
+    if (level >= colHdrs.rows.length) {
+      colHdrs.rows.splice(colHdrs.rows.length, 0, new wjcGrid.Row());
+    }
+    // loop through the groups adding columns or groups
+    for (var i = 0; i < columnGroups.length; i++) {
+      var group = columnGroups[i];
+      if (!group.columns) {
+
+        // create a single column
+        var col = new wjcGrid.Column();
+        col.dataType = DataType.String;
+        // copy properties from group
+        for (var prop in group) {
+          if (prop in col) {
+            if (prop != 'dataType') {
+              col[prop] = group[prop];
+            }
+            else {
+              if (group[prop] != 'Array') {
+                col[prop] = group[prop];
+              }
+            }
+          }
+        }
+
+        // add the new column to the grid, set the header
+        flex.columns.push(col);
+        colHdrs.setCellData(level, colHdrs.columns.length - 1, group.header);
+      }
+      else {
+
+        // get starting column index for this group
+        var colIndex = colHdrs.columns.length;
+
+        // create columns for this group
+        this.createColumnGroups(flex, group.columns, level + 1);
+
+        // set headers for this group
+        for (var j = colIndex; j < colHdrs.columns.length; j++) {
+          colHdrs.setCellData(level, j, group.header);
+        }
+      }
+    }
+  }
+
+  mergeColumnGroups(flex: wjcGrid.FlexGrid) {
+
+    // merge headers
+    var colHdrs = flex.columnHeaders;
+    flex.allowMerging = wjcGrid.AllowMerging.AllHeaders;
+
+    // merge horizontally
+    for (var r = 0; r < colHdrs.rows.length; r++) {
+      colHdrs.rows[r].allowMerging = true;
+    }
+
+    // merge vertically
+    for (var c = 0; c < colHdrs.columns.length; c++) {
+      colHdrs.columns[c].allowMerging = true;
+    }
+
+
+    // fill empty cells with content from cell above
+    //for (var c = 0; c < colHdrs.columns.length; c++) {
+    //    for (var r = 1; r < colHdrs.rows.length; r++) {
+    //        var hdr = colHdrs.getCellData(r, c, false);
+    //        if (!hdr || hdr == colHdrs.columns[c].binding) {
+    //            var hdr = colHdrs.getCellData(r - 1, c, false);
+    //            colHdrs.setCellData(r, c, hdr);
+    //        }
+    //    }
+    //}
+
+
+    // handle top-left panel
+    //for (var c = 0; c < flex.topLeftCells.columns.length; c++) {
+    //    flex.topLeftCells.columns[c].allowMerging = true;
+    //}
+
+
+  }
+  IsSubmit = false;
+  protected async submit(formData: FormGroup, navigateUrl: any[], isApproveSend?: boolean, func?: Promise<void>) {
+    try {
+      this.showLoading = true;
+      if (this.paramsRoute == 'copy')
+        this.id = -1
+
+      if (this.paramsRoute == 'split')
+        this.id = -1
+        
+      if (isApproveSend == true) {
+        this.editorFrm.controls['ApproveSend'].setValue(true);
+      }
+      
+      if (this._layoutDeclare.serverUpdating)
+        for (let command of this._layoutDeclare.serverUpdating) {
+          if (formData.valid)
+            await this.dfpanel.runConstraint(command).then();// => console.log(command + '- success'));
+        }
+
+      if (formData.invalid) {
+        this.allowSendMail = false;
+        this.showLoading = false;
+        return false;
+      }
+
+      //////////////////////////////////////////////////////////
+      if (!this._layoutDeclare.layout) {
+        alert('Declare layout data');
+        return;
+      }
+
+      let parentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
+      let isView = this._layoutDeclare.layout.Structure.Parent.IsView;
+
+      if (!parentTableName) {
+        alert('Parent Table Name is not declare');
+        return;
+      }
+      this.IsSubmit = true;
+      this._layoutDeclare.panels.forEach(panel => {
+        panel.controls.forEach(control => {
+          if (control instanceof UploadInput) {
+            if (control.file)
+              this.filesUpload.push(control.file);
+          }
+        })
+      });
+
+      this._layoutDeclare.panels.forEach(panel => {
+        panel.controls.forEach(control => {
+          if (control instanceof UploadImage) {
+            if (control.file)
+              this.imageUpload.push(control.file);
+          }
+        })
+      });
+
+      let _ds = new DataSetContract();
+   
+      let _tbParent = new TableContract(parentTableName);
+     
+      if (formData && formData.value) {
+
+        for (let key in formData.value) {
+          const _colContract = new ColumnContract();
+          _colContract.ColumnName = key;
+
+          _tbParent.Columns.push(_colContract);
+        }
+
+        for (let key in this.parentData) {
+          if (!formData.contains(key)) {
+            const _colContract = new ColumnContract();
+            _colContract.ColumnName = key;
+
+            _tbParent.Columns.push(_colContract);
+          }
+        }
+
+        let _defaultValues = this.id > -1 ? {} : this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+        let _row = this.createRow(this.parentData, _defaultValues, formData.value, _tbParent.Columns);
+
+        if (!this.id) {
+          _row.RowState = DataRowState.Added;
+        } else {
+          if (this.id > -1) {
+            _row.RowState = DataRowState.Modified;
+          }
+          else {
+            _row.RowState = DataRowState.Added;
+          }
+        }
+
+        if (this.paramsRoute == 'copy') {
+
+          let newAsCopyLstParent = this._layoutDeclare.layout.Structure.Parent.ResetNewAsCopy.split(',');
+          for (let _col in newAsCopyLstParent) {
+            let _coltmp;
+            if (newAsCopyLstParent[_col] == 'Id' || newAsCopyLstParent[_col] == 'CreatedBy' || newAsCopyLstParent[_col] == 'ModifiedBy') {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col]);
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+            }
+            else {
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col]);
+              if (this.editorFrm.controls[_coltmp.ColumnName] != undefined) {
+
+                if (this.editorFrm.controls[_coltmp.ColumnName] instanceof NumberBoxInput)
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = 0;
+                else
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+              else {
+                _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+            }
+          }
+        }
+
+        if (this.paramsRoute == 'split') {
+
+          let splitLstParent = this._layoutDeclare.layout.Structure.Parent.ResetWhenSplit.split(',')
+
+          if (this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit) {
+            let copyValueWhenSplit = this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit;
+
+            for (let _w in copyValueWhenSplit) {
+              let colFrom = copyValueWhenSplit[_w].FromColumn;
+              let colTo = copyValueWhenSplit[_w].ToColumn;
+
+
+              let _coltmp = _tbParent.Columns.find(col => col.ColumnName == colFrom);
+              let _coltmp2 = _tbParent.Columns.find(col => col.ColumnName == colTo);
+
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp2)] = _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)];
+            }
+          }
+
+          for (let _col in splitLstParent) {
+            let _coltmp;
+            if (splitLstParent[_col] == 'Id') {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col]);
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+            }
+            else {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col])
+
+              //_row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+
+              if (this.editorFrm.controls[_coltmp.ColumnName] != undefined) {
+
+                if (this.editorFrm.controls[_coltmp.ColumnName] instanceof NumberBoxInput)
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = 0;
+                else
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+              else {
+                _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+            }
+          }
+
+        }
+
+        _tbParent.Rows.push(_row);
+
+       
+        if (this.id > -1) {
+          let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+          _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+          let today = new Date();
+          let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = date;
+
+        }
+        else {
+          let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+          _ds.Tables.push(_tbParent);
+        }
+      }
+      
+      // if (this._layoutDeclare.layout.Structure.Child != undefined) {
+      let childs = this._layoutDeclare.layout.Structure.Child;
+      for (let i = 0; i < childs.length; i++) {
+        if (childs[i].IsView == 'view') {
+          continue;
+        }
+   
+        if ((!childs[i].Name || !childs[i].ParentKey || !childs[i].ChildKey)) {
+          continue;
+        }
+
+        let _tbChild = new TableContract(childs[i].Name);
+
+
+        if (this.gridArray[i].columns) {
+          for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+
+            _tbChild.Columns.push(_colContract);
+          }
+        }
+        const _defaultValuesChild = childs[i].DefaultValues;
+      
+        for (const key in _defaultValuesChild) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = key as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == key);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+
+        if (this.gridArray[i]) {
+          for (let j in this.gridArray[i].itemsSource.itemsRemoved[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+          for (let j in this.gridArray[i].itemsSource.itemsEdited[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+          for (let j in this.gridArray[i].itemsSource.itemsAdded[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+
+        }
+
+        if (this.paramsRoute == 'copy' && childs[i].ResetNewAsCopy != undefined) {
+          this.gridArray[i].itemsSource.itemsAdded.clear();
+
+          if (this.gridArray[i].itemsSource.items.length > 0) {
+            for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+              this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+            }
+          }
+
+          let newAsCopyLst = childs[i].ResetNewAsCopy.split(',')
+
+          for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+            for (let _col in newAsCopyLst) {
+              if (newAsCopyLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = ''
+            }
+          }
+
+          for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+            for (let _col in newAsCopyLst) {
+              if (newAsCopyLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = ''
+            }
+          }
+
+          this.gridArray[i].itemsSource.itemsEdited.clear();
+          this.gridArray[i].itemsSource.itemsRemoved.clear();
+        }
+       
+        if (this.paramsRoute == 'split') {
+          this.gridArray[i].itemsSource.itemsAdded.clear();
+
+          if (this.gridArray[i].itemsSource.items.length > 0) {
+            for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+              this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+            }
+          }
+
+          let splitLst = childs[i].ResetWhenSplit.split(',')
+          
+          for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+            for (let _col in splitLst) {
+              if (splitLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = ''
+            }
+          }
+          
+          for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+            for (let _col in splitLst) {
+              if (splitLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = ''
+            }
+          }
+          
+          this.gridArray[i].itemsSource.itemsEdited.clear();
+          this.gridArray[i].itemsSource.itemsRemoved.clear();
+        }
+
+      
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsAdded.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsAdded.length; _n++) {
+            let added = this.gridArray[i].itemsSource.itemsAdded[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, added, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Added;
+
+            _tbChild.Rows.push(_row);
+          }
+        }
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsEdited.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsEdited.length; _n++) {
+            let edited = this.gridArray[i].itemsSource.itemsEdited[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, edited, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Modified;
+            _tbChild.Rows.push(_row);
+          }
+        }
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsRemoved.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsRemoved.length; _n++) {
+            let removed = this.gridArray[i].itemsSource.itemsRemoved[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, removed, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Deleted;
+            _tbChild.Rows.push(_row);
+          }
+        }
+
+        for (const row of _tbChild.Rows) {
+          if (this.id > -1) {
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+            _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+            let today = new Date();
+            let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = date;
+
+          }
+          else {
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+          }
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+          _ds.Tables.push(_tbParent);
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName === _tbChild.TableName)) {
+          _ds.Tables.push(_tbChild);
+        }
+      }
+    let newChilds = this._layoutDeclare.layout.Structure.Child.filter(d=>d.IsView !== "view");
+    this._layoutDeclare.layout.Structure.Child = newChilds;
+
+      // } HUNG
+      let data = await this._service.post({
+        Layout: this._layoutDeclare.layout.Structure,
+        EditorData: _ds
+      }).toPromise();
+   
+      if (data instanceof Object) {
+      }
+      else {
+        if (data != 'Deleted row information cannot be accessed through the row.') {
+          alert(data);
+          this.isLoading = false;
+          return;
+        }
+      }
+      //2201: xử lý view thành table
+  
+
+      try {
+       
+        if (this.id == -1 || this.id == undefined) {
+         
+          let _tbName = this._layoutDeclare.layout.Structure.Parent.Name;
+          if (_tbName.startsWith('v')) {
+           
+            if (_tbName.indexOf('_') > - 1)
+              _tbName = _tbName.substr(1, _tbName.indexOf('_') - 1);
+            else
+              _tbName = _tbName.substr(1, _tbName.length);
+          }
+ 
+          let _parent = data[_tbName][0];
+
+          for (let key in _parent) {
+            this.parentData[key] = _parent[key];
+          }
+      
+          this.dfpanel.updateValueForm(_parent);
+        }
+
+      
+        try {
+          for (let grid of this.gridArray) {
+            for (let row of grid.itemsSource.sourceCollection) {
+           
+              if (row['Data'] != undefined) {
+              
+                this.filesUpload.push(row['Data']);
+                console.log(row['Data']);
+              }
+            }
+          }
+        }
+        catch (e) { }
+  
+        this.upLoadFiles().then(async (result) => {
+       
+          // this.showLoading = true;
+          // console.log(result);
+          if (result) {
+            let IsAttachParentFail = false;
+            let ListIdDetail = Array<string>();
+
+            let parentKey = '';
+            let childs = this._layoutDeclare.layout.Structure.Child;
+            let idxchild: number;
+            for (let i = 0; i < childs.length; i++) {
+              if (childs[i].Name = 'vB30BizDocDocument') {
+                idxchild = i;
+                parentKey = childs[i].ParentKey;
+              }
+            }
+
+            for (let file of result) {
+              if (file.exist == false) {
+                if (file.fileName == this.parentData['FilePath']) {
+                  IsAttachParentFail = true;
+                } else {
+                  for (let row of this.gridArray[idxchild].itemsSource.sourceCollection) {
+                    if (row['FilePath'] == file.fileName) {
+                      ListIdDetail.push(file.fileName);
+                    }
+
+                  }
+                }
+              }
+            }
+
+
+            const params = new Array<ParameterContract>();
+            const param1 = new ParameterContract();
+            const param2 = new ParameterContract();
+            const param3 = new ParameterContract();
+            const param4 = new ParameterContract();
+            const param5 = new ParameterContract();
+            const param6 = new ParameterContract();
+
+            param1.ParameterName = this.convertParameterName('TableName');
+            param1.ParameterValue = this._layoutDeclare.layout.Structure.Parent.Name;
+            params.push(param1);
+
+
+            param2.ParameterName = this.convertParameterName('ParentKeyName');
+            param2.ParameterValue = parentKey;
+            params.push(param2);
+
+            param3.ParameterName = this.convertParameterName('Id');
+            param3.ParameterValue = this.id;
+            params.push(param3);
+
+            param4.ParameterName = this.convertParameterName('ListIdDetail');
+            param4.ParameterValue = ListIdDetail.join(',');
+            params.push(param4);
+
+            param5.ParameterName = this.convertParameterName('TableDetail');
+            param5.ParameterValue = 'B30BizDocDocument';
+            params.push(param5);
+
+            param6.ParameterName = this.convertParameterName('IsAttachParentFail');
+            param6.ParameterValue = IsAttachParentFail;
+            params.push(param6);
+
+
+            let _data = await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Ctc_RemoveFilePath', params).toPromise();
+
+            if (isApproveSend == false || isApproveSend == undefined || isApproveSend == null) {
+              navigateUrl.push(this.parentData['Id']);
+            }
+  
+            if (this._layoutDeclare.serverUpdated != undefined && this._layoutDeclare.serverUpdated.length > 0) {
+              for (let i = 0; i < this._layoutDeclare.serverUpdated.length; i++) {
+                await this.dfpanel.runConstraint(this._layoutDeclare.serverUpdated[i]).then(() => {
+                  if (i == this._layoutDeclare.serverUpdated.length - 1) {
+                    if (func == null || func == undefined) {
+                      this.router.navigate(['main']).then(() => {
+                        this.router.navigate(navigateUrl).then(() => {
+                          if (navigateUrl.length > 3)
+                            navigateUrl.pop();
+                          this.IsSubmit = false;
+                          // if (isApproveSend == false || isApproveSend == undefined || isApproveSend == null)
+                          //   location.reload(false);
+                        })
+                      });
+                    }
+                    else {
+                      func.then(() => {
+
+                      });
+                    }
+                  }
+                });
+              }
+            } else {
+              this.router.navigate(['main']).then(() => {
+                this.router.navigate(navigateUrl).then(() => {
+                  if (navigateUrl.length > 3)
+                    navigateUrl.pop();
+                  this.IsSubmit = false;
+                })
+              });
+            }
+          }
+        });
+      }
+      catch (ex) {
+        alert("Xảy ra lỗi trong quá trình thực hiện");
+        console.log('Submit error. ' + ex);
+        this.router.navigate(['main']).then(() => {
+          this.router.navigate(navigateUrl).then(() => {
+            if (navigateUrl.length > 3)
+              navigateUrl.pop();
+          })
+        });
+      }
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện.");
+      console.log(ex);
+    }
+  }
+
+
+  
+  protected async submitXML(formData: FormGroup, navigateUrl: any[], isApproveSend?: boolean, func?: Promise<void>) {
+    console.log('submitXML');
+    if (this.paramsRoute == 'copy')
+      this.id = -1
+
+    if (this.paramsRoute == 'split')
+      this.id = -1
+
+    if (isApproveSend == true) {
+      this.editorFrm.controls['ApproveSend'].setValue(true);
+    }
+
+    if (this._layoutDeclare.serverUpdating)
+      for (let command of this._layoutDeclare.serverUpdating) {
+        if (formData.valid)
+          await this.dfpanel.runConstraint(command).then();// => console.log(command + '- success'));
+      }
+
+    if (formData.invalid) {
+      this.allowSendMail = false;
+      return;
+    } else {
+      this.showLoading = true;
+    }
+
+    //////////////////////////////////////////////////////////
+    if (!this._layoutDeclare.layout) {
+      alert('Declare layout data');
+      return;
+    }
+
+    let parentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
+    if (!parentTableName) {
+      alert('Parent Table Name is not declare');
+      return;
+    }
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(control => {
+        if (control instanceof UploadInput) {
+          if (control.file)
+            this.filesUpload.push(control.file);
+        }
+      })
+    });
+
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(control => {
+        if (control instanceof UploadImage) {
+          if (control.file)
+            this.imageUpload.push(control.file);
+        }
+      })
+    });
+
+    let _ds = new DataSetContract();
+
+    let _tbParent = new TableContract(parentTableName);
+
+    if (formData && formData.value) {
+
+      for (let key in formData.value) {
+        const _colContract = new ColumnContract();
+        _colContract.ColumnName = key;
+
+        _tbParent.Columns.push(_colContract);
+      }
+
+      for (let key in this.parentData) {
+        if (!formData.contains(key)) {
+          const _colContract = new ColumnContract();
+          _colContract.ColumnName = key;
+
+          _tbParent.Columns.push(_colContract);
+        }
+      }
+
+      let _defaultValues = this.id > -1 ? {} : this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+      let _row = this.createRow(this.parentData, _defaultValues, formData.value, _tbParent.Columns);
+
+      if (!this.id) {
+        _row.RowState = DataRowState.Added;
+      } else {
+        if (this.id > -1) {
+          _row.RowState = DataRowState.Modified;
+        }
+        else {
+          _row.RowState = DataRowState.Added;
+        }
+      }
+
+      if (this.paramsRoute == 'copy') {
+
+        let newAsCopyLstParent = this._layoutDeclare.layout.Structure.Parent.ResetNewAsCopy.split(',')
+        for (let _col in newAsCopyLstParent) {
+          let _coltmp;
+          if (newAsCopyLstParent[_col] == 'Id') {
+
+            _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col]);
+            _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+          }
+          else {
+            _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col])
+
+            _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+          }
+        }
+
+      }
+
+      if (this.paramsRoute == 'split') {
+
+        let splitLstParent = this._layoutDeclare.layout.Structure.Parent.ResetWhenSplit.split(',')
+
+        if (this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit) {
+          let copyValueWhenSplit = this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit;
+
+          for (let _w in copyValueWhenSplit) {
+            let colFrom = copyValueWhenSplit[_w].FromColumn;
+            let colTo = copyValueWhenSplit[_w].ToColumn;
+
+
+            let _coltmp = _tbParent.Columns.find(col => col.ColumnName == colFrom);
+            let _coltmp2 = _tbParent.Columns.find(col => col.ColumnName == colTo);
+
+            _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp2)] = _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)];
+          }
+        }
+
+        for (let _col in splitLstParent) {
+          let _coltmp;
+          if (splitLstParent[_col] == 'Id') {
+
+            _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col]);
+            _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+          }
+          else {
+            _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col])
+
+            _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+          }
+        }
+
+      }
+
+      _tbParent.Rows.push(_row);
+
+
+      if (this.id > -1) {
+        let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+        _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+        let today = new Date();
+        let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = date;
+
+      }
+      else {
+        let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+        _ds.Tables.push(_tbParent);
+      }
+    }
+
+    // if (this._layoutDeclare.layout.Structure.Child != undefined) {
+    let childs = this._layoutDeclare.layout.Structure.Child;
+    for (let i = 0; i < childs.length; i++) {
+      if (!childs[i].Name || !childs[i].ParentKey || !childs[i].ChildKey) {
+        continue;
+      }
+
+      let _tbChild = new TableContract(childs[i].Name);
+      if (this.gridArray[i].columns) {
+        for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+
+          _tbChild.Columns.push(_colContract);
+        }
+      }
+      const _defaultValuesChild = childs[i].DefaultValues;
+
+      for (const key in _defaultValuesChild) {
+        let _colContract = new ColumnContract();
+        _colContract.ColumnName = key as string;
+        let _coltmp = _tbChild.Columns.find(col => col.ColumnName == key);
+        if (_coltmp == undefined)
+          _tbChild.Columns.push(_colContract);
+      }
+
+      if (this.gridArray[i]) {
+        for (let j in this.gridArray[i].itemsSource.itemsRemoved[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+        for (let j in this.gridArray[i].itemsSource.itemsEdited[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+        for (let j in this.gridArray[i].itemsSource.itemsAdded[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+        let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'RowState');
+        if (_coltmp == undefined) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = 'RowState';
+          _tbChild.Columns.push(_colContract);
+        }
+      }
+
+      if (this.paramsRoute == 'copy') {
+        this.gridArray[i].itemsSource.itemsAdded.clear();
+
+        if (this.gridArray[i].itemsSource.items.length > 0) {
+          for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+            this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+          }
+        }
+
+        let newAsCopyLst = childs[i].ResetNewAsCopy.split(',')
+
+        for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+          for (let _col in newAsCopyLst) {
+            if (newAsCopyLst[_col] == 'Id')
+              this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = -1;
+            else
+              this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = ''
+          }
+
+        }
+
+        for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+          for (let _col in newAsCopyLst) {
+            if (newAsCopyLst[_col] == 'Id')
+              this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = -1;
+            else
+              this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = ''
+          }
+        }
+
+        this.gridArray[i].itemsSource.itemsEdited.clear();
+        this.gridArray[i].itemsSource.itemsRemoved.clear();
+      }
+
+      if (this.paramsRoute == 'split') {
+        this.gridArray[i].itemsSource.itemsAdded.clear();
+
+        if (this.gridArray[i].itemsSource.items.length > 0) {
+          for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+            this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+          }
+        }
+
+        let splitLst = childs[i].ResetWhenSplit.split(',')
+
+        for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+          for (let _col in splitLst) {
+            if (splitLst[_col] == 'Id')
+              this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = -1;
+            else
+              this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = ''
+          }
+        }
+
+        for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+          for (let _col in splitLst) {
+            if (splitLst[_col] == 'Id')
+              this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = -1;
+            else
+              this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = ''
+          }
+        }
+
+        this.gridArray[i].itemsSource.itemsEdited.clear();
+        this.gridArray[i].itemsSource.itemsRemoved.clear();
+      }
+
+
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsAdded.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsAdded.length; _n++) {
+          let added = this.gridArray[i].itemsSource.itemsAdded[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, added, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Added;
+          _row.CurrentItems['RowState'] = 'Added';
+          _tbChild.Rows.push(_row);
+        }
+      }
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsEdited.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsEdited.length; _n++) {
+          let edited = this.gridArray[i].itemsSource.itemsEdited[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, edited, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Modified;
+          _row.CurrentItems['RowState'] = 'Modified';
+          _tbChild.Rows.push(_row);
+        }
+      }
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsRemoved.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsRemoved.length; _n++) {
+          let removed = this.gridArray[i].itemsSource.itemsRemoved[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, removed, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Deleted;
+          _row.CurrentItems['RowState'] = 'Deleted';
+          _tbChild.Rows.push(_row);
+        }
+      }
+
+
+      // //ở trên là như cách cũ lấy dòng dưới lưới cần thiết, ử dưới này là lấy tất cả theo a muốn
+      // if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.items.length > 0) {
+      //   for (let _n = 0; _n < this.gridArray[i].itemsSource.items.length; _n++) {
+      //     let items = this.gridArray[i].itemsSource.items[_n];
+      //     let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, items, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+      //     _row.RowState = DataRowState.Unchanged;
+      //     _tbChild.Rows.push(_row);
+      //   }
+      // }
+
+      for (const row of _tbChild.Rows) {
+        if (this.id > -1) {
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+          _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+          let today = new Date();
+          let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = date;
+
+        }
+        else {
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+        }
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+        _ds.Tables.push(_tbParent);
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName === _tbChild.TableName)) {
+        _ds.Tables.push(_tbChild);
+      }
+    }
+    // }
+    let data = await this._service.post({
+      Layout: this._layoutDeclare.layout.Structure,
+      EditorData: _ds
+    }, true, this.id).toPromise();
+
+    if (data instanceof Object) {
+    }
+    else {
+      if (data != 'Deleted row information cannot be accessed through the row.') {
+        alert(data);
+        this.isLoading = false;
+        return;
+      }
+    }
+    //2201: xử lý view thành table
+    try {
+      if (this.id == -1 || this.id == undefined) {
+        let _tbName = this._layoutDeclare.layout.Structure.Parent.Name;
+        if (_tbName.startsWith('v')) {
+          _tbName = _tbName.substr(1, _tbName.indexOf('_') - 1);
+        }
+
+        let _parent = data[_tbName][0];
+
+        for (let key in _parent) {
+          this.parentData[key] = _parent[key];
+        }
+
+        this.dfpanel.updateValueForm(_parent);
+      }
+
+
+      try {
+        for (let grid of this.gridArray) {
+          for (let row of grid.itemsSource.sourceCollection) {
+            if (row['Data'] != undefined) {
+              this.filesUpload.push(row['Data']);
+            }
+          }
+        }
+      }
+      catch (e) { }
+
+      this.upLoadFiles().then(async (result) => {
+        // this.showLoading = true;
+        console.log(result);
+        if (result) {
+          let IsAttachParentFail = false;
+          let ListIdDetail = Array<string>();
+
+          let parentKey = '';
+          let childs = this._layoutDeclare.layout.Structure.Child;
+          let idxchild: number;
+          for (let i = 0; i < childs.length; i++) {
+            if (childs[i].Name = 'vB30BizDocDocument') {
+              idxchild = i;
+              parentKey = childs[i].ParentKey;
+            }
+          }
+
+          for (let file of result) {
+            if (file.exist == false) {
+              if (file.fileName == this.parentData['FilePath']) {
+                IsAttachParentFail = true;
+              } else {
+                for (let row of this.gridArray[idxchild].itemsSource.sourceCollection) {
+                  if (row['FilePath'] == file.fileName) {
+                    ListIdDetail.push(file.fileName);
+                  }
+
+                }
+              }
+            }
+          }
+
+          const params = new Array<ParameterContract>();
+          const param1 = new ParameterContract();
+          const param2 = new ParameterContract();
+          const param3 = new ParameterContract();
+          const param4 = new ParameterContract();
+          const param5 = new ParameterContract();
+          const param6 = new ParameterContract();
+
+          param1.ParameterName = this.convertParameterName('TableName');
+          param1.ParameterValue = this._layoutDeclare.layout.Structure.Parent.Name;
+          params.push(param1);
+
+
+          param2.ParameterName = this.convertParameterName('ParentKeyName');
+          param2.ParameterValue = parentKey;
+          params.push(param2);
+
+          param3.ParameterName = this.convertParameterName('Id');
+          param3.ParameterValue = this.id;
+          params.push(param3);
+
+          param4.ParameterName = this.convertParameterName('ListIdDetail');
+          param4.ParameterValue = ListIdDetail.join(',');
+          params.push(param4);
+
+          param5.ParameterName = this.convertParameterName('TableDetail');
+          param5.ParameterValue = 'B30BizDocDocument';
+          params.push(param5);
+
+          param6.ParameterName = this.convertParameterName('IsAttachParentFail');
+          param6.ParameterValue = IsAttachParentFail;
+          params.push(param6);
+
+
+          let _data = await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Ctc_RemoveFilePath', params).toPromise();
+
+          if (isApproveSend == false || isApproveSend == undefined || isApproveSend == null) {
+            navigateUrl.push(this.parentData['Id']);
+          }
+
+          if (this._layoutDeclare.serverUpdated != undefined && this._layoutDeclare.serverUpdated.length > 0) {
+            for (let i = 0; i < this._layoutDeclare.serverUpdated.length; i++) {
+              await this.dfpanel.runConstraint(this._layoutDeclare.serverUpdated[i]).then(() => {
+                if (i == this._layoutDeclare.serverUpdated.length - 1) {
+                  if (func == null || func == undefined) {
+                    this.router.navigate(['main']).then(() => {
+                      this.router.navigate(navigateUrl).then(() => {
+                        if (navigateUrl.length > 3)
+                          navigateUrl.pop();
+
+                        // if (isApproveSend == false || isApproveSend == undefined || isApproveSend == null)
+                        //   location.reload(false);
+                      })
+                    });
+                  }
+                  else {
+                    func.then(() => {
+
+                    });
+                  }
+                }
+              });
+            }
+          } else {
+            this.router.navigate(['main']).then(() => {
+              this.router.navigate(navigateUrl).then(() => {
+                if (navigateUrl.length > 3)
+                  navigateUrl.pop();
+              })
+            });
+          }
+        }
+      });
+    }
+    catch (ex) {
+      console.log('Submit error. ' + ex);
+      this.router.navigate(['main']).then(() => {
+        this.router.navigate(navigateUrl).then(() => {
+          if (navigateUrl.length > 3)
+            navigateUrl.pop();
+        })
+      });
+    }
+
+    // this.showLoading = false;
+  }
+
+  protected async submitChild(formData: FormGroup) {
+
+    if (this._layoutDeclare.serverUpdating)
+      for (let command of this._layoutDeclare.serverUpdating) {
+        if (formData.valid)
+          await this.dfpanel.runConstraint(command).then();// => console.log(command + '- success'));
+      }
+
+    if (formData.invalid) {
+      return;
+    } else {
+      this.showLoading = true;
+    }
+
+    //////////////////////////////////////////////////////////
+    if (!this._layoutDeclare.layout) {
+      alert('Declare layout data');
+      return;
+    }
+
+    let parentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
+    if (!parentTableName) {
+      alert('Parent Table Name is not declare');
+      return;
+    }
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(control => {
+        if (control instanceof UploadInput) {
+          if (control.file)
+            this.filesUpload.push(control.file);
+        }
+      })
+    });
+
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(control => {
+        if (control instanceof UploadImage) {
+          if (control.file)
+            this.imageUpload.push(control.file);
+        }
+      })
+    });
+
+    let _ds = new DataSetContract();
+
+    let _tbParent = new TableContract(parentTableName);
+
+    if (formData && formData.value) {
+      for (let key in formData.value) {
+        const _colContract = new ColumnContract();
+        _colContract.ColumnName = key;
+
+        _tbParent.Columns.push(_colContract);
+      }
+
+      for (let key in this.parentData) {
+        if (!formData.contains(key)) {
+          const _colContract = new ColumnContract();
+          _colContract.ColumnName = key;
+
+          _tbParent.Columns.push(_colContract);
+        }
+      }
+
+      let _defaultValues = this.id > -1 ? {} : this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+      let _row = this.createRow(this.parentData, _defaultValues, formData.value, _tbParent.Columns);
+
+      if (!this.id) {
+        _row.RowState = DataRowState.Added;
+      } else {
+        if (this.id > -1) {
+          _row.RowState = DataRowState.Modified;
+        }
+        else {
+          _row.RowState = DataRowState.Added;
+        }
+      }
+
+      _tbParent.Rows.push(_row);
+
+
+      if (this.id > -1) {
+        let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+        _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+        let today = new Date();
+        let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = date;
+
+      }
+      else {
+        let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+        _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+        _ds.Tables.push(_tbParent);
+      }
+    }
+
+    // if (this._layoutDeclare.layout.Structure.Child != undefined) {
+    let childs = this._layoutDeclare.layout.Structure.Child;
+    for (let i = 0; i < childs.length; i++) {
+      if (!childs[i].Name || !childs[i].ParentKey || !childs[i].ChildKey) {
+        continue;
+      }
+
+      let _tbChild = new TableContract(childs[i].Name);
+      if (this.gridArray[i].columns) {
+        for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+
+          _tbChild.Columns.push(_colContract);
+        }
+      }
+      const _defaultValuesChild = childs[i].DefaultValues;
+
+      for (const key in _defaultValuesChild) {
+        let _colContract = new ColumnContract();
+        _colContract.ColumnName = key as string;
+        let _coltmp = _tbChild.Columns.find(col => col.ColumnName == key);
+        if (_coltmp == undefined)
+          _tbChild.Columns.push(_colContract);
+      }
+
+      if (this.gridArray[i]) {
+        for (let j in this.gridArray[i].itemsSource.itemsRemoved[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+        for (let j in this.gridArray[i].itemsSource.itemsEdited[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+        for (let j in this.gridArray[i].itemsSource.itemsAdded[0]) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = j as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+
+      }
+
+
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsAdded.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsAdded.length; _n++) {
+          let added = this.gridArray[i].itemsSource.itemsAdded[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, added, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Added;
+
+          _tbChild.Rows.push(_row);
+        }
+      }
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsEdited.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsEdited.length; _n++) {
+          let edited = this.gridArray[i].itemsSource.itemsEdited[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, edited, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Modified;
+          _tbChild.Rows.push(_row);
+        }
+      }
+      if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsRemoved.length > 0) {
+        for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsRemoved.length; _n++) {
+          let removed = this.gridArray[i].itemsSource.itemsRemoved[_n];
+          let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, removed, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+          _row.RowState = DataRowState.Deleted;
+          _tbChild.Rows.push(_row);
+        }
+      }
+
+      for (const row of _tbChild.Rows) {
+        if (this.id > -1) {
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+          _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+          let today = new Date();
+          let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = date;
+
+        }
+        else {
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+          row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+        }
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+        _ds.Tables.push(_tbParent);
+      }
+
+      if (!_ds.Tables.find(tb => tb.TableName === _tbChild.TableName)) {
+        _ds.Tables.push(_tbChild);
+      }
+    }
+    // }
+    let data = await this._service.post({
+      Layout: this._layoutDeclare.layout.Structure,
+      EditorData: _ds
+    }).toPromise();
+
+    if (data instanceof Object) {
+    }
+    else {
+      if (data != 'Deleted row information cannot be accessed through the row.') {
+        alert(data);
+        this.isLoading = false;
+        return;
+      }
+    }
+    //2201: xử lý view thành table
+    try {
+      if (this.id == -1 || this.id == undefined) {
+        let _tbName = this._layoutDeclare.layout.Structure.Parent.Name;
+        if (_tbName.startsWith('v')) {
+          _tbName = _tbName.substr(1, _tbName.indexOf('_') - 1);
+        }
+
+        let _parent = data[_tbName][0];
+
+        for (let key in _parent) {
+          this.parentData[key] = _parent[key];
+        }
+
+        this.dfpanel.updateValueForm(_parent);
+      }
+
+      if (this._layoutDeclare.serverUpdated != undefined && this._layoutDeclare.serverUpdated.length > 0) {
+        for (let i = 0; i < this._layoutDeclare.serverUpdated.length; i++) {
+          await this.dfpanel.runConstraint(this._layoutDeclare.serverUpdated[i]).then(() => {
+            if (i == this._layoutDeclare.serverUpdated.length - 1) {
+            }
+          });
+        }
+      }
+
+    }
+    catch (ex) {
+      console.log('Submit error. ' + ex);
+    }
+
+    this.showLoading = false;
+  }
+
+  createRow(schemaRow: any, defaultRow: any, valueRow: any, columns: any, parentRow?: RowContract, parentColumns?: ColumnContract[], flex?: wjcGrid.FlexGrid): RowContract {
+
+    let _row = new RowContract();
+
+    _row.CurrentItems = new Array<any>();
+
+    for (let _nCol = 0; _nCol < columns.length; _nCol++) {
+      let value = schemaRow[columns[_nCol].ColumnName];
+
+      let value2 = defaultRow ? defaultRow[columns[_nCol].ColumnName] : undefined;
+      if (parentRow && parentColumns)
+        value2 = this.updateFromParent(value2, parentRow, parentColumns);
+
+      let value3 = valueRow[columns[_nCol].ColumnName];
+      if (value2 != undefined && value2 != null) {
+        value = value2;
+      }
+      if (value3 != undefined && value3 != null) {
+        value = value3;
+      }
+      
+      if ((value instanceof Date) || (value2 instanceof Date) || (value3 instanceof Date)) {
+        if (value2 !== undefined) value = value2;
+        if (value3 !== undefined) {
+          value = value3;
+        };
+      }
+      
+      if (columns[_nCol].ColumnName == 'BuiltinOrder' && flex != undefined && flex != null) {
+        let index = flex.itemsSource._view.indexOf(valueRow);
+        value = index + 1;
+      }
+
+      if (columns[_nCol].ColumnName == 'FilePath') {
+        let _value = <string>value;
+        for (let file of this.filesUpload) {
+          if (_value.includes(file.name)) {
+            value = file.name;
+            break;
+          }
+        }
+      }
+
+      if (columns[_nCol].ColumnName == 'ImagePath') {
+        let _value = <string>value;
+        for (let file of this.imageUpload) {
+          if (_value.includes(file.name)) {
+            value = file.name;
+            break;
+          }
+        }
+      }
+
+      if (columns[_nCol].ColumnName == 'CreatedAt') {
+        value = null;
+      }
+
+      if (value instanceof Array) {
+        let arr = [];
+        for (let i in value) {
+          arr.push(value[i]['ValueMember']);
+        }
+        value = arr.join(',');
+      }
+      if (value instanceof Date) {
+        if (value <= (new Date(1900, 1, 1)))
+          value = null;
+        else {
+          var date = value;
+          value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        }
+      }
+      _row.CurrentItems.push(value);
+    }
+
+    return _row;
+  }
+  
+  
+  upLoadFiles() {
+    // if (!this.editorFrm.controls['IdApprove'])
+      console.log(!this.editorFrm.controls['IdApprove'])
+    if (this.filesUpload.length > 0) {
+      if (!this.parentData['IdApprove'])
+        return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['Id']).toPromise();
+      else
+        return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['IdApprove']).toPromise();
+    }
+    else if (this.imageUpload.length > 0) {
+      return this._service.upLoadImage(this.imageUpload, this.zCommandKey).toPromise();
+    }
+    return Promise.resolve('Upload files ok');
+  }
+
+  // upLoadFiles() {
+  //   if (this.filesUpload.length > 0) {
+  //     let prosub = this._service.uploadProgress.subscribe(
+  //       data => {
+  //           let progress = (Math.round(data * 100) / 100).toString() + '%';
+  //           console.log(progress);
+  //           if (data == 100) {
+  //               setTimeout(() => {
+  //               }, 300);
+  //           }
+  //       }, error => {
+  //       }
+  //     );
+  //     this.subscription.add(prosub);
+  //     return this._service.upLoadNew(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['Id']).toPromise();
+  //   }
+  //   else if (this.imageUpload.length > 0) {
+  //     return this._service.upLoadImage(this.imageUpload, this.zCommandKey).toPromise();
+  //   }
+  //   return Promise.resolve('Upload files ok');
+  // }
+
+  translateAutoText(zExpr: any): any {
+    if (!zExpr) { return zExpr; }
+
+    const _jsonData = localStorage.getItem(SystemConstants.CURRENT_USER);
+    const _staticData: BravoSiteStorage = JSON.parse(_jsonData);
+
+    if (typeof zExpr === 'string') {
+      if (zExpr.startsWith('{VAR=')) {
+        const _field = zExpr.substring(5, zExpr.indexOf('}', 0));
+        return !_staticData[_field] ? zExpr : _staticData[_field];
+      }
+    }
+
+    return zExpr;
+  }
+
+  updateFromParent(zExpr: string, pRow: RowContract, pCol: ColumnContract[]) {
+    if (typeof zExpr === 'string' && zExpr.startsWith('Parent.')) {
+      const _field = zExpr.substring(7);
+      const _n = pCol.findIndex(col => col.ColumnName === _field);
+
+      return pRow.CurrentItems[_n];
+    }
+
+    return zExpr;
+  }
+
+  // tslint:disable-next-line:member-ordering
+  protected _controlCollection: InputBase<any>[] = [];
+  public get controlCollection(): InputBase<any>[] {
+    this._layoutDeclare.panels.forEach(panel => {
+      panel.controls.forEach(lk => {
+        this._controlCollection.push(lk);
+      });
+    });
+
+    return this._controlCollection;
+  }
+
+  isLoading = false;
+  taidulieu: boolean = false;
+  //Thêm dialog
+  confirmDialog() {
+    if (this.editorFrm.valid) {
+      this.showDialog = true;
+    }
+  }
+  //Hết Thêm dialog
+  async onClick(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
+
+  //Thêm dialog
+  closeDialog() {
+    this.showDialog = false;
+  }
+  //Hết Thêm dialog
+
+  async onClickNoneValid(state?: any) {
+    this.showDialog = false;//Thêm dialog
+    if (this.editorFrm.valid)
+      this.showLoading = true;
+    for (let command of this._layoutDeclare.buttonLoadChild) {
+      await this.dfpanel.runConstraint(command).then();
+    }
+
+    this.showLoading = false;
+  }
+
+  async import(table: string, folder: string) {
+    if (this.editorFrm.valid) {
+      let input = document.getElementById('importControl');
+      if (input instanceof HTMLInputElement) {
+        let fileImport = [];
+        if (input.files.length <= 0) return;
+        this.showLoading = true;
+        fileImport.push(input.files[0]);
+        // console.log(this.filesUpload);
+        await this._service.import(fileImport, folder, table, this.editorFrm.get("ProductCostId").value, Global.convertConfig('{VAR=User.UserName}'), Global.convertConfig('{VAR=Branch.Ma_Dvcs}'));
+        await this.dfpanel.runConstraint('Evaluator_ServerConstraint_LoadDataImport').then(async () => {
+          // let _event = new wjcGrid.FormatItemEventArgs(new wjcGrid.GridPanel(this.gridArray[0], wjcGrid.CellType.Cell, this.gridArray[0].rows, this.gridArray[0].columns, this.gridArray[0].hostElement), this.gridArray[0].viewRange, this.gridArray[0].cells.getCellElement(0, 0));
+          if (this._layoutDeclare.importCommand.length > 0)
+            for (let command of this._layoutDeclare.importCommand) {
+              if (this.editorFrm.valid)
+                await this.dfpanel.runConstraint(command, undefined, null).then(() => console.log(command + ' ..success'));
+            }
+        });
+        this.showLoading = false;
+      }
+    }
+  }
+
+  //khóa sort ngày
+  sort(column: string, gridIndex: number, ascending: boolean) {
+    // if (this.gridArray[gridIndex].itemsSource) {
+    //   var sd = new SortDescription(column, ascending);
+    //   let ds: CollectionView = this.gridArray[gridIndex].itemsSource;
+    //   ds.sortDescriptions.push(sd);
+    //   this.gridArray[gridIndex].itemsSource.refresh();
+    // }
+  }
+
+  //zoom
+  protected isVisiblePanel = true;
+  onclickCollapsablePanel(gridtmp: wjcGrid.FlexGrid[]) {
+    if (this.isVisiblePanel) {
+      this.isVisiblePanel = false;
+      for (let i in gridtmp) {
+        gridtmp[i].columns.clear();
+        switch (this.gridArray.indexOf(gridtmp[i])) {
+          case 0:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns, 0);
+            break;
+          case 1:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns1, 0);
+            break;
+          case 2:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns2, 0);
+            break;
+          case 3:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns3, 0);
+            break;
+          case 4:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns4, 0);
+            break;
+          case 5:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns5, 0);
+            break;
+          case 6:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns6, 0);
+            break;
+          case 7:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns7, 0);
+            break;
+          case 8:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns8, 0);
+            break;
+          case 9:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns9, 0);
+            break;
+        }
+      }
+    }
+    else {
+      this.isVisiblePanel = true;
+      for (let i in gridtmp) {
+        gridtmp[i].columns.clear();
+        switch (this.gridArray.indexOf(gridtmp[i])) {
+          case 0:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns, 0);
+            break;
+          case 1:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns1, 0);
+            break;
+          case 2:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns2, 0);
+            break;
+          case 3:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns3, 0);
+            break;
+          case 4:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns4, 0);
+            break;
+          case 5:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns5, 0);
+            break;
+          case 6:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns6, 0);
+            break;
+          case 7:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns7, 0);
+            break;
+          case 8:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns8, 0);
+            break;
+          case 9:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns9, 0);
+            break;
+        }
+      }
+    }
+  }
+
+
+  resetBuiltinOrder(grid: wjcGrid.FlexGrid) {
+    let colSort = this._layoutDeclare.layout.Structure.Child[this.dfpanel.gridArray.indexOf(grid)].Sort;
+    for (let i = 0; i < grid.rows.length - 1; i++) {
+      grid.setCellData(i, colSort, i + 1);
+    }
+  }
+
+  async rowAddedEvent(grid: wjcGrid.FlexGrid) {
+    if (this._layoutDeclare.rowAdded)
+      if (this._layoutDeclare.rowAdded.length > 0)
+        for (let rowadd of this._layoutDeclare.rowAdded[this.dfpanel.gridArray.indexOf(grid)].Evaluators) {
+
+          await this.dfpanel.runConstraint(rowadd, undefined, null).then(() => console.log(rowadd + ' ..success'));
+
+        }
+  }
+
+  setDisplayPanel() {
+    let styles = {
+      'display': this.isVisiblePanel ? 'block' : 'none'
+    };
+    return styles;
+  }
+
+  setHeightGrid() {
+
+    let height = {
+      'height': this.isVisiblePanel ? Math.round(screen.height / 2).toString() + 'px' : Math.round((screen.height / 4) * 3).toString() + 'px'
+    };
+
+    return height;
+  }
+
+  private translate_expr(expr) {
+    if (!expr) { return expr; }
+    let _result = expr;
+ 
+    let controls: string[] = [];
+    for (const control in this.editorFrm.controls) {
+      controls.push(control);
+      
+    }
+    for (const control in this.parentData) {
+      if (!this.editorFrm.contains(control)) {
+        controls.push(control);
+      }
+    }
+    controls.sort((a, b) => b.length - a.length);
+
+    for (const control of controls) {
+      let patern = '{EXPR=' + control + '}';
+      
+      if (_result.indexOf(patern) > -1) {
+      
+        let value
+        if (this.editorFrm.contains(control))
+          value = this.editorFrm[control].value;
+        else
+          value = this.parentData[control];
+        do {
+          _result = _result.replace(patern, value);
+        }
+        while (_result.indexOf(patern) > -1)
+      }
+    }
+    // console.log(_result);
+    return _result;
+  }
+
+  closeWindow() {
+    window.close();
+  }
+
+  @ViewChild('importPopup') importPopup: Popup
+  @ViewChild('importNumber') importNumber: wjcInput.WjInputNumber;
+  @ViewChild('importGrid') importGrid: wjcGrid.FlexGrid;
+
+  importExcel() {
+    let fileInput = <HTMLInputElement>document.getElementById('importControl');
+    if (fileInput.files[0]) {
+      wjcGridXlsx.FlexGridXlsxConverter.load(this.importGrid, fileInput.files[0], { includeColumnHeaders: true });
+    }
+  }
+
+  openDialog() {
+    let pop = this.importPopup;
+    this.importNumber.placeholder = 'Start Row';
+    pop.show();
+    let fileInput = <HTMLInputElement>document.getElementById('importControl');
+    fileInput.click();
+
+    this.importGrid.allowAddNew = false;
+    this.importGrid.rowHeaders.columns[0].width = 43;
+    this.importGrid.selectionMode = wjcGrid.SelectionMode.RowRange;
+  }
+
+  async updateImportTo(gridtmp: wjcGrid.FlexGrid) {
+
+    let rows = this.importGrid.rows;
+    let cols = this.importGrid.columns;
+    let ds: CollectionView = gridtmp.itemsSource;
+    ds.itemsAdded.clear();
+    ds.itemsEdited.clear();
+
+    var selected = [];
+    for (let i = 0; i < gridtmp.rows.length; i++) {
+      selected.push(gridtmp.rows[i].dataItem);
+    }
+
+    for (let i = 0; i < selected.length; i++) {
+      ds.remove(selected[i]);
+    }
+
+    if (rows.length > 0) {
+      let startRow = this.importNumber.value - 1;
+      startRow = startRow < 0 ? 0 : startRow;
+      //
+      for (let r = startRow; r < rows.length; r++) {
+        let row = {};
+        let defines = 0;
+        for (var c = 0; c < cols.length; c++) {
+          let _v = this.importGrid.getCellData(r, c, false);
+          let col = gridtmp.columns.getColumn(this.importGrid.columns[c].header);
+
+          if (col != null)
+            // if (col.dataType == wjcCore.DataType.Date && _v) {
+            //   let date = new Date(_v);
+            //   _v = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            //   row[col.binding] = _v;
+            // }
+            if (col.dataType == wjcCore.DataType.Date && _v) {
+              var a = /^#(\d{2})\/(\d{2})\/(\d{4})$/.exec(_v);
+              if (a != null && a != undefined)
+                _v = new Date(Date.UTC(+a[3], + a[2] - 1, +a[1]));
+              row[col.binding] = _v;
+            }
+            else {
+              row[col.binding] = _v
+            }
+
+          if (col != null)
+            if (row[col.binding] && row[col.binding] != null) {
+              defines++;
+            }
+        }
+        if (defines >= 2) {
+          ds.itemsAdded.push(row);
+          ds.sourceCollection.push(row);
+        }
+      }
+
+      for (let column of gridtmp.itemsSource['defaultRow']) {
+        for (let row of gridtmp.itemsSource.sourceCollection) {
+          if (row[column] == null || row[column] == undefined) {
+            //boom Dương 09052018
+            let _v = gridtmp.itemsSource['defaultRow'][column];
+            if (gridtmp.columns[column].dataType == wjcCore.DataType.Date) {
+              let date = _v;
+              _v = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+              row[column] = _v;
+            }
+            else
+              row[column] = _v;
+          }
+        }
+      }
+      // ds.sourceCollection = data;
+    }
+    else
+      gridtmp.itemsSource.sourceCollection = [];
+
+    gridtmp.itemsSource.refresh();
+    this.fixSourceCollection(gridtmp);
+
+    if (this._layoutDeclare.importCommand.length > 0)
+      for (let command of this._layoutDeclare.importCommand) {
+        if (this.editorFrm.valid) {
+          try {
+            await this.dfpanel.runConstraint(command, undefined, null).then(() => console.log(command + ' ..success'));
+          } catch (exception) {
+
+          }
+        }
+      }
+
+    this.importPopup.hide();
+  }
+
+  deleteImportRow() {
+    let selected = [];
+
+    //let _idrowdel = flex.selectedRows[0]._idx;
+
+    for (let k in this.importGrid.selectedRows) {
+      let _idrowdel = this.importGrid.selectedRows[k]._idx;
+      for (var i = 0; i < this.importGrid.rows.length; i++) {
+        if (i == _idrowdel) {
+          selected.push(this.importGrid.rows[i]);
+          break;
+        }
+      }
+    }
+    for (let i = 0; i < selected.length; i++) {
+      this.importGrid.rows.remove(selected[i]);
+    }
+  }
+
+  fixSourceCollection(gridtmp: wjcGrid.FlexGrid) {
+    let data = gridtmp.itemsSource.sourceCollection;
+    for (let r = 0; r < data.length; r++) {
+      for (let c = 0; c < gridtmp.columns.length; c++) {
+        let _value = data[r][gridtmp.columns[c].binding];
+        if (gridtmp.columns[c].dataType == wjcCore.DataType.Number) {
+          _value = Number(_value);
+          if (isNaN(_value)) {
+            gridtmp.itemsSource.sourceCollection[r][gridtmp.columns[c].binding] = 0;
+          } else {
+            gridtmp.itemsSource.sourceCollection[r][gridtmp.columns[c].binding] = _value;
+
+          }
+        } else if (gridtmp.columns[c].dataType == wjcCore.DataType.Boolean) {
+          _value = Boolean(_value);
+
+          if (!_value) {
+            data[r][gridtmp.columns[c].binding] = false;
+          } else {
+            data[r][gridtmp.columns[c].binding] = _value;
+
+          }
+        }
+      }
+    }
+    gridtmp.itemsSource.refresh();
+
+  }
+
+  //boom của Khoa, chạy evalutator khi truyền tham số sang Editor
+  inputParams() {
+
+    let _parameters = this._layoutDeclare.panels[0].controls;
+
+    this.inputs = [];
+    _parameters.forEach(param => {
+      // console.log(param);
+      switch (param.className) {
+        case 'LookupBoxInput':
+          let _lb = new LookupBoxInput({
+            key: param.key,
+            label: param.label,
+            lookupKey: param['lookupKey'],
+            lookupfilter: param['lookupfilter'],
+            hideValueMember: false
+          }, this._service, null);
+
+          this.inputs.push(_lb);
+          break;
+
+        case 'DateBoxInput':
+          let _db = new DateBoxInput({
+            key: param.key,
+            label: param.label,
+            type: 'date',
+            format: 'dd/MM/yyyy',
+          });
+
+          this.inputs.push(_db);
+          break;
+
+        default:
+          let _tb = new TextBoxInput({
+            key: param.key,
+            label: param.label,
+            type: 'text'
+          })
+
+          this.inputs.push(_tb);
+          break;
+      }
+    });
+  }
+
+  //Kit: 27/03/2018: Đưa in vào editor đặt hàng Quý Đỗ
+  //08/03/2018: In chứng từ
+
+  convertParameterName(pzName: string) {
+    const DbParamPrefixOld = '@_';
+    const DbParamPrefix = '@';
+
+    return pzName.startsWith(DbParamPrefixOld) || pzName.startsWith(DbParamPrefix) ?
+      pzName : DbParamPrefixOld + pzName;
+  }
+
+  async printVoucher(input: string, layoutName: string = 'MAU1', gridForm?: wjcGrid.FlexGrid, extInput?: string, extVar?: string) {
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    param1.ParameterValue = input;
+    params.push(param1);
+
+    if (extInput != '' && extInput != undefined && extInput != null) {
+      param2.ParameterName = this.convertParameterName(extVar);
+      param2.ParameterValue = extInput;
+      params.push(param2);
+    }
+
+    let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, _command, params)
+      .toPromise().then();
+
+    let _htmlDetail = ''
+    if (this.gridPrint) {
+      this.dataPrint = new wjcCore.CollectionView(_data['data']);
+      this.gridPrint.itemsSource = new wjcCore.CollectionView(_data['data']);
+      _htmlDetail = this.renderTable(this.gridPrint);
+    }
+
+    let _htmlDetailForm = ''
+    if (gridForm) {
+      _htmlDetailForm = this.renderTable(gridForm);
+    }
+
+    this.outputPrint = <Array<Object>>(_data['output']);
+
+    let _title;
+    for (let lo of this._layoutDeclare.layout.PrintDocument.LayoutPrint) {
+      if (lo['Layout'] == layoutName) {
+        _title = lo['FileName'];
+      }
+
+    }
+
+    if (_title == '' || _title == null || _title == undefined) {
+      _title = this._layoutDeclare.layout.PrintDocument.Text;
+    }
+
+    let _html = `<html>
+    <head>
+      <title>`+ this.translate_output(_title, this.outputPrint) + `</title>
+     </head>`;
+    _html += '<body onload="window.print();window.close()">';
+
+
+    _html += this.translate_output(this._layoutPrinter[0][layoutName], this.outputPrint);
+
+    if (_html.toString().indexOf('{VAR=BravoDetail}') > -1) {
+      _html = _html.replace(/{VAR=BravoDetail}/gi, _htmlDetail);
+    }
+
+    if (_html.toString().indexOf('{VAR=BravoDetailForm}') > -1) {
+      _html = _html.replace(/{VAR=BravoDetailForm}/gi, _htmlDetailForm);
+    }
+
+    _html += '</body></html>'
+    return _html;
+  }
+
+  async printVoucher_WordFlow(input: string, layoutName: string = 'MAU1', gridForm?: wjcGrid.FlexGrid, extInput?: string, extVar?: string) {
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command_WorkFlow;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    param1.ParameterValue = input;
+    params.push(param1);
+
+    if (extInput != '' && extInput != undefined && extInput != null) {
+      param2.ParameterName = this.convertParameterName(extVar);
+      param2.ParameterValue = extInput;
+      params.push(param2);
+    }
+
+    let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, _command, params)
+      .toPromise().then();
+
+    let _htmlDetail = ''
+    if (this.gridPrint) {
+      this.dataPrint = new wjcCore.CollectionView(_data['data']);
+      this.gridPrint.itemsSource = new wjcCore.CollectionView(_data['data']);
+      _htmlDetail = this.renderTable(this.gridPrint);
+    }
+
+    let _htmlDetailForm = ''
+    if (gridForm) {
+      _htmlDetailForm = this.renderTable(gridForm);
+    }
+
+    this.outputPrint = <Array<Object>>(_data['output']);
+
+    let _title;
+    // for (let lo of this._layoutDeclare.layout.PrintDocument.LayoutPrint) {
+    //   if (lo['Layout'] == layoutName) {
+    //     _title = lo['FileName'];
+    //   }
+    // }
+
+    if (_title == '' || _title == null || _title == undefined) {
+      _title = this._layoutDeclare.layout.PrintDocument.Text;
+    }
+
+    let _html = `<html>
+    <head>
+      <title>`+ this.translate_output(_title, this.outputPrint) + `</title>
+     </head>`;
+    _html += '<body onload="window.print();window.close()">';
+
+
+    _html += this.translate_output(this._layoutPrinter_WordFlow[0][layoutName], this.outputPrint);
+
+    if (_html.toString().indexOf('{VAR=BravoDetail}') > -1) {
+      _html = _html.replace(/{VAR=BravoDetail}/gi, _htmlDetail);
+    }
+
+    if (_html.toString().indexOf('{VAR=BravoDetailForm}') > -1) {
+      _html = _html.replace(/{VAR=BravoDetailForm}/gi, _htmlDetailForm);
+    }
+
+    _html += '</body></html>'
+    return _html;
+  }
+
+  async exportHtml_WorkFlow(name: string, fileName: string, folderPath: string, _idTT?: number, extInput?: string, extVar?: string) {
+    this.showLoading = true;
+
+    let _command = this._layoutDeclare.layout.PrintDocument.Command_WorkFlow;
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('Id');
+    if (_idTT != undefined && _idTT != null && _idTT > 0)
+      param1.ParameterValue = _idTT
+    else
+      param1.ParameterValue = this.id
+    params.push(param1);
+
+    if (extInput != '' && extInput != undefined && extInput != null) {
+      param2.ParameterName = this.convertParameterName(extVar);
+      param2.ParameterValue = extInput;
+      params.push(param2);
+    }
+
+
+    let ctor1 = CryptoExtension.encrypt(_command);
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    this._service.exportHtml(folderPath + name, body).subscribe(data => {
+
+      //     let _htmlDetail = ''
+      //     if (this.gridPrint) {
+      //         this.dataPrint = new wjcCore.CollectionView(data['data']);
+      //         this.gridPrint.itemsSource = new wjcCore.CollectionView(data['data']);
+      //         _htmlDetail = this.renderTable(this.gridPrint);
+      //     }
+      this.outputPrint = <Array<Object>>(data['output']);
+
+      let _title = fileName;
+
+      if (_title == '' || _title == null || _title == undefined) {
+        _title = this._layoutDeclare.layout.PrintDocument.Text;
+      }
+
+      let _html = `<html>
+    <head>
+    <title>`+ this.translate_output(_title, this.outputPrint) + `</title>
+        </head>`;
+      _html += '<body onload="window.print();window.close()">';
+
+      _html += Global.translateImageOutput(data['html'], data['output']);
+
+      if (_html.toString().indexOf('______________________________') > -1) {
+        _html = _html.replace(/______________________________/gi, this.outputPrint['@_Comment']);
+      }
+
+
+      _html += '</body></html>'
+
+      this.showLoading = false;
+
+      let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+
+      popupWin.document.write(_html);
+
+      popupWin.document.close();
+    });
+  }
+
+  translate_output(expr, row: any) {
+    let _result = expr;
+
+    let controls: string[] = [];
+
+    for (const control in row) {
+      if (control.startsWith('@_', 0))
+        controls.push(control.substring(2, control.length));
+    }
+    controls.sort((a, b) => b.length - a.length);
+
+    for (const control of controls) {
+      let patern = '{VAR=' + control + '}';
+
+      if (_result.indexOf(patern) > -1) {
+
+        let value = row['@_' + control];
+
+        if (value instanceof Date) {
+          if (value != null)
+            value = value.toLocaleDateString();
+        }
+
+
+        if (wjcCore.isNumber(value)) {
+          if (value != null && value != '0') {
+            value = this.transform(value);
+          }
+        }
+
+        do {
+          _result = _result.replace(patern, value);
+        }
+        while (_result.indexOf(patern) > -1)
+      }
+    }
+
+    return _result;
+
+  }
+
+
+  replaceDecimal(value) {
+
+    const _var = typeof (value);
+    if (!value) {
+      return '0';
+      // return '\'\'';
+    }
+    let _val = value;
+    if (value instanceof String) {
+      if (!value.startsWith('\0'))
+        _val = Number(value.split(',').join(''));
+    }
+    if (isNaN(_val)) {
+      return '\'' + value + '\'';
+    } else {
+      return _val;
+    }
+  }
+
+  replaceString(expr: any, symbol: string) {
+    let result = '';
+    for (let i = 0; i < expr.length; i++) {
+      if (expr[i] == symbol)
+        continue;
+      result += expr[i]
+    }
+
+    return result;
+  }
+
+
+  translate_Parameter_Explorer(expr, row: any) {
+
+
+    let _result = expr;
+    if (!expr) { return true; }
+
+    let controls: string[] = [];
+
+
+    for (const control in row) {
+      controls.push(control);
+    }
+    controls.sort((a, b) => b.length - a.length);
+
+    for (const control of controls) {
+      let patern = '{EXPR=' + control + '}';
+      if (_result.indexOf(patern) > -1) {
+
+        let value = row[control];
+
+        if (value instanceof Date) {
+          if (value != null)
+            value = '\'' + value.toISOString() + '\'';
+        }
+        do {
+          _result = _result.replace(patern, value);
+        }
+        while (_result.indexOf(patern) > -1)
+      }
+    }
+
+    if (_result.indexOf(' AND ') > -1) {
+      _result = _result.split(' AND ').join(' && ');
+    }
+    if (_result.indexOf(' OR ') > -1) {
+      _result = _result.split(' OR ').join(' || ');
+    }
+
+    return _result;
+
+  }
+
+  transform(value: number | string, fractionSize: number = 0): string {
+    let [integer, fraction = ""] = (value || "").toString()
+      .split('.');
+
+    fraction = fractionSize > 0
+      ? ',' + (fraction + '000000').substring(0, fractionSize)
+      : "";
+
+    integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (integer == '') {
+      fraction = ''
+    }
+    return integer + fraction;
+  }
+
+  //Xử lý in detail
+  renderTable(flex: wjcGrid.FlexGrid) {
+
+    // start table
+    var tbl = '<table style="border-spacing: 0px; border-top: solid 1px black;border-left: solid 1px black;">';
+
+    // headers
+    if (flex.headersVisibility & wjcGrid.HeadersVisibility.Column) {
+      tbl += '<thead>';
+      for (var r = 0; r < flex.columnHeaders.rows.length; r++) {
+        tbl += this.renderRow(flex.columnHeaders, r);
+      }
+      tbl += '</thead>';
+    }
+
+    // body
+    tbl += '<tbody>';
+    for (var r = 0; r < flex.rows.length; r++) {
+      tbl += this.renderRow(flex.cells, r);
+    }
+    tbl += '</tbody>';
+
+    // done
+    tbl += '</table>';
+    return tbl;
+  }
+
+  renderRow(panel: wjcGrid.GridPanel, r: number) {
+
+    let cs
+    var tr = '',
+      row = panel.rows[r],
+      nextCol = -1;
+    if (row.renderSize > 0) {
+
+      // start row/group row
+      tr += row instanceof wjcGrid.GroupRow
+        ? '<tr style="font-weight:bold;height:2em;border-top:2px solid grey">'
+        : '<tr>';
+
+      // render each column
+      for (var c = 0; c < panel.columns.length; c++) {
+        var col = panel.columns[c];
+
+        if (col.renderSize > 0 && c >= nextCol) {
+          var colSpan = '', mergedRange = null;
+          var rowSpan = '';
+
+          // get cell content
+          var content = panel.getCellData(r, c, true),
+            data = panel.getCellData(r, c, false),
+            isHtml = row.isContentHtml || col.isContentHtml
+
+
+          if (!isHtml && wjcCore.isString(data)) {
+            content = wjcCore.escapeHtml(content);
+          }
+          if (wjcCore.isBoolean(data)) {
+            content = data ? '&#9745;' : '&#9744;';
+          }
+          if (wjcCore.isNumber(data)) {
+            let fractionSize = 0
+            if (col['format'] != undefined)
+              fractionSize = Number(col['format'].substr(1, 1));
+
+            //Khoa đổi 25/04
+            if (col['format'] != undefined) {
+              if (col['format'].substr(0, 1) == 'n' || col['format'].substr(0, 1) == 'p')
+                fractionSize = Number(col['format'].substr(1, 1));
+
+              if (col['format'].substr(0, 1) == 'p') {
+                let cvt = data * 100;
+                content = cvt.toFixed(0) + " %";
+              }
+              else {
+                content = this.transform(data, fractionSize);
+              }
+            }
+            else
+              content = this.transform(data, fractionSize);
+          }
+          if (row instanceof wjcGrid.GroupRow && c == panel.columns.firstVisibleIndex) {
+            content = row.getGroupHeader();
+          }
+
+          // handle merged cells
+          mergedRange = panel.grid.getMergedRange(panel, r, c, false);
+          if (mergedRange && mergedRange.columnSpan > 1) {
+            colSpan = ' colspan="' + mergedRange.columnSpan + '"';
+            nextCol = c + mergedRange.columnSpan;
+          }
+          if (mergedRange && mergedRange.rowSpan > 1) {
+            rowSpan = ' rowspan="' + mergedRange.rowSpan + '"';
+          }
+
+
+          // get cell style
+          var style = 'width:' + (mergedRange ? mergedRange.getRenderSize(panel).width : col.renderSize) + 'px;';
+          var styleTH = 'width:' + (mergedRange ? mergedRange.getRenderSize(panel).width : col.renderSize) + 'px;';
+
+
+          if (col.getAlignment()) {
+            style += 'text-align:' + col.getAlignment() + ';';
+          }
+
+          styleTH += 'text-align:center;valign:center;background-color:#f8f1e6;';
+
+          // add cell to row
+          if (panel.cellType == wjcGrid.CellType.ColumnHeader) {
+
+            if (r == 0)
+              tr += '<th style="border-right: solid 1px black;border-bottom: solid 1px black;' + styleTH + '"' + colSpan + rowSpan + '>' + content + '</th>';
+
+            else if (rowSpan == '' && r > 0)
+              tr += '<th style="border-right: solid 1px black;border-bottom: solid 1px black;' + styleTH + '"' + colSpan + '>' + content + '</th>';
+          } else {
+
+            if (panel.rows[r].dataItem['IsTitleRow'] == true) {
+              style += 'font-weight:bold;color:blue;background-color:#f8f1e6;'
+              tr += '<td style="border-right: solid 1px black;border-bottom: solid 1px black;' + style + '"' + colSpan + '>' + content + '</td>';
+            }
+            else {
+              tr += '<td style="border-right: solid 1px black;border-bottom: solid 1px black;' + style + '"' + colSpan + '>' + content + '</td>';
+            }
+          }
+        }
+      }
+
+
+      // close row
+      tr += '</tr>';
+    }
+    return tr;
+  }
+
+  exportEditor(title: string) {
+    let workbook = <wjcXlsx.Workbook>Global.createWorkBook(title, this._layoutDeclare.panels[0].controls, this.editorFrm.value, this.gridArray[0]);
+    workbook.save(title + '.xlsx');
+  }
+
+  // getPermission(commandKey: string, option: string) {
+  //   return Global.getPermission(commandKey, option);
+  // }
+
+  setPermission(data: any, data2: any) {
+    this.isPermisionEdiAll_isSave = Global.getPermissionAll(data, data2, this.zCommandKey, 'IsSave');
+    this.isPermisionEdiAll_isApprove = Global.getPermissionAll(data, data2, this.zCommandKey, 'IsApprove');
+    this.isPermisionEdiAll_isExport = Global.getPermissionAll(data, data2, this.zCommandKey, 'IsExport');
+    this.isPermisionEdiAll_isPrint = Global.getPermissionAll(data, data2, this.zCommandKey, 'IsPrint');
+  }
+
+  ///SEND MAIL EDITOR
+
+  async sendMail(data: any, docCode?: string, id?: number, isAttachFiles: boolean = false, _state?: any) {
+    this.subscription = new Subscription();
+
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+    const param4 = new ParameterContract();
+    const param5 = new ParameterContract();
+    const param6 = new ParameterContract();
+    const param7 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('ProductCostId');
+    param1.ParameterValue = data.controls['ProductCostId'].value;
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('nUserId');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID);
+    params.push(param2);
+
+    // if (data.controls['ItemGroupCode'] != undefined) {
+    //   param3.ParameterName = Global.convertParameterName('ItemGroupCode');
+    //   param3.ParameterValue = data.controls['ItemGroupCode'].value;
+    //   params.push(param3);
+    // }
+    // else {
+    //   param3.ParameterName = Global.convertParameterName('ItemGroupCode');
+    //   param3.ParameterValue = '';
+    //   params.push(param3);
+    // }
+
+    param4.ParameterName = Global.convertParameterName('DocCode');
+    param4.ParameterValue = docCode;
+    params.push(param4);
+
+    param5.ParameterName = Global.convertParameterName('Id');
+    param5.ParameterValue = id;
+    params.push(param5);
+
+    param6.ParameterName = Global.convertParameterName('BranchCode');
+    param6.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+    params.push(param6);
+
+    param7.ParameterName = Global.convertParameterName('State');
+    param7.ParameterValue = _state;
+    params.push(param7);
+
+    let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Coteccons_GetInfoSendMail', params)
+      .toPromise().then();
+
+    let _commnetHtml = _data['output']['@_Comment'];
+    
+    let _configMail = _data['data'];
+   
+    if (_configMail[0]['EmailTo'] != undefined) {
+      if (_configMail.length > 0) {
+        this.SendMailObject.from = _configMail[0]['EmailAddress'];
+        this.SendMailObject.to = _configMail[0]['EmailTo'];
+        this.SendMailObject.cc = _configMail[0]['EmailCC'];
+        this.SendMailObject.subject = _configMail[0]['Subject'];
+        //this.SendMailObject.plainTextMessage = _configMail[0]['Content'];
+        this.SendMailObject.nameSend = _configMail[0]['UserName'];
+        this.SendMailObject.mailType = _configMail[0]['MailType'];
+
+        this.SendMailObject.smtpOptions.server = _configMail[0]['EmailServerName'];
+        this.SendMailObject.smtpOptions.useSsl = Boolean(_configMail[0]['EmailServerEnable_SSL']);
+        this.SendMailObject.smtpOptions.port = Number(_configMail[0]['EmailServerPort']);
+        this.SendMailObject.smtpOptions.user = _configMail[0]['EmailAccountName'];
+        this.SendMailObject.smtpOptions.password = _configMail[0]['usc'];
+        this.SendMailObject.smtpOptions.requiresAuthentication = _configMail[0]['IsRequiresAuthen'];
+        this.SendMailObject.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
+        
+        if (isAttachFiles) {
+          let file = { source: '', des: '' };
+         
+          file.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + data.controls['DocNo'].value.replace(/\//gi, '-') + '.pdf';
+         
+          file.source = _configMail[0]['TemplatePath'];
+          console.log(file);
+          this.SendMailObject.files.push(file);
+         
+          if (_configMail[0]['NumOfAttachFile'])
+            for (let index = 0; index < Number(_configMail[0]['NumOfAttachFile']); index++) {
+              let file1 = { source: '', des: '' };
+              if (_configMail[0]['AttachFile' + index] !== '' && _configMail[0]['AttachFile' + index] !== undefined) {
+                file1.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + _configMail[0]['AttachFile' + index];
+                file1.source = '';
+                
+                this.SendMailObject.files.push(file1);
+              }
+            }
+
+          const params = new Array<ParameterContract>();
+          const param1 = new ParameterContract();
+          const param2 = new ParameterContract();
+
+          param1.ParameterName = Global.convertParameterName('Id');
+          param1.ParameterValue = id;
+          params.push(param1);
+
+          param2.ParameterName = Global.convertParameterName('DocCode');
+          param2.ParameterValue = docCode;
+          params.push(param2);
+       
+          let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, _configMail[0]['Command'], params)
+            .toPromise().then();
+
+          //this.SendMailObject.replacement = _data['output'];
+
+          let ctor1 = CryptoExtension.encrypt(_configMail[0]['Command']);
+          const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+          let exportOption = {
+            "storeName": ctor1,
+            "params": ctor2
+          }
+          this.SendMailObject.exportOption = exportOption;
+        }
+
+        //fill file
+        let ctor1 = CryptoExtension.encrypt('usp_Coteccons_GetInfoSendMail');
+        const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+        let emailBodyTemplate: string = _configMail[0]['EmailBody']
+    
+        let body = {
+          "storeName": ctor1,
+          "params": ctor2
+        }
+
+        let completedApprove = _configMail[0]['CompletedApprove'];
+        // let operationCode = _configMail[0]['OperationCode'];
+        let docCode1 = _configMail[0]['DocCode'];
+        let _html: any;
+    
+        if (_state != undefined && _state == '0') {
+          await this._service.exportHtml(emailBodyTemplate, body).toPromise().then(data => {
+            _html = data['html'];
+
+            if (_html.toString().indexOf('______________________________') > -1) {
+              if (_commnetHtml != '' && _commnetHtml != undefined && _commnetHtml != null) {
+                _html = _html.replace(/______________________________/gi, _commnetHtml);
+              }
+              else {
+                _html = _html.replace(/______________________________/gi, ' .');
+              }
+            }
+            this.SendMailObject.htmlMessage = _html;
+
+            let arrTo = this.SendMailObject.to.split(';');
+            if (arrTo.length == 1) {
+              if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                this.subscription.add(sub);
+              }
+              else {
+                const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                });
+                //const sub = this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+                this.subscription.add(sub);
+              }
+            }
+            else if (arrTo.length > 1) {
+              if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                this.subscription.add(sub);
+              }
+              else {
+                const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                });
+                //const sub = this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+                this.subscription.add(sub);
+              }
+            }
+          });
+          console.log('JobReturn');
+        }
+        else
+          if (completedApprove == false || completedApprove == 0 || completedApprove == '0') {
+            console.log('JobRemind');
+            await this._service.exportHtml(emailBodyTemplate, body).toPromise().then(data => {
+              _html = data['html'];
+
+              if (_html.toString().indexOf('______________________________') > -1) {
+                if (_commnetHtml != '' && _commnetHtml != undefined && _commnetHtml != null) {
+                  _html = _html.replace(/______________________________/gi, _commnetHtml);
+                }
+                else {
+                  _html = _html.replace(/______________________________/gi, ' .');
+                }
+              }
+              this.SendMailObject.htmlMessage = _html;
+
+              let arrTo = this.SendMailObject.to.split(';');
+              if (arrTo.length == 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+              }
+              else if (arrTo.length > 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+              }
+            });
+          }
+          else
+          if (docCode1 == 'CL') {
+            console.log(docCode1);
+            await this._service.exportHtml('/5.TemplateMail/CCM_HoanThanhDuyet_Claim.docx', body).toPromise().then(data => {
+              _html = data['html'];
+              if (_html.toString().indexOf('______________________________') > -1) {
+                if (_commnetHtml != '' && _commnetHtml != undefined && _commnetHtml != null) {
+                  _html = _html.replace(/______________________________/gi, _commnetHtml);
+                }
+                else {
+                  _html = _html.replace(/______________________________/gi, ' .');
+                }
+              }
+              this.SendMailObject.htmlMessage = _html;
+
+              let arrTo = this.SendMailObject.to.split(';');
+              if (arrTo.length == 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+
+              }
+              else if (arrTo.length > 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+              }
+            });
+          }
+          else 
+            {
+            console.log('JobCompleted');
+            await this._service.exportHtml(emailBodyTemplate, body).toPromise().then(data => {
+              _html = data['html'];
+              if (_html.toString().indexOf('______________________________') > -1) {
+                if (_commnetHtml != '' && _commnetHtml != undefined && _commnetHtml != null) {
+                  _html = _html.replace(/______________________________/gi, _commnetHtml);
+                }
+                else {
+                  _html = _html.replace(/______________________________/gi, ' .');
+                }
+              }
+              this.SendMailObject.htmlMessage = _html;
+
+              let arrTo = this.SendMailObject.to.split(';');
+              if (arrTo.length == 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+
+              }
+              else if (arrTo.length > 1) {
+                if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+                  const sub = this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+                else {
+                  const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+                  });
+                  //const sub = this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+                  this.subscription.add(sub);
+                }
+              }
+            });
+          }
+        //console.log(this.SendMailObject);
+
+        // let arrTo = this.SendMailObject.to.split(';');
+        // if (arrTo.length == 1) {
+        //   if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+        //     const sub = await this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+        //     this.subscription.add(sub);
+        //   }
+        //   else {
+        //     const sub = await this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+        //     this.subscription.add(sub);
+        //   }
+
+        // }
+        // else if (arrTo.length > 1) {
+        //   if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') == 'A01') {
+        //     const sub = await this._service.sendMailNotAuthen(Global.MailEndPoint, this.SendMailObject).subscribe();
+        //     this.subscription.add(sub);
+        //   }
+        //   else {
+        //     const sub = await this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+        //     this.subscription.add(sub);
+        //   }
+        // }
+      }
+    }
+  }
+
+
+  @ViewChild('frmEmailPopup') frmEmailPopup: Popup
+  @ViewChild('inputEmail') inputEmail: string;
+  //@ViewChild('inputPassword') inputPassword: string;
+  @ViewChild('inputTo') inputTo: string;
+  @ViewChild('inputCC') inputCC: string;
+  // @ViewChild('inputBCC') inputBCC: string;
+  @ViewChild('inputSubject') inputSubject: string;
+  @ViewChild('inputplainTextMessage') inputplainTextMessage: string;
+
+  MailInfo = {
+    from: '',
+    nameSend: '',
+    to: '',
+    cc: '',
+    bcc: '',
+    subject: '',
+    plainTextMessage: '',
+    htmlMessage: null,
+    files: [],
+    mailToken: '',
+    smtpOptions: { server: '', user: '', password: '', port: 25, useSsl: true, requiresAuthentication: true },
+    //replacement: null,
+    exportOption: null,
+    toConfirm: '',
+    mailType: ''
+  }
+
+  MailConfirm = {
+    from: '',
+    nameSend: '',
+    to: '',
+    cc: '',
+    bcc: '',
+    subject: '',
+    plainTextMessage: '',
+    mailToken: '',
+    htmlMessage: null,
+    files: [],
+    smtpOptions: { server: '', user: '', password: '', port: 25, useSsl: true, requiresAuthentication: true },
+    //replacement: null,
+    exportOption: null,
+    mailType: ''
+  }
+
+  async getInfoTemplateMail(data: any, id?: number, approveGroup?: string) {
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+    const param4 = new ParameterContract();
+    const param5 = new ParameterContract();
+    const param6 = new ParameterContract();
+    const param7 = new ParameterContract();
+
+
+    let commandStore: string;
+    let templatePath: string;
+    let filePath: string;
+
+    if (approveGroup != undefined) {
+      param1.ParameterName = Global.convertParameterName('CommandKey');
+      param1.ParameterValue = this.zCommandKey + approveGroup;
+      params.push(param1);
+    }
+    else {
+      param1.ParameterName = Global.convertParameterName('CommandKey');
+      param1.ParameterValue = this.zCommandKey;
+      params.push(param1);
+    }
+
+    param2.ParameterName = Global.convertParameterName('BranchCode');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = data.controls['ProductCostId'].value;
+    params.push(param3);
+
+    param4.ParameterName = Global.convertParameterName('nUserId');
+    param4.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID);
+    params.push(param4);
+
+    param5.ParameterName = Global.convertParameterName('ItemGroupCode');
+    param5.ParameterValue = data.controls['ItemGroupCode'].value;
+    params.push(param5);
+
+    param6.ParameterName = Global.convertParameterName('DocCode');
+    param6.ParameterValue = this.parentData['DocCode'];
+    params.push(param6);
+
+    param7.ParameterName = Global.convertParameterName('Id');
+    param7.ParameterValue = id;
+    params.push(param7);
+
+    let isAttachFiles = false;
+    let isConfirmMail = false;
+    let isAdjust = false;
+
+    await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_TMCtc_GetInfoTemplateSendMail', params).toPromise().then(_data => {
+      if (_data[0] != undefined) {
+        isAttachFiles = _data[0]['IsAttachFile'];
+        isConfirmMail = _data[0]['IsConfirm'];
+        isAdjust = _data[0]['IsAdjust'];
+
+
+        commandStore = _data[0]['Command'];
+        templatePath = _data[0]['TemplatePath'];
+        filePath = _data[0]['FilePath'];
+
+        this.MailInfo.from = _data[0]['EmailAddress'];
+        this.MailInfo.cc = _data[0]['EmailCc'];
+        this.MailInfo.bcc = _data[0]['Bcc'];
+        this.MailInfo.nameSend = _data[0]['UserName'];
+        this.MailInfo.to = _data[0]['EmailTo'];
+        this.MailInfo.subject = _data[0]['Subject'];
+        this.MailInfo.mailType = _data[0]['MailType'];
+
+        //mail nhận confirm
+        this.MailInfo.toConfirm = _data[0]['EmailConfirm'];
+
+        this.MailInfo.smtpOptions.server = _data[0]['EmailServerName'];
+        this.MailInfo.smtpOptions.port = _data[0]['EmailServerPort'];
+        this.MailInfo.smtpOptions.user = _data[0]['EmailAccountName'];
+        this.MailInfo.smtpOptions.password = _data[0]['usc'];
+        this.MailInfo.smtpOptions.useSsl = _data[0]['EmailServerEnable_SSL'];
+        this.MailInfo.smtpOptions.requiresAuthentication = _data[0]['IsRequiresAuthen'];
+        this.MailInfo.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
+      }
+    });
+
+
+    if (isAttachFiles) {
+
+      let file = { source: '', des: '' };
+      
+      file.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + data.controls['DocNo'].value.replace(/\//gi, '-') + '.pdf';
+      file.source = templatePath;
+
+      this.MailInfo.files.push(file);
+
+      const params = new Array<ParameterContract>();
+      const param1 = new ParameterContract();
+
+      param1.ParameterName = Global.convertParameterName('Id');
+      param1.ParameterValue = id;
+      params.push(param1);
+
+      let _dataAttach = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, commandStore, params)
+        .toPromise().then();
+
+      //this.MailInfo.replacement = _dataAttach['output'];
+
+      let ctor1 = CryptoExtension.encrypt(commandStore);
+      const ctor2 = CryptoExtension.encrypt(JSON.stringify(params));
+
+      let exportOption = {
+        "storeName": ctor1,
+        "params": ctor2
+      }
+      this.MailInfo.exportOption = exportOption;
+    }
+
+    const paramsSe = new Array<ParameterContract>();
+    const paramsSe1 = new ParameterContract();
+    const paramsSe2 = new ParameterContract();
+    paramsSe1.ParameterName = this.convertParameterName('Id');
+    paramsSe1.ParameterValue = id;
+    paramsSe.push(paramsSe1);
+
+    paramsSe.push(param4);//nUserId
+    paramsSe.push(param6);//DocCode
+
+    let ctor1 = CryptoExtension.encrypt('usp_Web_BindingTemplateEmail');
+    const ctor2 = CryptoExtension.encrypt(JSON.stringify(paramsSe));
+
+    let body = {
+      "storeName": ctor1,
+      "params": ctor2
+    }
+
+    let _html = await this._service.exportHtml('/5.TemplateMail/' + filePath, body).toPromise().then();
+
+    this.MailInfo.htmlMessage = _html['html'];
+
+    if (isAdjust) {
+      let pop = this.frmEmailPopup;
+      if (this.richtextMail == undefined) {
+        this.richtextMail = CKEditorExtension.create("Nội dung", "richtextmail", this.MailInfo.htmlMessage);
+      }
+
+      this.inputCC['nativeElement'].value = this.MailInfo.cc;
+      this.inputTo['nativeElement'].value = this.MailInfo.to;
+      this.inputSubject['nativeElement'].value = this.MailInfo.subject;
+      // this.inputBCC['nativeElement'].value = MailInfo.bcc;
+      pop.show();
+    }
+    else {
+      if (!isConfirmMail) {
+        let arrTo = this.MailInfo.to.split(';');
+        if (arrTo.length == 1) {
+          //const sub = await this._service.sendMail(Global.MailEndPoint, this.MailInfo).subscribe();
+          // sử dụng cách mới ớ dưới đây
+          const sub = this._service.sendMailApi(Global.MailEndPoint, this.MailInfo).subscribe((result) => {
+          });
+          this.subscription.add(sub);
+        }
+        else if (arrTo.length > 1) {
+          //const sub = await this._service.sendMailToMulti(Global.MailEndPoint, this.MailInfo).subscribe();
+          const sub = this._service.sendMailApi(Global.MailEndPoint, this.MailInfo).subscribe((result) => {
+          });
+          this.subscription.add(sub);
+        }
+      }
+      else {
+        this.sendMailConfirm();
+      }
+    }
+
+  }
+
+  closeFormEmail() {
+    this.frmEmailPopup.hide();
+    location.reload();
+  }
+  //popup gửi mail
+  async sendMailCustom(reload?: boolean, func?: Promise<void>) {
+
+    this.SendMailObject.from = this.MailInfo.from;
+    this.SendMailObject.to = this.inputTo['nativeElement'].value;
+    this.SendMailObject.cc = this.inputCC['nativeElement'].value;
+    this.SendMailObject.subject = this.inputSubject['nativeElement'].value;
+    this.SendMailObject.nameSend = this.MailInfo.nameSend;
+    this.SendMailObject.mailType = this.MailInfo.mailType;
+
+    this.SendMailObject.htmlMessage = '<body style="font-family:' + "'Times New Roman'" + ';">' + this.richtextMail.getData() + '</body>';
+
+    this.SendMailObject.smtpOptions.server = this.MailInfo.smtpOptions.server;
+    this.SendMailObject.smtpOptions.port = this.MailInfo.smtpOptions.port;
+    this.SendMailObject.smtpOptions.user = this.MailInfo.smtpOptions.user;
+    this.SendMailObject.smtpOptions.password = this.MailInfo.smtpOptions.password;
+    this.SendMailObject.smtpOptions.useSsl = this.MailInfo.smtpOptions.useSsl;
+    this.SendMailObject.smtpOptions.requiresAuthentication = this.MailInfo.smtpOptions.requiresAuthentication;
+    this.SendMailObject.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
+
+    if (this.MailInfo.files.length > 0) {
+      this.SendMailObject.files = this.MailInfo.files;
+      //this.SendMailObject.replacement = this.MailInfo.replacement;
+      this.SendMailObject.exportOption = this.MailInfo.exportOption;
+    }
+
+    let arrTo = this.SendMailObject.to.split(';');
+    if (arrTo.length == 1) {
+
+      //const sub = await this._service.sendMail(Global.MailEndPoint, this.SendMailObject).subscribe();
+      const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+        if (result.success == false) {
+          alert('Tiến trình không thành công');
+        }
+      });
+
+      this.subscription.add(sub);
+
+      if (func != null || func != undefined) {
+        func.then(() => {
+          console.log('update sended email sendMail....!');
+        })
+      }
+    }
+    else if (arrTo.length > 1) {
+      //const sub = await this._service.sendMailToMulti(Global.MailEndPoint, this.SendMailObject).subscribe();
+      const sub = this._service.sendMailApi(Global.MailEndPoint, this.SendMailObject).subscribe((result) => {
+        if (result.success == false) {
+          alert('Tiến trình không thành công');
+        }
+      });
+      this.subscription.add(sub);
+      if (func != null || func != undefined) {
+        func.then(() => {
+          console.log('update sended email sendMailToMulti....!');
+        })
+      }
+    }
+
+    this.frmEmailPopup.hide();
+
+    if (reload) {
+      this.router.navigate(['/main', 'notifications_tm', 'index']);
+      // this.router.navigate(['main']).then(() => {
+      //   this.router.navigate(this.indexPage).then(() => {
+      //   })
+      // });
+    }
+
+  }
+  //xác nhận trong Email
+  async sendMailConfirm() {
+    this.subscription = new Subscription();
+
+    this.SendMailObject.from = this.MailInfo.from;
+    this.SendMailObject.to = this.MailInfo.to;
+    this.SendMailObject.cc = this.MailInfo.cc;
+    this.SendMailObject.subject = this.MailInfo.subject;
+    this.SendMailObject.nameSend = this.MailInfo.nameSend;
+    this.SendMailObject.mailType = this.MailInfo.mailType;
+    // this.SendMailObject.htmlMessage = this.MailInfo.htmlMessage;
+
+    // console.log(this.MailInfo.htmlMessage);
+
+    this.SendMailObject.smtpOptions.server = this.MailInfo.smtpOptions.server;
+    this.SendMailObject.smtpOptions.port = this.MailInfo.smtpOptions.port;
+    this.SendMailObject.smtpOptions.user = this.MailInfo.smtpOptions.user;
+    this.SendMailObject.smtpOptions.password = this.MailInfo.smtpOptions.password;
+    this.SendMailObject.smtpOptions.useSsl = this.MailInfo.smtpOptions.useSsl;
+    this.SendMailObject.smtpOptions.requiresAuthentication = this.MailInfo.smtpOptions.requiresAuthentication;
+    this.SendMailObject.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
+
+
+    if (this.MailInfo.files.length > 0) {
+      this.SendMailObject.files = this.MailInfo.files;
+      //this.SendMailObject.replacement = this.MailInfo.replacement;
+      this.SendMailObject.exportOption = this.MailInfo.exportOption;
+    }
+
+
+    this.MailConfirm.from = this.MailInfo.from;
+    this.MailConfirm.to = this.MailInfo.toConfirm;
+    this.MailConfirm.subject = 'V/v: Xác nhận email gủi đi - ' + this.MailInfo.subject;
+    this.MailConfirm.nameSend = this.MailInfo.nameSend;
+    this.MailConfirm.mailType = this.MailInfo.mailType;
+
+    this.MailConfirm.smtpOptions.server = this.MailInfo.smtpOptions.server;
+    this.MailConfirm.smtpOptions.useSsl = this.MailInfo.smtpOptions.useSsl;
+    this.MailConfirm.smtpOptions.port = this.MailInfo.smtpOptions.port;
+    this.MailConfirm.smtpOptions.user = this.MailInfo.smtpOptions.user;
+    this.MailConfirm.smtpOptions.password = this.MailInfo.smtpOptions.password;
+    this.MailConfirm.smtpOptions.requiresAuthentication = this.MailInfo.smtpOptions.requiresAuthentication;
+    this.MailConfirm.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
+
+
+    //Xử lý lưu htmlMessage xuống db
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('CommandWeb');
+    param1.ParameterValue = this.zCommandKey;
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('KeySend');
+    param2.ParameterValue = this.id
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('EmailData');
+    param3.ParameterValue = this.MailInfo.htmlMessage;//encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(this.MailInfo.htmlMessage)));
+    params.push(param3);
+
+
+    let _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Web_B00EmailSendLog_Insert', params)
+      .toPromise().then();
+
+    this.MailConfirm.htmlMessage = this.MailInfo.htmlMessage + `
+    <a target="_blank" href="`+ Global.MailEndPoint + `/sendasync?body=` + encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(this.SendMailObject))) + '&keySend=' + this.id + '&command=' + this.zCommandKey + `" style="background-color: greenyellow;">Chấp nhận</a>`
+
+    let arrTo = this.MailConfirm.to.split(',');
+    if (arrTo.length == 1) {
+
+      //const sub = await this._service.sendMail(Global.MailEndPoint, this.MailConfirm).subscribe();
+      const sub = this._service.sendMailApi(Global.MailEndPoint, this.MailConfirm).subscribe((result) => {
+      });
+      this.subscription.add(sub);
+    }
+    else if (arrTo.length > 1) {
+      //const sub = await this._service.sendMailToMulti(Global.MailEndPoint, this.MailConfirm).subscribe();
+      const sub = this._service.sendMailApi(Global.MailEndPoint, this.MailConfirm).subscribe((result) => {
+      });
+      this.subscription.add(sub);
+    }
+  }
+
+
+  @ViewChild('inputCancelNote') inputCancelNote: string;
+  async cancelVoucherClick(input: number) {
+    this.showLoading = true;
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+
+
+    param1.ParameterName = Global.convertParameterName('Id');
+    param1.ParameterValue = input;
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('Note');
+    param2.ParameterValue = this.inputCancelNote['nativeElement'].value;
+    params.push(param2);
+
+    let _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_TMCtc_Cancel_btnClick', params)
+      .toPromise().then();
+
+    this.showLoading = false;
+    this.showDialog = false;
+  }
+
+  showDialogCancel(text: string) {
+    this.showDialog = true;
+    this.titleConfirmDialog = text;
+  }
+
+  hideDialogCancel() {
+    this.showDialog = false;
+  }
+
+  autoSizeVisibleRows(flex: wjcGrid.FlexGrid, force: boolean) {
+    var rng = flex.viewRange;
+    for (var r = rng.row; r <= rng.row2; r++) {
+      if (flex.rows[r] != undefined)
+        if (force || flex.rows[r].height == null) {
+          flex.autoSizeRow(r, false)
+        }
+    }
+  }
+
+  @ViewChild('frmPopupTooltip') frmPopupTooltip: Popup
+  @ViewChild('contentPopupTooltip') contentPopupTooltip: string
+
+  dbClickCellContent(flex: wjcGrid.FlexGrid) {
+    let pop = this.frmPopupTooltip;
+
+    if (!flex.isReadOnly)
+      return;
+
+    let host = flex.hostElement;
+    let self = this;
+
+    host.addEventListener('dblclick', () => {
+
+      var sel = flex.selection;
+
+      let _content = flex.getCellData(sel.row, sel.col, true);
+
+      this.contentPopupTooltip['nativeElement'].innerHTML = _content;
+
+      (<HTMLElement>this.contentPopupTooltip['nativeElement']).style.userSelect = 'text';
+
+      pop.show();
+
+    });
+  }
+
+
+  @ViewChild('linkCommandPopup') linkCommandPopup: Popup
+  @ViewChild('linkCommandGrid') linkCommandGrid: wjcGrid.FlexGrid;
+  orderSelect: number;
+
+  async openLinkCommand(data: any) {
+    let pop = this.linkCommandPopup;
+    pop.show();
+
+    this.linkCommandGrid.rows.clear();
+    this.linkCommandGrid.columns.clear();
+    this.linkCommandGrid.autoGenerateColumns = false;
+    this.bindColumnGroups(this.linkCommandGrid, data.grid);
+
+
+    await this.loadDataLinkCommand(data);
+    this.orderSelect = 0;
+  }
+
+
+  async loadDataLinkCommand(info: any) {
+
+    const keys = info.ConstraintKey.split(',');
+
+    for (let control in this.editorFrm.controls)
+      this.parentData[control] = this.editorFrm.get(control).value;
+
+    const params = this.dfpanel.fn_build_paramater(keys, this.parentData);
+    let data = await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, info.Command, params).toPromise();
+
+    this.linkCommandGrid.itemsSource = new wjcCore.CollectionView(data);
+
+    localStorage.removeItem(SystemConstants.INFO_LINKCOMMAND);
+    localStorage.setItem(SystemConstants.INFO_LINKCOMMAND, JSON.stringify(info));
+
+
+  }
+
+  async sendDataTo(flex: wjcGrid.FlexGrid) {
+
+    let dataLinkCommand: any = <Array<Object>>JSON.parse(localStorage.getItem(SystemConstants.INFO_LINKCOMMAND));
+
+
+    const keys = dataLinkCommand.SendData.ConstraintKey.split(',');
+    let gridtmp: wjcGrid.FlexGrid = this.gridArray[Number(dataLinkCommand.SendData.OutputTable)];
+    const flagParam = false;
+    for (let control in this.editorFrm.controls)
+      this.parentData[control] = this.editorFrm.get(control).value;
+    const params = this.dfpanel.fn_build_paramater(keys, this.parentData);
+
+    let paramXMLPopup = new ParameterContract();
+    paramXMLPopup.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlPopup);
+    paramXMLPopup.ParameterValue = dataLinkCommand.SendData.ParameterXmlPopup;
+
+    params.push(paramXMLPopup);
+
+    if (dataLinkCommand.SendData.ParameterXmlName1) {
+      let paramXML1 = new ParameterContract();
+      paramXML1.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName1);
+      paramXML1.ParameterValue = dataLinkCommand.SendData.ParameterXmlName1;
+      params.push(paramXML1);
+    }
+
+    if (dataLinkCommand.SendDataParameterXmlName2) {
+      let paramXML2 = new ParameterContract();
+      paramXML2.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName2);
+      paramXML2.ParameterValue = dataLinkCommand.SendDataParameterXmlName2;
+      params.push(paramXML2);
+
+    }
+
+    let XMLObjectPopup = {
+      name: dataLinkCommand.SendData.ParameterXmlPopup,
+      collection: this.linkCommandGrid.itemsSource.items
+    }
+
+    let ds;
+    let XMLObject1;
+    let XMLObject2;
+
+    ds = Global.getDataSetContract(XMLObjectPopup);
+
+    if (dataLinkCommand.SendData.ParameterXmlName1) {
+      XMLObject1 = {
+        name: dataLinkCommand.SendData.ParameterXmlName1,
+        collection: this.gridArray[dataLinkCommand.SendData.TableXml1].itemsSource.items
+      }
+
+      ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1);
+    }
+
+    if (dataLinkCommand.SendData.ParameterXmlName2) {
+      XMLObject2 = {
+        name: dataLinkCommand.SendData.ParameterXmlName2,
+        collection: this.gridArray[dataLinkCommand.SendData.TableXml2].itemsSource.items
+      }
+      ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1, XMLObject2);
+    }
+
+    let data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, dataLinkCommand.SendData.Command, params, ds).toPromise().then();
+
+    if (data['data'][0].length > 0) {
+      let ds: CollectionView = gridtmp.itemsSource;
+
+      var selected = [];
+      for (let i = 0; i < gridtmp.rows.length; i++) {
+        selected.push(gridtmp.rows[i].dataItem);
+      }
+
+      for (let i = 0; i < selected.length; i++) {
+        ds.remove(selected[i]);
+      }
+
+      for (let row of data['data'][0]) {
+        ds.itemsAdded.push(row);
+        ds.sourceCollection.push(row);
+      }
+
+      for (let column of gridtmp.itemsSource['defaultRow']) {
+        for (let row of gridtmp.itemsSource.sourceCollection) {
+          if (row[column] == null || row[column] == undefined)
+            row[column] = gridtmp.itemsSource['defaultRow'][column];
+        }
+      }
+
+      // ds.sourceCollection = data;
+    }
+    else
+      gridtmp.itemsSource.sourceCollection = [];
+
+    gridtmp.itemsSource.refresh();
+
+    this.linkCommandPopup.hide();
+  }
+
+  checkSelectPopup(row: any) {
+    let dataLinkCommand: any = <Array<Object>>JSON.parse(localStorage.getItem(SystemConstants.INFO_LINKCOMMAND));
+    if (dataLinkCommand.SendData.ColumnCheckBox) {
+      let col = dataLinkCommand.SendData.ColumnCheckBox;
+      let index = 0;
+      for (index = 0; index < this.linkCommandGrid.columns.length; index++) {
+        if (this.linkCommandGrid.columns[index].binding == col) {
+          break;
+        }
+      }
+
+      let _value = true;
+
+      if (row.dataItem[dataLinkCommand.SendData.ColumnCheckBox]) {
+        _value = false;
+      }
+
+      this.linkCommandGrid.setCellData(row._idx, index, _value);
+
+      if (_value)
+        this.orderSelect += 1;
+      else
+        this.orderSelect -= 1;
+
+      if (dataLinkCommand.SendData.CheckBoxOrder) {
+        let colOrder = dataLinkCommand.SendData.CheckBoxOrder;
+        let indexOrder = 0;
+        for (indexOrder = 0; indexOrder < this.linkCommandGrid.columns.length; indexOrder++) {
+          if (this.linkCommandGrid.columns[indexOrder].binding == colOrder) {
+            break;
+          }
+        }
+        if (_value)
+          this.linkCommandGrid.setCellData(row._idx, indexOrder, this.orderSelect);
+        else
+          this.linkCommandGrid.setCellData(row._idx, indexOrder, 0);
+
+      }
+    }
+
+  }
+
+  openbravoDropdown() {
+    document.getElementById("bravoDropdown").classList.toggle("bravo-show");
+  }
+
+  isMobileMenu() {
+    if ($(window).width() < 991) {
+        return true;
+    }
+    return false;
+}
+
+  //QuyDv: check duplicate data on grid
+  protected _errorUnique: boolean;
+  protected _valueDuplicate: any;
+  checkUniqueColGrid(flex: wjcGrid.FlexGrid, field: string) {
+    if (flex) {
+      let _arr: any = flex.itemsSource.items;
+
+      this._errorUnique = false;
+
+      for (let i = 0; i < _arr.length; i++) {
+        for (let j = i + 1; j < _arr.length; j++) {
+        
+          if (_arr[i][field] == _arr[j][field]) {
+            console.log(_arr[i][field])
+            this._errorUnique = true;
+            this._valueDuplicate = _arr[i][field];
+            
+            break;
+          }
+        }
+        if (this._errorUnique == true) break;
+      }
+    }
+  }
+
+  checkUniqueColGridNotIncludedEmpty(flex: wjcGrid.FlexGrid, field: string, fieldWarning?: string) {
+    if (flex) {
+      let _arr: any = flex.itemsSource.items;
+
+      this._errorUnique = false;
+
+      for (let i = 0; i < _arr.length; i++) {
+        for (let j = i + 1; j < _arr.length; j++) {
+          if (_arr[i][field] != '' && _arr[j][field] != '' && _arr[i][field] != undefined && _arr[j][field] != undefined)
+            if (_arr[i][field] == _arr[j][field]) {
+              this._errorUnique = true;
+              this._valueDuplicate = _arr[i][field] + ': ' + _arr[i][fieldWarning];
+              break;
+            }
+        }
+        if (this._errorUnique == true) break;
+      }
+    }
+  }
+
+  //Quydv
+  wordWrapGrid() {
+    let scrollPositionChanged = (s, e) => {
+      this.autoSizeVisibleRows(s, false);
+    }
+
+    let loadedRows = (s, e) => {
+      // setTimeout(() => {
+      //   this.autoSizeVisibleRows(s, false);
+      // }, 50);
+      this.autoSizeVisibleRows(s, false);
+    }
+
+    let resizedColumn = (s, e) => { // column resized
+      // setTimeout(() => {
+      //   this.autoSizeVisibleRows(s, true);
+      // }, 50);
+      this.autoSizeVisibleRows(s, true);
+    }
+    let cellEditEnded = (s, e) => { // cell edited
+      if (s.columns[e.col].wordWrap) {
+        this.autoSizeVisibleRows(s, true);
+      }
+    }
+
+    let rowEditEnded = (s, e) => { // whole row undo
+      if (e.cancel) {
+        this.autoSizeVisibleRows(s, true);
+      }
+    }
+
+
+    for (let i in this.gridArray) {
+      this.gridArray[i].scrollPositionChanged.removeHandler(scrollPositionChanged);
+      this.gridArray[i].scrollPositionChanged.addHandler(scrollPositionChanged);
+
+      this.gridArray[i].loadedRows.removeHandler(loadedRows);
+      this.gridArray[i].loadedRows.addHandler(loadedRows);
+
+      this.gridArray[i].resizedColumn.removeHandler(resizedColumn);
+      this.gridArray[i].resizedColumn.addHandler(resizedColumn);
+
+      this.gridArray[i].rowEditEnded.removeHandler(rowEditEnded);
+      this.gridArray[i].rowEditEnded.addHandler(rowEditEnded);
+    }
+  }
+
+  downloadFile(folder: string, name: string) {
+    if (name) {
+      const sub = this._service.dowload(folder, '', name).subscribe(blob => {
+        if (name.toUpperCase().endsWith('PDF') == false || (blob.size / 1024) > 10240)
+          importedSaveAs(blob, name);
+        else {
+          let url = window.URL.createObjectURL(blob);
+          window.open(url);
+        }
+      });
+      this.subscription.add(sub);
+    }
+  }
+  
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+}

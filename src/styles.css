@@ -1,0 +1,6 @@
+/* You can add global styles to this file, and also import other style files */
+.login-page{
+    /* background: url('./assets/img/banner.jpg') no-repeat !important; */
+    background-size: 100% !important;
+    background-color: #fff!important;
+}

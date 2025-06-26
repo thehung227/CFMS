@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=1024, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Silent-Callback</title>
+        <script src="/assets/js/oidc-client.min.js"></script>
+    </head>
+    <body>
+        <script>
+            const idpSettings = {
+                authority: "https://auth.newtecons.vn",
+                client_id: "5ebb890b-a43d-4643-ad7f-6dd42d287ed1",
+                scope: "openid profile",
+                response_type: "code"
+            };
+
+            new Oidc.UserManager(idpSettings).signinSilentCallback()
+                .catch(error => {
+                    console.log(error);
+                });
+        </script>
+    </body>
+</html>

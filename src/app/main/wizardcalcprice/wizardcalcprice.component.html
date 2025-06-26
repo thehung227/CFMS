@@ -1,0 +1,254 @@
+<!-- <div class="content-wrapper" style="padding-top: 20px;">
+  <section class="content">
+    <div class="box" id="box-content">
+      <div class="box-header with-border">
+          <label>
+            Chọn loại biểu đồ:
+            <wj-combo-box #tileCmb [itemsSource]="tileTypes"></wj-combo-box>
+          </label>
+          <button class="btn btn-primary" (click)="addTile(tileCmb.selectedItem)">Thêm</button>
+      </div>
+
+      <div class="box-body">
+
+        <div class="dashboard" draggable="true" (click)="handleTile($event) " (dragstart)="dragstart($event)" (dragover)="dragover($event)"
+          (drop)="drop($event)" (dragend)="dragend($event)">
+          <div #dynCompContainer ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div> -->
+
+
+<!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
+
+<div class="content-wrapper">
+  <section class="content">
+    <div class="box" id="box-content">
+      <div class="box-header"></div>
+      <div class="box=body">
+        <div class="wizard">
+          <div class="wizard-inner">
+            <div class="connecting-line"></div>
+            <ul class="nav nav-tabs" role="tablist">
+
+              <li role="presentation" id="tabstep1" class="active">
+                <a href="#step1" data-toggle="tab" aria-controls="step1" role="tab" title="Điều kiện lọc" (click)="onTabClick(0)">
+                  <span class="round-tab">
+                    <i class="fa fa-bars"></i>
+                  </span>
+                </a>
+              </li>
+              <!-- class="disabled" -->
+              <li role="presentation" id="tabstep2">
+                <a href="#step2" data-toggle="tab" aria-controls="step2" role="tab" title="Chọn phương án tính giá" (click)="postXML(editorFrm)">
+                  <span class="round-tab">
+                    <i class="fa fa-edit"></i>
+                  </span>
+                </a>
+              </li>
+              <li role="presentation" id="tabstep3">
+                <a href="#step3" data-toggle="tab" aria-controls="step3" role="tab" title="Điều chỉnh giá" (click)="SaveHtml(editorFrm)">
+                  <span class="round-tab">
+                    <i class="fa fa-file"></i>
+                  </span>
+                </a>
+              </li>
+
+              <li role="presentation" id="tabstep4">
+                <a href="#complete" data-toggle="tab" aria-controls="step4" role="tab" title="Tạo đơn hàng và kết thúc" (click)="confirmDialog()">
+                  <span class="round-tab">
+                    <i class="fa fa-check"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <form role="form">
+            <div class="tab-content">
+              <div class="tab-pane active" role="tabpanel" id="step1">
+                <div class="col-md-6">
+                  <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                  </df-panel>
+                </div>
+                <div class="col-md-12" style="margin-left: 25%;">
+                  <button type="button" class="btn btn-primary" (click)="loadFilterGrid(editorFrm)">Lấy danh sách báo giá</button>
+
+                </div>
+                
+                <div class="col-md-12" id="gridFilter" style="display: none;margin-top:10px;">
+                  <wj-flex-grid #gridFilter style="height: 300px" [itemsSource]="dataFilter">
+                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                      <i class="fa fa-folder-open" style="font-size:16px;color:goldenrod;" (click)="showAttachQR(gridFilter)"></i>
+                    </template>
+                  </wj-flex-grid>
+                </div>
+
+
+                <div style="clear:both"></div>
+                <ul class="list-inline pull-right">
+                  <li>
+                    <button type="button" class="btn btn-primary next-step" (click)="postXML(editorFrm)">Tiếp theo</button>
+                  </li>
+                </ul>
+              </div>
+              <div class="tab-pane" role="tabpanel" id="step2">
+
+                  <button type="button" class="btn" title="Thu nhóm" (click)="collapseAllGrid(0)">
+                      <i class="fa fa-angle-double-up fa-md" aria-hidden="true"></i>
+                  </button>
+                  <button type="button" class="btn" title="Mở nhóm" (click)="collapseAllGrid(2)">
+                      <i class="fa fa-angle-double-down fa-md" aria-hidden="true"></i>
+                  </button>
+                  <b style="color: red">(*) - Yêu cầu mở toàn bộ nhóm để lưu phương án so sánh giá</b>
+                  <br/>
+                <p style="font-size: 12pt;font-weight: bold;color: red;">Mặt hàng không đủ điều kiện tính (không đồng đều mặt hàng, thương hiệu giữa các NCC)</p>
+                <wj-flex-grid [itemsSource]="dataEditor2" #gridEditor2 style="height:auto;">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                        <input type="checkbox" value="">
+                    </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                        <input type="checkbox" value="">
+                    </template> -->
+                </wj-flex-grid>
+                <!-- (itemsSourceChanged)="_applyGroup(gridEditor,'CustomerName')" -->
+                <p style="font-size: 12pt;font-weight: bold;color: green;">Phương án tính giá thứ 1: tổng giá trị</p>
+                <wj-flex-grid [itemsSource]="dataEditor" #gridEditor style="height:auto;" (itemsSourceChanged)="_applyGroup_Chuoi(gridEditor,'CustomerName')">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                          <input type="checkbox" value="">
+                      </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          <input type="checkbox" value="">
+                      </template> -->
+                </wj-flex-grid>
+
+                <p style="font-size: 12pt;font-weight: bold;color: green;">Kết quả tính đề nghị thứ 1</p>
+                <wj-flex-grid [itemsSource]="dataEditor1" #gridEditor1 style="height:auto;" (itemsSourceChanged)="_applyGroup(gridEditor1,'CustomerName,TradeMarkCode')">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                          <input type="checkbox" value="">
+                      </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          <input type="checkbox" value="">
+                      </template> -->
+                </wj-flex-grid>
+                <p style="font-size: 12pt;font-weight: bold;color: blue;">So sánh hiệu quả phương pháp 1</p>
+                <wj-flex-grid [itemsSource]="dataEditor6" #gridEditor6 style="height:auto;">
+                </wj-flex-grid>
+
+                <p style="font-size: 12pt;font-weight: bold;color: green;">Phương án tính giá thứ 2: đơn giá nhỏ nhất</p>
+                <wj-flex-grid [itemsSource]="dataEditor3" #gridEditor3 style="height:auto;" (itemsSourceChanged)="_applyGroup(gridEditor3,'CustomerName')">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                      <input type="checkbox" value="">
+                  </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                      <input type="checkbox" value="">
+                  </template> -->
+                </wj-flex-grid>
+
+                <p style="font-size: 12pt;font-weight: bold;color: green;">Kết quả tính đề nghị thứ 2</p>
+                <wj-flex-grid [itemsSource]="dataEditor4" #gridEditor4 style="height:auto;" (itemsSourceChanged)="_applyGroup(gridEditor4,'CustomerName')">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                    <input type="checkbox" value="">
+                </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    <input type="checkbox" value="">
+                </template> -->
+                </wj-flex-grid>
+
+                <p style="font-size: 12pt;font-weight: bold;color: blue;">Phương án tự chọn</p>
+                <wj-flex-grid [itemsSource]="dataEditor5" #gridEditor5 style="height:auto;">
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
+                    <input type="checkbox" value="">
+                </template> -->
+                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    <input type="checkbox" value="">
+                </template> -->
+                </wj-flex-grid>
+
+                <button type="button" class="btn btn-primary" (click)="showCompare(gridEditor5,editorFrm)">Tính hiệu quả so sánh 3</button>
+
+                <p style="font-size: 12pt;font-weight: bold;color: blue;">So sánh hiệu quả phương pháp 3</p>
+                <wj-flex-grid [itemsSource]="dataEditor7" #gridEditor7 style="height:auto;">
+                </wj-flex-grid>
+
+
+                <ul class="list-inline pull-right">
+                  <!-- <li>
+                    <button type="button" class="btn btn-default prev-step" >Quay lại bước 1</button>
+                  </li> -->
+                  <li>
+                    <button type="button" class="btn btn-primary next-step" (click)="SaveHtml(editorFrm)">Xử lý tính giá</button>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="tab-pane" role="tabpanel" id="step3">
+
+                <wj-menu #ctxMenu [header]="'Run'" [value]="browser" [isButton]="true" (itemClicked)="splitButtonItemClicked(ctxMenu, $event,gridAdjust)"
+                  style="display:none;">
+                  <wj-menu-item [value]="'NumberUp'">Làm tròn lên</wj-menu-item>
+                  <wj-menu-item [value]="'NumberDown'">Làm tròn xuống</wj-menu-item>
+                </wj-menu>
+
+                <p style="font-size: 12pt;font-weight: bold;color: blue;">Phương án chọn</p>
+                <wj-flex-grid [itemsSource]="dataAdjust" class="grid" #gridAdjust style="height:auto;" [wjContextMenu]="ctxMenu">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+
+                <p style="font-size: 12pt;font-weight: bold;color: blue;">Hiệu quả phương án chọn</p>
+                <wj-flex-grid [itemsSource]="dataEffective" #gridEffective style="height:auto;">
+                </wj-flex-grid>
+
+                <ul class="list-inline pull-right">
+                  <li>
+                    <button type="button" class="btn btn-primary btn-info-full next-step" (click)="confirmDialog()">Tạo đơn hàng</button>
+                  </li>
+                 
+                </ul>
+              </div>
+
+              <div class="tab-pane" role="tabpanel" id="step4">
+                <h3>Danh sách đơn hàng đã được tạo</h3>
+
+                <wj-flex-grid [itemsSource]="dataReport" class="grid" #gridReport style="height: 640px">
+
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </div>
+
+              <div class="clearfix"></div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- Thêm dialog -->
+<app-dialog [(visible)]="showDialog" #dialogFrm>
+  <div class="headerConfirm">
+    <b style="color: red;">Tạo đơn hàng mua!</b>
+  </div>
+  <div class="titleConfirm">
+    <br/>
+    <p>
+      <b>Thao tác này sẽ xóa các Đơn Hàng của Đề Nghị Mua đã tạo trước để tạo lại, xác nhận: </b>
+    </p>
+  </div>
+  <div class="btnConfirm">
+    <button (click)="postXMLResult(editorFrm)" class="btn btn-success">Đồng ý</button>
+    <button (click)="closeDialog()" class="btn">Hủy bỏ</button>
+  </div>
+</app-dialog>
+<!-- Hết Thêm dialog -->

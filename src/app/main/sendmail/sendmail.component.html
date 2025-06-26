@@ -1,0 +1,47 @@
+<div class="center-div">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 class="panel-title">Gửi mail nhà cung cấp</h3>
+    </div>
+    <div class="panel-body">
+      <form>
+        <div class="form-group">
+          <label class="control-label">Email From</label>
+          <input type="text" class="form-control" #inputEmail placeholder="Email gửi" style="width:40rem;">
+        </div>
+        <!-- <div class="form-group">
+          <label class="control-label">Password</label>
+          <input type="password" class="form-control" #inputPassword placeholder="password">
+        </div> -->
+        <div class="form-group">
+          <label class="control-label">Email To</label>
+            <input type="text" class="form-control" #inputTo placeholder="Email nhận">
+          </div>
+        <div class="form-group">
+          <label class="control-label">CC</label>
+            <input type="text" class="form-control" #inputCC placeholder="CC to: ngăn cách bằng dấu ;">
+          </div>
+          <div class="form-group">
+            <label class="control-label">BCC</label>
+              <input type="text" class="form-control" #inputBCC placeholder="BCC to: ngăn cách bằng dấu ;">
+            </div>
+            <div class="form-group">
+              <label class="control-label">Subject</label>
+                <input type="text" class="form-control" #inputSubject placeholder="Tiêu đề">
+              </div>
+
+              <div class="form-group">
+                <label class="control-label">Message</label>
+                <textarea rows="4" cols="50"  class="form-control" #inputplainTextMessage placeholder="Nội dung">
+                  </textarea>
+                </div>
+        <div class="form-group">
+
+          <button type="button" class="btn btn-raised btn-primary" (click)="SendMail()">Gửi</button>
+          <button type="button" class="btn btn-raised btn-danger" (click)="closeForm()">Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>

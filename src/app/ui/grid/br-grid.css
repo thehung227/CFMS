@@ -1,0 +1,12 @@
+.clone-btn:hover {
+    background-color: #fefefe;
+}
+
+.clone-btn {
+    background-color: transparent;
+}
+
+.mouse-selection {
+    border: 1px solid;
+}
+

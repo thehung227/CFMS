@@ -1,0 +1,21 @@
+<div class='panel-custom' [ngClass]="panel.className">
+    <div *ngFor="let control of panel.controls" class="form-row">
+        <df-editor-input [input]="control" [form]="form" [dataSource]="parentData" [isUsingBinding]="isUsingBinding"
+                (clickCommand)="clickCustom($event)"
+                (valueChanged)="onValueChanged($event)">
+        </df-editor-input>
+    </div>
+
+    <!-- <app-modal #modal>
+        <div class="app-modal-header">
+          header
+        </div>
+        <div class="app-modal-body">
+          Whatever content you like, form fields, anything
+        </div>
+        <div class="app-modal-footer">
+          <button type="button" class="btn btn-default" (click)="modal.hide()">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </app-modal> -->
+</div>

@@ -1,0 +1,158 @@
+<header class="main-header">
+
+    <!-- Logo -->
+    <!-- <a [routerLink]="['/main', 'notifications', 'index']" class="logo"> [routerLink]="['/main', 'productlist', 'index']"-->
+    <a class="logo">
+        <!-- mini logo for sidebar mini 50x50 pixels -->
+        <span class="logo-mini">
+            <!-- <b></b> -->
+            <img src={{getLogoMiniPath}} height="35" width="35">
+        </span>
+        <!-- logo for regular state and mobile devices -->
+        <span class="logo-lg">
+            <!-- <b>Coteccons Group</b> -->
+            <img src={{getLogoPath}} height="50">
+        </span>
+    </a>
+
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top" role="navigation">
+
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" style="color:#029004;">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+
+        <div class="col-xs-6" style="margin-top: 17px;">
+            <!-- <select class="form-control" name="productlist" (change)="onChange($event.target.value)">
+                    <option value="">Chọn gói thầu</option>
+                    <option *ngFor="let product of listProduct" [value]="product.RowId" >{{product.Name}}</option>
+            </select> -->
+            <div class="dropdown" style="width: 120%;">
+                <button (click)="myFunction()" class="dropbtn" style="width: 100%;">{{getProductName || 'Chọn gói thầu'}} </button>
+                <div id="myDropdown" class="dropdown-content" style="height: 500px;width: 100%">
+                    <input type="text" placeholder="Tìm kiếm gói thầu..."  style="width: 100%;" id="myInput" (keyup)="filterFunction()">
+                    <!-- <option *ngFor="let product of listProduct" [value]="product.RowId" [label]="product.RowId + ' - ' + product.Name" (click)="onChange($event)">{{product.RowId}} - {{product.Name}}</option> -->
+                    <!-- <li *ngFor="let product of listProduct" [value]="product.RowId" (click)="onChange($event)">{{product.RowId}} - {{product.Name}}</li> -->
+                    <input *ngFor="let product of listProduct" type="button" class="inputbtnproduct" (click)="onChange($event)" [name]="product.ProductCostIdBoth" [value]="product.RowId + ' - ' + product.Name">
+                </div>
+            </div>
+            
+        </div>
+
+        
+
+
+        <!-- <div class="navbar-title-custom">Hệ thống quản lý Chi phí & Hợp đồng</div> -->
+        <!-- Navbar Right Menu -->
+        <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                <!-- <li class="dropdown messages-menu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-envelope-o"></i>
+                        <span class="label label-success">4</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="header">You have 4 messages</li>
+                        <li>
+                            <ul class="menu">
+                                <li>
+                                    <a href="#">
+                                        <div class="pull-left">
+                                            <img src="assets/img/user3-128x128.ico" class="img-circle" alt="User Image">
+                                        </div>
+                                        <h4>
+                                            Support Team
+                                            <small>
+                                                <i class="fa fa-clock-o"></i> 5 mins</small>
+                                        </h4>
+                                        <p>Why not buy a new awesome theme?</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="footer">
+                            <a href="#">See All Messages</a>
+                        </li>
+                    </ul>
+                </li> -->
+
+                <!-- /.messages-menu -->
+
+                <!-- Notifications Menu -->
+              
+
+                <!-- <li class="dropdown tasks-menu">
+                    <a class="dropdown-toggle" data-toggle="dropdown" [routerLink]="['productlist','index']" title="Danh sách dự án/ gói thầu">
+                        <i class="fa fa-filter"></i>
+                    </a>
+                </li> -->
+
+                <!-- Tasks Menu -->
+                <li class="dropdown tasks-menu" *ngIf="isMobile">
+                    <!-- Menu Toggle Button -->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Mẫu excel import">
+                        <i class="fa fa-download"></i>
+                        <span class="label label-danger">15</span>
+                    </a>
+                </li>
+
+                <li class="dropdown tasks-menu" *ngIf="isMobile">
+                    <!-- Menu Toggle Button -->
+                    
+                  
+                </li>
+
+                <!-- User Account Menu -->
+                <li class="dropdown user user-menu">
+                    <!-- Menu Toggle Button -->
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <!-- The user image in the navbar-->
+                        <img src="assets/img/user3-128x128.ico" class="user-image" alt="User Image">
+                        <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                        <span class="hidden-xs">{{showUserName}}</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <!-- The user image in the menu -->
+                        <li class="user-header">
+                            <img src="assets/img/user3-128x128.ico" class="img-circle" alt="User Image">
+
+                            <p>
+                                {{showUserName}} - {{showUserFullName}}
+                                <!--<small>Member since Dec. 2017</small>-->
+                            </p>
+                        </li>
+                        <!-- Menu Body -->
+                        <!-- <li class="user-body">
+                            <div class="row">
+                                <div class="col-xs-4 text-center">
+                                    <a href="#">Followers</a>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <a href="#">Sales</a>
+                                </div>
+                                <div class="col-xs-4 text-center">
+                                    <a href="#">Friends</a>
+                                </div>
+                            </div>
+                            <!-- /.row -->
+                        <!-- </li> -->
+                        <!-- Menu Footer-->
+                        <li class="user-footer">
+                            <!-- <div class="pull-left">
+                                <a href="#" class="btn btn-default btn-flat">Profile</a>
+                            </div> -->
+                            <div class="pull-right">
+                                <a (click)="logout()" class="btn btn-default btn-flat" style="background-color: #f44336;color: white;"> Đăng xuất</a>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Control Sidebar Toggle Button -->
+                <!-- <li>
+                    <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                </li> -->
+            </ul>
+        </div>
+    </nav>
+</header>

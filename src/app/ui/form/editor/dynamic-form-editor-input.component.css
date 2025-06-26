@@ -1,0 +1,239 @@
+input[type="text"]{
+    /* width: 100%; */
+    border: 1px solid rgba(0,0,0,.2);
+    /* border-radius: 4px; */
+    padding: 3px;
+    /* float: left; */
+    /* min-height: 2em; */
+}
+
+input[type="file"]{
+    display: inline;
+}
+
+.form-group-custom{
+    padding-left: 5px;
+    padding-right: 0px;
+    margin-bottom: 3px;
+    height: 30px;
+}
+.form-richtext{
+    height: auto;
+}
+.form-group-custom-label{
+    height: 30px;
+    padding-top: 8px;
+}
+
+/* .form-group-custom1{
+    padding-left: 5px;
+    padding-right: 0px;
+} */
+
+.btn-load{
+    border-radius: 8px;
+    height: 30px;
+    margin-bottom: 3px;
+    margin-left: 33.33333333%
+}
+
+.wj-content{
+    border-radius: 0;
+}
+
+.wj-input-group .wj-form-control{
+    min-height: 1.9em;
+}
+
+.box-body .row{
+    padding-top: 5px;
+}
+
+.wj-error {
+    color: #d50000;
+    position: absolute;
+    font-size: 12px;
+    margin-top: 3px;
+    visibility: hidden;
+    display: block;
+}
+.wj-control.wj-state-invalid ~ .wj-error {
+    visibility: visible;
+}
+
+/* input.ng-valid, .form-group-custom .ng-valid {
+    border-color: rgb(77, 124, 156) !important;
+    border-radius: 8px;
+    
+}
+
+input.ng-invalid, .form-group-custom .ng-invalid {
+    border-color: red;
+    border-radius: 8px;
+    
+} */
+
+input.ng-valid, .form-group-custom .ng-valid {
+    /* border-left: 4px solid rgb(77, 124, 156); */
+    /* border-color: rgb(77, 124, 156) !important;
+    border-radius: 8px; */
+
+    /* background-image: url(~/assets/img/icon-warning.png);
+    background-repeat: no-repeat;
+    background-size: 11px;
+    height: 11px;
+    width: 11px;
+    position: absolute;
+    float: left; */
+    /* border-color: rgb(77, 124, 156) !important;
+    border-radius: 8px; */
+    /* position: absolute; */
+    border-color: rgb(77, 124, 156);
+    border-radius: 8px;
+}
+
+input.ng-invalid, .form-group-custom .ng-invalid {
+
+    background-image: url(/assets/img/icon-warning.png) !important;
+    background-repeat: no-repeat;
+    background-position-x: 1px;
+    background-position-y: 8px;
+    background-size: 7px;
+    /* position: absolute; */
+    border-color:red !important;
+    background-color:#FFFCFC;
+    border-radius: 8px;
+    
+}
+
+input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    border: 1px solid  rgb(77, 124, 156);
+    border-radius: 8px;
+    height: 30px;
+    padding: 1px;
+    padding-top: 3px;
+    cursor: pointer;
+    background: #FFFCFC;
+    width: 200px;
+    overflow: hidden;
+}
+
+.checkboxcontainer {
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    display: inline-block;
+    height: 30px;
+    vertical-align: middle;
+    padding-left: 0px;
+    padding-top: 3px;
+    
+  }
+  
+  /* Hide the browser's default checkbox */
+  
+  .checkboxcontainer input {
+    position: absolute;
+    width: 0px;
+    opacity: 0;
+    cursor: pointer;
+    display: inline-block;
+  }
+  
+  /* Create a custom checkbox */
+  
+  .checkmark {
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 5px;
+    border:solid 1px rgb(77, 124, 156);
+  }
+  
+  /* On mouse-over, add a grey background color */
+  
+  .checkboxcontainer:hover input~.checkmark {
+    background-color: #ccc;
+  }
+  
+  /* When the checkbox is checked, add a blue background */
+  
+  .checkboxcontainer input:checked~.checkmark {
+    /* background-color: #2196F3; */
+    background-color: #eee;
+  }
+  
+  /* Create the checkmark/indicator (hidden when not checked) */
+  
+  .checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+  }
+  
+  /* Show the checkmark when checked */
+  
+  .checkboxcontainer input:checked~.checkmark:after {
+    display: block;
+  }
+  
+  /* Style the checkmark/indicator */
+  
+  .checkboxcontainer .checkmark:after {
+    /* left: 9px; */
+    /* top: 5px; */
+    margin-top: 2px;
+    margin-left: 6px;
+    width: 6px;
+    height: 12px;
+    border: solid #00acd6;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+
+  .wj-control {
+      padding-left: 0px;
+      padding-right: 0px;
+      height: 30px;
+  }
+
+  .row {
+    margin-left: 0px;
+    margin-right: 0px;
+  }
+
+  @media only screen and (max-width: 414px) {
+      .form-group-custom-label {
+          display: none;
+      }
+      .col-xs-8 {
+          width: 100%;
+      }
+      .btn-load {
+          margin-left: 0%
+      }
+      .mobile-label {
+          display: block;
+      }
+  }
+
+  @media only screen and (min-width: 415px) {
+    .mobile-label {
+        display: none;
+    }
+}
+
+.none-label {
+   display: none;
+}
+
+  

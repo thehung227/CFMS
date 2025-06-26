@@ -1,0 +1,123 @@
+.main-header li.user-header {
+    background-color: #18384b;
+}
+
+.navbar-title-custom
+{
+    color: white;
+    float: left;
+    font-family: arial;
+    margin-left: 29%;
+    text-align: center;
+    margin-top: 8px;
+    font-size: 16pt;
+}
+
+.navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a
+{
+    padding: 8px;
+}
+
+.menu a :hover
+{
+    background-color: aquamarine;
+}
+
+.navbar-nav > .tasks-menu > .dropdown-menu > li .menu {
+    max-height: 370px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: hidden;
+}
+
+/* CSS Dropdow */
+.dropbtn {
+    /* background-color: #304c5c;
+    color: white;
+    padding: 4px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border: green 1px solid;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px; */
+    color: #0b7321;
+    font-weight: bolder;
+    padding: 4px;
+    /* font-size: 16px; */
+    border: none;
+    cursor: pointer;
+    border: #0b7321 1px solid;
+    /* border-top-left-radius: 5px; */
+    /* border-top-right-radius: 5px; */
+    background: linear-gradient(to right,#e4efea,#7dbce0);
+}
+
+.dropbtn:hover, .dropbtn:focus {
+    background: linear-gradient(to right,#7dbce0,#e4efea);
+}
+
+#myInput {
+    /* border-box: box-sizing; */
+    background-image: url('https://www.w3schools.com/howto/searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+}
+
+#myInput:focus {outline: 3px solid #ddd;}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    overflow: auto;
+    border: 1px solid #ddd;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content option {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+.dropdown-content li {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.inputbtnproduct {
+    width: 100%;text-align: left;height: 39px;border: none;background-color: aliceblue;color: darkblue;font-weight: 600;
+}
+
+.dropdown a:hover {background-color: #ddd}
+
+.dropdown option:hover {background-color: #ddd}
+
+.dropdown li:hover {background-color: #ddd}
+
+.dropdown input.inputbtnproduct:hover {background-color: #ddd}
+
+.show {display:block;}

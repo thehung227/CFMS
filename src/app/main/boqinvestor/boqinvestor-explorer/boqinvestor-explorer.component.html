@@ -1,0 +1,224 @@
+<div *ngIf="isUsingFilter" class="col-md-2 filter">
+    <section class="content">
+        <div class="box" id="box-content" style="min-height:650px;">
+            <div class="box-header with-border">
+                <h3 class="box-title">Điều kiện lọc</h3>
+                <div class="box-tools pull-right">
+                    <!--button type="button" class="btn btn-box-tool">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                    </button-->
+
+                    <a class="dropdown-toggle btn" data-toggle="dropdown" href="#">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li *ngFor="let item of filterData">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" (click)="updateCheckedOptions($event, item)" [ngModel]="item.isChecked" /> {{item.label}}
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <form (ngSubmit)="onSubmit(form)" [formGroup]="form">
+                <div class="box-body" [style.height.px]="contentFilterHeight">
+
+                    <div *ngFor="let input of inputs" class="form-row">
+                        <df-input [input]="input" [form]="form" (toogle)="tooglePin($event)"></df-input>
+                    </div>
+
+                    <!--<div class="form-group">
+                        <label>Từ ngày</label>
+                        <wj-input-date [(value)]="DocDate1" [format]="'dd/MM/yyyy'"></wj-input-date>
+                    </div>
+                    <div class="form-group">
+                        <label>Đến ngày</label>
+                        <wj-input-date [(value)]="DocDate2" [format]="'dd/MM/yyyy'"></wj-input-date>
+                    </div>-->
+                    <div class="box-footer">
+                        <button class="btn btn-primary">Tìm kiếm</button>
+                        <button (click)="toogleFilter()" class="btn btn-danger">Hủy</button>
+                    </div>
+                </div>
+                <div class="box-footer" style="height:50px;">
+
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<div [ngClass]="{'col-md-10 content-filter': isUsingFilter}">
+    <section class="content">
+        <div class="box" id="box-content">
+            <div class="box-header with-border">
+                <h3 class="box-title" id="titleName">Bill chủ đầu tư</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="box-body" #contentFilter>
+                <nav class="navbar navbar-default">
+                    <div class="container-fluid">
+                        <ul class="nav navbar-nav">
+                            <div class="toolbox">
+                                <!-- openWindow(['/main','boqinvestor','detail']) -->
+                                <button type="button" class="btn btn-success" [routerLink]="['/main','boqinvestor','detail']" title="Thêm mới" *ngIf="isSysAdmin=='true' || isPermisionExAll_isAddNew">
+                                    <i class="fa fa-plus-square" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-primary" (click)="editExplorer(grid,['/main','boqinvestor','detail'])" title="Mở/ Chỉnh sửa" *ngIf="isSysAdmin=='true' || isPermisionExAll_isEdit">
+                                    <i class="fa fa-pencil-square-o " aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn bg-purple" title="Xóa" (click)="confirmDialog(grid, 'DocNo')" *ngIf="isSysAdmin=='true' || isPermisionExAll_isDelete">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn btn-warning dropdown-toggle" title="In, kết xuất" type="button" data-toggle="dropdown" style="width: 40px;" *ngIf="isSysAdmin=='true' || isPermisionExAll_isPrint">
+                                    <i class="fa fa-print" aria-hidden="true"></i>
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" style="margin-left: 10%;border-color: antiquewhite;background-color: antiquewhite;">
+                                    <li>
+                                        <a class="dropdown-item" style="height: 34px;" *ngFor="let layout of listLayoutPrint"> {{layout.Name}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <button class="btn " type="button" (click)="exportHtml(grid,layout.WordName,layout.FileName, layout.FolderPath)" style="color:white;float: right;margin-right:5px;background-color:orange;height: 100%;">
+                                                <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                            </button>
+                                            <button class="btn " type="button" (click)="exportWord(grid,layout.WordName,layout.FileName, layout.FolderPath)" style="color:white;float: right;margin-right:5px;background-color:rgb(7, 104, 201);height: 100%;" *ngIf="layout.WordName != 'WorkFlow_KHKK.docx'">
+                                                <i class="fa fa-file-word-o" aria-hidden="true"></i>
+                                            </button>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <!-- <button type="button" class="btn btn-warning" title="In" (click)="showPrintVoucher(grid)" *ngIf="isSysAdmin=='true' || isPermisionExAll_isPrint">
+                                    <i class="fa fa-print" aria-hidden="true"></i>
+                                </button> -->
+                                <!-- <button type="button" class="btn" style="color: green;background-color:white;border:solid 1px green;" title="Kết xuất" (click)="export()">
+                                    <i class="fa fa-file-excel-o" aria-hidden="true"></i>
+                                </button> -->
+                                <button type="button" class="btn btn-danger" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()">
+                                    <i class="fa fa-filter fa-lg" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-info" (click)="clearFilterExplorer()" title="Tải lại dữ liệu">
+                                    <i class="fa fa-refresh" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn" title="Thu nhóm" (click)="grid.collapseGroupsToLevel(0)">
+                                    <i class="fa fa-angle-double-up fa-md" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn" title="Mở nhóm" (click)="grid.collapseGroupsToLevel(grid.rows.maxGroupLevel + 1)">
+                                    <i class="fa fa-angle-double-down fa-md" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <!-- <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Dữ liệu
+                                  <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a [routerLink]="['/main', 'boqinvestor','detail']">Thêm mới</a>
+                                    </li>
+                                    <li><a href="#">Đình chỉ</a></li>
+                                </ul>
+                            </li> -->
+                            <!--li><a href="#">Page 2</a></li-->
+                        </ul>
+                    </div>
+                </nav>
+
+                <wj-flex-grid [itemsSource]="data" #grid (itemsSourceChanged)="itemsSourceChangedHandler()" style="height:100%;min-height: 650px;" (click)="clickGridParent(grid)">
+                    <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                       
+                        <i *ngIf="cell.item.NotApproveSend == true" class="fa fa-exclamation-circle faa-flash animated" style="font-size:20px;color:red"
+                            title="Yêu cầu trình duyệt!"></i>
+                    
+                    </template> -->
+                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+
+                    <!-- lưới cháu -->
+                    <wj-flex-grid-column [binding]="Button" [isReadOnly]="true">
+
+                        <ng-template wjFlexGridCellTemplate [cellType]="'Cell'" let-row="row" let-item="item" style="width:30px;">
+                            <span [ngStyle]="{display: gridChild?.isDetailAvailable(row) ? '' : 'none','float':'left'}">
+                                <i [ngStyle]="{display: gridChild.isDetailVisible(row) ? '' : 'none'}" (click)="clickGridParentHideDetail(gridChild,row)"
+                                    class="fa fa-minus"></i>
+                                <i [ngStyle]="{display: !gridChild?.isDetailVisible(row) ? '' : 'none'}" (click)="clickGridParentShowDetail(grid,gridChild,row,true)"
+                                    class="fa fa-plus"></i>
+                            </span>
+                        </ng-template>
+
+                    </wj-flex-grid-column>
+
+                    <!-- xử lý progress bar -->
+                    <!-- <wj-flex-grid-column [isReadOnly]="true" >
+                        <ng-template wjFlexGridCellTemplate let-cell="cell" [cellType]="'Cell'">
+                            <div class="myProgress"> 
+                                <div class="myBar" [ngStyle]="{'width': getPercent(cell.item.PaymentAmount,cell.item.OriginalAmount)}"></div>
+                                <div class="tilleBar">{{getPercent(cell.item.PaymentAmount,cell.item.OriginalAmount)}}</div>
+                              </div>
+                              
+                        </ng-template> 
+                    </wj-flex-grid-column> -->
+
+                    <ng-template wjFlexGridDetail #gridChild="wjFlexGridDetail" [detailVisibilityMode]="'Code'" let-item="item">
+                        <boqinvestor-explorer-child></boqinvestor-explorer-child>
+                    </ng-template>
+                    <!-- end lưới cháu -->
+                </wj-flex-grid>
+
+                <!-- lưới hỗ trợ in detail -->
+                <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                </wj-flex-grid>
+            </div>
+            <div class="box-footer">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" (click)="movePage(1)">
+                        <span class="glyphicon glyphicon-fast-backward"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber-1)">
+                        <span class="glyphicon glyphicon-step-backward"></span>
+                    </button>
+                    <button type="button" class="btn btn-default ng-binding">
+                        {{pageNumber}}/{{totalPage||1}}
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber+1)">
+                        <span class="glyphicon glyphicon-step-forward"></span>
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="movePage(totalPage)">
+                        <span class="glyphicon glyphicon-fast-forward"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div style="clear:both;"></div>
+
+<app-dialog [(visible)]="showDialog" #dialogFrm>
+    <div class="headerConfirm">
+        <b>Bạn có muốn xóa dữ liệu đã chọn!</b>
+    </div>
+    <div class="titleConfirm">
+        <p>Số chứng từ:
+            <b>{{titleConfirmDialog}}</b>
+        </p>
+    </div>
+    <div class="btnConfirm">
+        <button (click)="deleteExplorer(grid,true)" class="btn btn-success">Đồng ý</button>
+        <button (click)="deleteExplorer(grid,false)" class="btn">Hủy bỏ</button>
+    </div>
+</app-dialog>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+    <img src="/assets/img/gears.svg" style="width:50%">
+    <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

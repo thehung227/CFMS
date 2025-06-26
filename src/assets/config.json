@@ -1,0 +1,14 @@
+{
+  "localhost": {
+    "ApiEndpoint": "https://cfms.newtecons.vn",
+    "BranchCode": "N01",
+    "SSO_2": {
+      "Authority": "https://auth.newtecons.vn",
+      "UrlApp": "http://localhost:4200/#/auth",
+      "ClientId": "5ebb890b-a43d-4643-ad7f-6dd42d287ed1",
+      "ClientSecret": "tahXcPxxaAFJ6bHaYJtAAbtlh0JlPHKPKybDZhUkd8k=",
+      "Scope": "openid profile email api",
+       "Logout": "https://auth.newtecons.vn/account/logout?returnUrl=http://localhost:4200/#/logout?expried=1"
+    }
+  }
+}

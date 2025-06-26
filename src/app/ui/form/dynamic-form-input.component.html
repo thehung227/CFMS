@@ -1,0 +1,89 @@
+<div [formGroup]="form" class="form-group">
+    <label [attr.for]="input.key" [attr.style]="input.styleLabel">{{input.label}}</label>
+    <div class="pull-right">
+        <button class="btn btn-pin" (click)="tooglePin(input, $event)" type="button">
+            <i class="fa fa-thumb-tack" aria-hidden="true" style="font-size: 12px;"></i>
+        </button>
+    </div>
+    <div [ngSwitch]="input.controlType">
+        <wj-input-mask *ngSwitchCase="'textbox'"
+        [formControlName]="input.key"
+        [id]="input.key"
+        [attr.data-toggle]="'tooltip'"
+        [mask]="input.mask"
+        [promptChar]="' '"
+        [attr.data-original-title]="errorMessage">
+        </wj-input-mask>
+
+        <wj-input-number *ngSwitchCase="'number'"
+        #wjNumber
+        [formControlName]="input.key"
+        [id]="input.key"
+        [format]="input.format"
+        (valueChanged)="onNumberChanged($event)"
+        >
+        </wj-input-number>
+
+        <!-- <wj-combo-box *ngSwitchCase="'textbox'"
+        [formControlName]="input.key"
+        [id]="input.key"
+        [isRequired]="true">
+        </wj-combo-box> -->
+
+        <!-- <input *ngSwitchCase="'checkbox'"
+        [formControlName]="input.key"
+        [id]="input.key"
+        type="checkbox"
+        [disabled]="input.isDisabled"
+        [class]="input.class" /> -->
+
+        <label *ngSwitchCase="'checkbox'" [id]="input.key" [class]="input.inputStyle +' checkboxcontainer'" [attr.data-toggle]="'tooltip'"
+        [attr.data-original-title]="errorMessage">
+        <input type="checkbox" [formControlName]="input.key" class="checkboxinput"/>
+        <span class="checkmark"></span>
+        </label>
+        
+        <select *ngSwitchCase="'dropdown'"
+        [formControlName]="input.key"
+        [id]="input.key"
+        [class]="input.class">
+        <option *ngFor="let opt of input.options" [value]="opt.key">{{opt.value}}</option>
+        </select>
+
+        <wj-input-date *ngSwitchCase="'date'" #wjDate [formControlName]="input.key" [id]="input.key" [format]="input.format" [mask]="input.mask"
+    [isRequired]="false" [attr.data-toggle]="'tooltip'" [attr.data-original-title]="errorMessage" [value]="null" [isAnimated]=true
+    (valueChanged)="onDateChanged($event)" [class]="input.inputStyle +' wj-control wj-dropdown wj-content wj-state-collapsed wj-inputdate'">
+  </wj-input-date>
+
+        <wj-auto-complete #wjAuto *ngSwitchCase="'lookup'" [formControlName]="input.key" [id]="input.key" [itemsSource]="input.options"
+        [displayMemberPath]="'DisplayMember'" [selectedValuePath]="'ValueMember'" [isRequired]="false" [isContentHtml]="true" [attr.data-toggle]="'tooltip'"
+        [attr.data-original-title]="errorMessage" [delay]="500" [autoExpandSelection]="true" [isAnimated]=true (gotFocus)="onGotFocus(input)"
+        (lostFocus)="onLostFocus(input)" (initialized)="init(input)" (isDroppedDownChanging)="onDroppedDownChanging(input,$event)"
+        [itemsSourceFunction]="getQueries" [class]="input.inputStyle + ' wj-control wj-dropdown wj-content wj-combobox wj-autocomplete'">
+      </wj-auto-complete>
+        <!-- (gotFocus)=onGotFocus()
+        (lostFocus)=onLostFocus() -->
+
+        <wj-multi-select #wjMultiSelect *ngSwitchCase="'multiselect'" [formControlName]="input.key" [id]="input.key" [itemsSource]="input.options"
+    [maxHeaderItems]="10" [displayMemberPath]="'DisplayMember'" [selectedValuePath]="'ValueMember'" [checkedMemberPath]="'State'"
+    [isRequired]="false" [isContentHtml]="true" [attr.data-toggle]="'tooltip'" [attr.data-original-title]="errorMessage" [autoExpandSelection]="true"
+    [isAnimated]=true (initialized)="init(input)" (gotFocus)="onGotFocus(input)" (lostFocus)="onLostFocus(input)" (isDroppedDownChanging)="onDroppedDownChanging(input,$event)"
+    [class]="input.inputStyle + ' wj-control wj-dropdown wj-content wj-combobox wj-multiselect'">
+  </wj-multi-select>
+
+        <button *ngSwitchCase="'button'"
+        class="btn btn-load btn-link"
+        type="button"
+        (click)="clickCustom(input.key)">{{input.label}}
+        </button>
+
+        <input *ngSwitchCase="'file'"
+        [formControlName]="input.key"
+        [id]="input.key"
+        [type]="input.type"
+        (change)="input.uploadFile($event)"
+        [class]="input.class" />
+    </div>
+
+    <!--div class="errorMessage" *ngIf="!isValid">{{input.label}} is required</div-->
+</div>

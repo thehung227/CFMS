@@ -1,0 +1,14 @@
+<div id="viewfileattach" style="width: 100%;height: 100em;overflow-y: hidden;">
+  <object id="fileView" style="width: 100%;height: 100em;"></object>
+</div>
+<div style="width: 100%;height: 100%;background-color: white;overflow-y: auto; padding-left:10%;" id="htmlShow">
+</div>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

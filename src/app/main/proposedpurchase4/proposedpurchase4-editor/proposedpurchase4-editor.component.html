@@ -1,0 +1,119 @@
+<!-- Main content -->
+<section class="content">
+  <!-- Default box -->
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <div class="tab-content" style="height:900px;">
+      <div class="wrap-content">
+        <div class="col-right" id="pageRight">
+          <div class="box" id="box-content">
+            <div class="box-header with-border">
+              <h3 class="box-title" id="titleName">Xem đơn hàng mua</h3>
+              <div class="box-tools pull-right">
+                <a class="btn btn-default" (click)="backClick()">Thoát</a>
+                <!-- [routerLink]="['/main','purchaseorder','index']" -->
+              </div>
+            </div>
+            <div class="box-body">
+              <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                <strong>{{editorFrm.errors['error']}}</strong>
+              </div>
+              <div *ngFor="let panel of _layoutDeclare.panels" class="form-row">
+                <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                </df-panel>
+                <div style="clear:both"></div>
+              </div>
+
+              <div style="clear:both"></div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <button class="btn btn-info" type="button" style="margin-bottom:10px;" (click)="showVoucherPP('BM-F006b-Rev00 De Nghi Mua Hang.docx','Đề nghị mua hàng - {EXPR=DocNo}', '/3.Mau_In/C01/')">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Đề nghị</span>
+              </button>
+
+              <!-- <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: -10px;">Báo giá
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" style="margin-left: 26%;margin-top: -72%;background-color: antiquewhite;">
+                <li *ngFor="let btn of listButtonQR">
+                  <a class="dropdown-item" style="height: 39px;cursor: pointer;" (click)="showAttachQR('{EXPR=ProductCostId}\\'+folderNameQR,btn.Id)">
+                  Báo giá {{btn.Id}}
+                  </a>
+                </li>
+              </ul> -->
+
+              <div class="bravo-dropdown">
+                <button type="button" (click)="openbravoDropdown()" class="bravo-dropbtn btn btn-warning" style="margin-top: -10px;">Báo giá
+                  <span class="caret"></span>
+                </button>
+                  <div id="bravoDropdown" class="bravo-dropdown-content">
+                      <a *ngFor="let btn of listButtonQR" style="height: 39px;cursor: pointer;" (click)="showAttachQR('{EXPR=ProductCostId}\\'+folderNameQR,btn.Id)">
+                      Báo giá: {{btn.Id}}
+                      </a>
+                  </div>
+                </div>
+               
+              <button class="btn btn-danger" type="button" style="margin-bottom:10px;" (click)="showVoucher_CalPrice('FORM_Ket_Qua_Tinh_Gia.docx','Phương án chọn và hiệu quả - {EXPR=DocNo}', '/3.Mau_In/C01/')">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Phương án chọn</span>
+              </button>
+
+              <button class="btn btn-default" type="button" style="margin-bottom:10px;" (click)="showPrintVoucher(parentData?.Id)">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Đơn hàng</span>
+              </button>
+
+              
+              <button class="btn btn-basic" type="button" style="margin-bottom:10px;" (click)="getCalPriceForm()">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">So sánh giá</span>
+              </button>
+
+              <div class="form-row" style="border:1px solid #ddd;display: none;">
+
+                <div id="cssmenu">
+                  <ul>
+                    <li class="active">
+                      <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">
+                        <b>WorkFlow</b>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                    <section id="new">
+                      <wj-flex-grid class="grid" #grid style="height:280px;">
+                        
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-left" id="pageLeft">
+          <div style="width: 100%;height: 100%;background-color: white;overflow-y: auto;" id="htmlShow">
+            <!-- <fieldset id="htmlShow">
+                  </fieldset> -->
+          </div>
+          <div id="viewfileattach" style="width: 100%;height: 100%;overflow-y: auto;">
+              <object id="fileView" style="width: 100%;height: 100%;"></object>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+  <!-- /.box -->
+</section>
+<!-- /.content -->
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

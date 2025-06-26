@@ -1,0 +1,693 @@
+.btn {
+  padding: 4px 8px;
+}
+
+.wj-flexgrid {
+  height: 400px;
+  background-color: white;
+  border-radius: 2px;
+}
+
+.btn-edit {
+  padding: 2px 3px;
+}
+
+.navbar {
+  margin: -10px -10px 10px -10px;
+  border-radius: 0;
+  min-height: 30px;
+}
+
+.container-fluid {
+  padding-left: 0;
+  background-color: lightyellow;
+}
+
+.navbar-nav>li>a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.navbar-custom {
+  background: #d7d7d7;
+}
+
+.filter .content,
+.content-filter .content {
+  padding: 15px 0 0 0;
+}
+
+.filter {
+  padding: 0 5px 0 10px;
+}
+
+.filter .box-body {
+  overflow: auto;
+}
+
+.content-filter {
+  padding: 0 10px 0 5px;
+}
+
+.fa-lg {
+  vertical-align: 3%;
+}
+
+.btn-filter {
+  padding: 0 4px;
+}
+
+.checkbox {
+  padding: 3px 10px;
+  margin: 0;
+}
+
+.filter .form-group {
+  float: left;
+  margin: 0;
+}
+
+.navbar-nav .toolbox {
+  float: left;
+  margin-left: 24px;
+  width: auto;
+}
+
+.navbar-nav .toolbox>button {
+  margin-right: 10px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  width: 34px;
+}
+
+/* Progress bar*/
+
+.myProgress {
+  color: white;
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #ddd;
+}
+
+.myBar {
+  position: absolute;
+  height: 20px;
+  background-color: #4CAF50;
+}
+
+.tilleBar {
+  position: relative;
+  opacity: 1;
+  /* color: orangered; */
+  text-align: center;
+}
+
+/*slide menu*/
+
+#SlideItMoo_outer {
+  overflow: hidden;
+  width: 100%;
+  height: 10%;
+  margin: 0 auto;
+  background: none;
+  display: block;
+  position: relative;
+  padding: 15px 0 0 0;
+}
+
+/* create custom forward-backward buttons for this container */
+
+#SlideItMoo_outer .SlideItMoo_forward,
+#SlideItMoo_outer .SlideItMoo_back {
+  display: block;
+  position: absolute;
+  cursor: pointer;
+  width: 25px;
+  height: 178px;
+  bottom: 0px;
+  right: 0px;
+  /* background:url(../assets/img/item/slideitmoo_forward.png) no-repeat center;   */
+}
+
+#SlideItMoo_outer .SlideItMoo_back {
+  left: 0px;
+  /* background:url(../assets/img/item/slideitmoo_back.png) no-repeat center;   */
+}
+
+/* the width is set to show the number of thumbnails that will be visible */
+
+#SlideItMoo_inner {
+  position: relative;
+  overflow: hidden;
+  width: 90%;
+  /* set a display width to make the slider look good in case js is disabled */
+  margin: 0px auto 0px;
+  padding: 10px 0px 10px;
+}
+
+/* the thumbnails container; set a width on it so everything will be fine */
+
+#SlideItMoo_items {
+  display: block;
+  position: relative;
+}
+
+/* single element design */
+
+#SlideItMoo_items div.SlideItMoo_element {
+  display: block;
+  position: relative;
+  float: left;
+  margin: 15px 15px 0px;
+  width: 128px;
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  color: #ffffff;
+  background-color: #00a08a;
+  border: 1px solid;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#SlideItMoo_items div.SlideItMoo_element :hover {
+  background-color: rgb(200, 234, 245);
+}
+
+#SlideItMoo_items a {
+  margin: 3px 0px 0px;
+  clear: both;
+  display: block;
+  background: none;
+  padding: 5px;
+  background-color: #ffff;
+  border: 1px solid #00a08a;
+  /* width: 100%;
+      height: 140px; */
+}
+
+#SlideItMoo_items a img {
+  border: none;
+}
+
+/* *************************************************************************************************************************** */
+
+.card.card-cascade.wider {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.card {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  border: 0;
+  font-weight: 400;
+}
+
+.card {
+  position: relative;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-width: 0;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, .125);
+  border-radius: .25rem;
+}
+
+.card.card-cascade .view {
+  -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
+  -webkit-border-radius: .25rem;
+  border-radius: .25rem;
+}
+
+.peach-gradient {
+  background: -webkit-linear-gradient(50deg, #9cf2e6, #00a08a) !important;
+  background: -o-linear-gradient(50deg, #9cf2e6, #00a08a) !important;
+  background: linear-gradient(40deg, #9cf2e6, #00a08a) !important;
+}
+
+.view {
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+.card.card-cascade .view.gradient-card-header .card-header-title {
+  font-weight: 500;
+}
+
+.card.card-cascade.wider .card-body {
+  -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .16), 0 2px 10px 0 rgba(0, 0, 0, .12);
+  margin-left: 4%;
+  margin-right: 4%;
+  background: #fff;
+  z-index: 1;
+  -webkit-border-radius: 0 0 .25rem .25rem;
+  border-radius: 0 0 .25rem .25rem;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 0.25rem;
+}
+
+.card .card-body .card-text {
+  color: #747373;
+  font-size: 1.4rem;
+  font-weight: 400;
+  height: 1rem;
+}
+
+.orange-text {
+  color: #00a08a !important;
+}
+
+.p-2 {
+  padding: .5rem !important;
+}
+
+.flex-row-reverse {
+  -ms-flex-direction: row-reverse !important;
+  flex-direction: row-reverse !important;
+}
+
+.d-flex {
+  display: -ms-flexbox !important;
+  display: flex !important;
+}
+
+.waves-effect {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 1;
+}
+
+.card.card-cascade .view.gradient-card-header .btn-floating {
+  background-color: rgba(255, 255, 255, .2);
+}
+
+a:not([href]):not([tabindex]),
+a:not([href]):not([tabindex]):focus,
+a:not([href]):not([tabindex]):hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:not([href]):not([tabindex]) {
+  color: inherit;
+  text-decoration: none;
+}
+
+[type=reset],
+[type=submit],
+button,
+html [type=button] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+a.waves-effect,
+a.waves-light {
+  display: inline-block;
+}
+
+[type=reset],
+[type=submit],
+button,
+html [type=button] {
+  -webkit-appearance: button;
+}
+
+.btn-floating {
+  -webkit-box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
+  box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 1;
+  vertical-align: middle;
+  display: inline-block;
+  overflow: hidden;
+  -webkit-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  margin: 5px;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.waves-effect {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 1;
+}
+
+/* ********************************************************************************** */
+
+.overlay .mask {
+  opacity: 0;
+  -webkit-transition: all .4s ease-in-out;
+  -o-transition: all .4s ease-in-out;
+  transition: all .4s ease-in-out;
+}
+
+.view .mask {
+  position: absolute;
+  top: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background-attachment: fixed;
+}
+
+.rgba-white-slight {
+  background-color: rgba(255, 255, 255, .1);
+}
+
+.rgba-red-strong {
+  background-color: rgba(244, 67, 54, .7);
+}
+
+.view img,
+.view video {
+  position: relative;
+  display: block;
+}
+
+.card-img-top {
+  width: 100%;
+  border-top-left-radius: calc(.25rem - 1px);
+  border-top-right-radius: calc(.25rem - 1px);
+}
+
+img {
+  vertical-align: middle;
+  border-style: none;
+}
+
+.text-center {
+  text-align: center !important;
+  background-color: #08a48f;
+  color: white;
+}
+
+.card-body {
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 0.25rem;
+}
+
+.indigo-text {
+  color: #3f51b5 !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.pb-2,
+.py-2 {
+  padding-bottom: .5rem !important;
+}
+
+.pt-2,
+.py-2 {
+  padding-top: .5rem !important;
+}
+
+.mb-4,
+.my-4 {
+  margin-bottom: 1.5rem !important;
+}
+
+.row {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-align-content: center;
+  align-content: center;
+  margin-left: 3rem;
+  margin-right: 3rem;
+}
+
+#toast-container>div,
+.card.card-cascade .view.gradient-card-header,
+.clockpicker-display .clockpicker-display-column #click-am.text-primary,
+.clockpicker-display .clockpicker-display-column #click-pm.text-primary,
+.clockpicker-display .clockpicker-display-column .clockpicker-span-hours.text-primary,
+.clockpicker-display .clockpicker-display-column .clockpicker-span-minutes.text-primary,
+.darktheme .picker__box .picker__calendar-container .clockpicker-plate .clockpicker-tick,
+.darktheme .picker__box .picker__date-display .clockpicker-display,
+.darktheme .picker__box .picker__date-display .clockpicker-display .clockpicker-span-am-pm,
+.darktheme .picker__box .picker__footer button,
+.dropdown .dropdown-menu .dropdown-item:active,
+.dropdown .dropdown-menu .dropdown-item:hover,
+.picker--focused .picker__list-item--selected,
+.picker--time .picker__button--clear:focus,
+.picker--time .picker__button--clear:focus:before,
+.picker--time .picker__button--clear:hover,
+.picker--time .picker__button--clear:hover:before,
+.picker__box .picker__header .picker__date-display,
+.picker__box .picker__table .picker--focused,
+.picker__box .picker__table .picker__day--outfocus,
+.picker__box .picker__table .picker__day--selected,
+.picker__box .picker__table .picker__day--selected:hover,
+.picker__date-display,
+.picker__date-display .clockpicker-display .clockpicker-display-column #click-am.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column #click-pm.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column .clockpicker-span-hours.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column .clockpicker-span-minutes.text-primary,
+.picker__list-item--selected,
+.picker__list-item--selected:hover,
+.side-nav,
+.side-nav .search-form .form-control,
+.side-nav .search-form input[type=text]::placeholder,
+.toast-close-button,
+.toast-message a,
+.toast-message label,
+.white-text {
+  color: #fff !important;
+}
+
+#toast-container>div,
+.card.card-cascade .view.gradient-card-header,
+.clockpicker-display .clockpicker-display-column #click-am.text-primary,
+.clockpicker-display .clockpicker-display-column #click-pm.text-primary,
+.clockpicker-display .clockpicker-display-column .clockpicker-span-hours.text-primary,
+.clockpicker-display .clockpicker-display-column .clockpicker-span-minutes.text-primary,
+.darktheme .picker__box .picker__calendar-container .clockpicker-plate .clockpicker-tick,
+.darktheme .picker__box .picker__date-display .clockpicker-display,
+.darktheme .picker__box .picker__date-display .clockpicker-display .clockpicker-span-am-pm,
+.darktheme .picker__box .picker__footer button,
+.dropdown .dropdown-menu .dropdown-item:active,
+.dropdown .dropdown-menu .dropdown-item:hover,
+.picker--focused .picker__list-item--selected,
+.picker--time .picker__button--clear:focus,
+.picker--time .picker__button--clear:focus:before,
+.picker--time .picker__button--clear:hover,
+.picker--time .picker__button--clear:hover:before,
+.picker__box .picker__header .picker__date-display,
+.picker__box .picker__table .picker--focused,
+.picker__box .picker__table .picker__day--outfocus,
+.picker__box .picker__table .picker__day--selected,
+.picker__box .picker__table .picker__day--selected:hover,
+.picker__date-display,
+.picker__date-display .clockpicker-display .clockpicker-display-column #click-am.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column #click-pm.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column .clockpicker-span-hours.text-primary,
+.picker__date-display .clockpicker-display .clockpicker-display-column .clockpicker-span-minutes.text-primary,
+.picker__list-item--selected,
+.picker__list-item--selected:hover,
+.side-nav,
+.side-nav .search-form .form-control,
+.side-nav .search-form input[type=text]::-webkit-input-placeholder,
+.toast-close-button,
+.toast-message a,
+.toast-message label,
+.white-text {
+  color: #fff !important;
+}
+
+.flex-center {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+  height: 100%;
+}
+
+.hoverable {
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  -webkit-transition: all .55s ease-in-out;
+  -o-transition: all .55s ease-in-out;
+  transition: all .55s ease-in-out
+}
+
+.hoverable :hover {
+  -webkit-box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+  box-shadow: 0 8px 17px 0 rgba(0, 0, 0, .2), 0 6px 20px 0 rgba(0, 0, 0, .19);
+  -webkit-transition: all .55s ease-in-out;
+  -o-transition: all .55s ease-in-out;
+  transition: all .55s ease-in-out
+}
+
+.img-fluid, .modal-dialog.cascading-modal.modal-avatar .modal-header, .section-blog-fw .view img, .video-fluid {
+  max-width: 100%;
+  height: auto;
+}
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+}
+
+
+
+
+/* ***************************************************************************************** */
+.listview.view-icons-medium, .listview.view-icons-large, .listview.view-icons, .listview.view-tiles {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+}
+.listview {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  max-height: 100%;
+  background-color: #ffffff;
+  color: #1d1d1d;
+  list-style: none inside;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.listview .node-group {
+  display: block;
+  width: 100%;
+  position: relative;
+  line-height: 24px;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.listview .node-group > .data {
+  padding-left: 24px;
+  line-height: 24px;
+  font-size: 18px;
+}
+div {
+  position: relative;
+}
+
+.listview .node-group .node-toggle {
+  position: relative;
+  cursor: pointer;
+  padding-right: 1.5rem!important;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.listview .node-group .node-toggle::before {
+  display: block;
+  position: absolute;
+  vertical-align: middle;
+  color: transparent;
+  font-size: 0;
+  content: "";
+  height: 0.3125rem;
+  width: 0.3125rem;
+  background-color: transparent;
+  border-left: 1px solid;
+  border-bottom: 1px solid;
+  border-color: #1d1d1d;
+  top: 50%;
+  left: 100%;
+  margin-left: -1rem;
+  margin-top: -0.1625rem;
+  z-index: 2;
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+  -webkit-transition: all 0.15s ease-in-out;
+  transition: all 0.15s ease-in-out;
+  -webkit-transform-origin: center center 1px;
+          transform-origin: center center 1px;
+}
+.listview .node-group .node-toggle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 24px;
+  height: 24px;
+}
+.listview .node-group .node-toggle::before {
+  -webkit-transform: rotate(-135deg);
+          transform: rotate(-135deg);
+}
+.listview .node-group.expanded > .node-toggle::before {
+  -webkit-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+}
+.listview.view-icons-medium, .listview.view-icons-large, .listview.view-icons, .listview.view-tiles {
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-flow: row wrap;
+  flex-flow: row wrap;
+}
+.listview {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  max-height: 100%;
+  background-color: #ffffff;
+  color: #1d1d1d;
+  list-style: none inside;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}

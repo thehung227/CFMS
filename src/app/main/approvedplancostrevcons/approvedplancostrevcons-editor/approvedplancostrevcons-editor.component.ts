@@ -1,0 +1,96 @@
+import { Component, ViewChild, OnInit, OnDestroy, ElementRef, HostListener } from "@angular/core";
+import { BaseEditorComponent } from "../../_baseform/base-editor.component";
+import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
+import { WjInputModule } from 'wijmo/wijmo.angular2.input';
+
+import * as wjcCore from 'wijmo/wijmo';
+import * as wjcGrid from 'wijmo/wijmo.grid';
+import * as wjcInput from 'wijmo/wijmo.angular2.input';
+import { DynamicFormPanelComponent } from "../../../ui/form/dynamic-form-panel.component";
+import { BaseEditorService } from "../../../base/base.service-editor";
+import { ActivatedRoute, Router } from "@angular/router";
+import { PanelControlService } from "../../../ui/panel/PanelControlService";
+import { LayoutApprovedPlanCostRevConsEditor } from "../DeclareLayout";
+import { Title } from "@angular/platform-browser";
+import { Location } from "@angular/common";
+import { Global } from "../../../shared/global";
+
+@Component({
+  selector: 'app-approvedplancostrevcons-editor-form',
+  templateUrl: './approvedplancostrevcons-editor.component.html',
+  styleUrls: ['./approvedplancostrevcons-editor.component.css']
+})
+
+export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent implements OnInit, OnDestroy {
+
+  @ViewChild('grid') grid: wjcGrid.FlexGrid;
+  @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
+  @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
+  @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
+
+  indexPage = ['/main', 'plancostrevcons', 'index'];
+  folderName = '01.Ke_Hoach_DoanhThu_ChiPhi';
+
+  constructor(service: BaseEditorService,
+    route: ActivatedRoute,
+    pcs: PanelControlService,
+    elRef: ElementRef,
+    router: Router, titleService: Title,
+    private _location: Location) {
+    super(service, route, pcs, elRef, router, titleService)
+    this._layoutDeclare = new LayoutApprovedPlanCostRevConsEditor(service, this.parentData);
+  }
+
+  @HostListener('window:resize', [])
+  onWindowResize() {
+    // this.resizeWidthControls();
+  }
+
+  ngOnInit() {
+    this.gridArray = [this.grid, this.grid1, this.grid2];
+    this.init();
+    this.grid.isReadOnly = true;
+    this.grid1.isReadOnly = true;
+    this.grid2.isReadOnly = true;
+
+    this.dbClickCellContent(this.grid1);
+  }
+  ngAfterViewInit() {
+    this.dfpanel = this._dfpanel; this.afterViewInit();
+
+    //this.wordWrapGrid();
+  }
+
+  ngOnDestroy() {
+    this.destroy();
+  }
+
+  onSubmit(formData: any) {
+    this.submit(formData, this.indexPage);
+  }
+
+  backClick() {
+    this._location.back();
+  }
+
+  async onClick(state: any) {
+    if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])
+      alert("User đăng nhập không đúng với người duyệt!!!");
+    else {
+      this.isLoading = true;
+      this.parentData["ApproveStatus"] = state;
+      this.parentData["ApproveStatusWeb"] = state;
+      // await this.dfpanel.runConstraint('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(()=>{
+      //   setTimeout(() => {
+      //     window.close();
+      //   }, 1000);
+      // });
+      this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
+        this.sendMail(this.editorFrm, 'K2', this.parentData['IdCCMBudget'], false, state).then(() => {
+          this.router.navigate(['/main', 'notifications', 'index']);
+        });
+      });
+      // this.backClick();
+    }
+  }
+}

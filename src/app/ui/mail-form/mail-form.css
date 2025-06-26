@@ -1,0 +1,42 @@
+.header {
+   color: #dcf3f6;
+   background-color: #00C1D5;
+   margin-bottom: 14px;
+   padding: 12px 0;
+}
+   .header img {
+     float: left;
+     margin: 0 10px 5px 0;
+  }
+
+
+.modal-content {
+   min-width: 400px;
+}
+input:invalid {
+   border-color: red;
+}
+body {
+   margin-bottom: 1in;
+}
+
+/* CSS animations for fading in and out */
+.custom-animation {
+   opacity: 0;
+   transform: rotate3d(1, .5, .5, 180deg) scale(0.5);
+   transition: all ease-out 0.3s;
+}
+.custom-animation-visible {
+   opacity: 1;
+   transform: none;
+   transition: all ease-in 0.4s;
+}
+
+.center-div
+{
+   margin-top: 100px;
+   top:50%;
+   left: 50%;
+   transform: translate3d(-50%,-50%, 0);
+   position: absolute;
+}

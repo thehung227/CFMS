@@ -1,0 +1,78 @@
+<!-- Main content -->
+<section class="content">
+  <!-- Default box -->
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <div class="box" id="box-content">
+      <div class="box-header with-border">
+        <h3 class="box-title" id="titleName">Danh mục bề mặt</h3>
+        <div class="box-tools pull-right">
+          <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
+                        <i class="fa fa-times"></i>
+                    </button> -->
+          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
+          <a class="btn btn-default" [routerLink]="['/main','itemsurface','index']">Thoát</a>
+          <!-- (click)="closeWindow()"  -->
+        </div>
+      </div>
+      <div class="box-body" style="height: 100em;">
+        <div *ngIf="editorFrm.errors" class="alert alert-danger">
+          <strong>{{editorFrm.errors['error']}}</strong>
+        </div>
+
+        <div *ngFor="let panel of _layoutDeclare.panels" class="form-row" [ngStyle]="setDisplayPanel()">
+          <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+          </df-panel>
+          <div style="clear:both"></div>
+        </div>
+
+        <div style="clear:both"></div>
+
+        <!-- <button class="btn btn-info fa fa-info" type="button" style="margin-bottom:10px;" (click)="onClickNoneValid()" *ngIf="parentData?.ItemGroupType=='02' || parentData?.ItemGroupType=='04'">
+          <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tạo tên vật tư</span>
+        </button> -->
+
+      </div>
+      <!-- /.box-body -->
+      <div class="box-footer">
+
+        <div class="form-row" style="border:1px solid #ddd;" style="display: none;">
+
+          <div id="cssmenu">
+            <ul>
+              <li class="active">
+                <a href="#tab1" data-toggle="tab">
+                  Chi tiết
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab1">
+              <section id="new">
+                <wj-flex-grid class="grid" #grid style="height:280px;" [ngStyle]="setHeightGrid()">
+
+                </wj-flex-grid>
+              </section>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- /.box-footer-->
+    </div>
+  </form>
+  <!-- /.box -->
+</section>
+<!-- /.content -->
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

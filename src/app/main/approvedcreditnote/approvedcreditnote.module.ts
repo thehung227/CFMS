@@ -1,0 +1,53 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { HttpModule } from '@angular/http';
+import { Routes, RouterModule } from '@angular/router';
+
+import { ApprovedCreditNoteComponent } from './approvedcreditnote.component';
+import { ApprovedCreditNoteEditorComponent } from './approvedcreditnote-editor/approvedcreditnote-editor.component';
+
+import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
+import { WjInputModule } from 'wijmo/wijmo.angular2.input';
+
+import { UIModule } from './../../ui/ui.module';
+
+import { InputControlService } from './../../ui/input/InputControlService';
+import { PanelControlService } from './../../ui/panel/PanelControlService';
+import { BaseExplorerService } from '../../base/base.service-explorer';
+import { PermissionResolve } from '../../base/resolver';
+
+const approvedcreditnoteRoutes: Routes = [
+    {
+        path: '', component: ApprovedCreditNoteComponent,
+        children: [
+            { path: '', redirectTo: 'index', pathMatch: 'full' },
+            { path: 'detail', component: ApprovedCreditNoteEditorComponent,resolve: { permission: PermissionResolve } },
+            { path: 'detail/:id', component: ApprovedCreditNoteEditorComponent,resolve: { permission: PermissionResolve } }
+        ]
+    },
+]
+
+@NgModule({
+    imports: [
+        CommonModule,
+        WjGridModule, WjInputModule,
+        FormsModule, ReactiveFormsModule,
+        HttpModule,
+        RouterModule.forChild(approvedcreditnoteRoutes),
+        UIModule
+    ],
+    declarations: [
+        ApprovedCreditNoteComponent,
+        ApprovedCreditNoteEditorComponent
+    ],
+    providers: [
+        BaseExplorerService,
+        InputControlService,
+        PanelControlService,
+        PermissionResolve
+    ],
+    exports: [ApprovedCreditNoteComponent]
+})
+
+export class ApprovedCreditNoteModule { }

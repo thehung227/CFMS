@@ -1,0 +1,76 @@
+<div [class]="'row mobile-label col-xs-12'">
+  <label *ngIf="input.isUsingLabel" [attr.for]="input.key">{{input.label}}</label>
+</div>
+<div *ngIf="input.isNewRow" style="clear:both"></div>
+<div [formGroup]="form" [class]="input.className" [ngSwitch]="input.controlType" [ngStyle]="{ 'height': input.controlType == 'image' ? '230px' : input.controlType == 'richtextbox' ? '180px' : ''}">
+  <label *ngIf="input.isUsingLabel" [class]="input.labelStyle" [attr.for]="input.key" >{{input.label}}</label>
+
+  <wj-input-mask *ngSwitchCase="'textbox'" [formControlName]="input.key" [id]="input.key" [mask]="input.mask" [promptChar]="' '"
+    [attr.data-toggle]="'tooltip'" (lostFocus)="onLostFocus(input)"
+     [attr.data-original-title]="errorMessage" [class]="input.inputStyle +' wj-control wj-inputmask wj-content wj-state-empty'">
+  </wj-input-mask>
+
+  <wj-input-number *ngSwitchCase="'number'" #wjNumber [formControlName]="input.key" [id]="input.key" [format]="input.format"
+    [step]="input.step" [min]="input.min" [max]="input.max" (valueChanged)="onNumberChanged($event)" [attr.data-toggle]="'tooltip'"
+    [attr.data-original-title]="errorMessage" [class]="input.inputStyle +' wj-control wj-inputnumber wj-content'">
+  </wj-input-number>
+
+  <select *ngSwitchCase="'dropdown'" [formControlName]="input.key" [id]="input.key">
+    <option *ngFor="let opt of input.options" [value]="opt.key">{{opt.value}}</option>
+  </select>
+
+  <label *ngSwitchCase="'checkbox'" [id]="input.key" [class]="input.inputStyle +' checkboxcontainer'" [attr.data-toggle]="'tooltip'"
+    [attr.data-original-title]="errorMessage">
+    <input type="checkbox" [formControlName]="input.key" class="checkboxinput" />
+    <span class="checkmark"></span>
+  </label>
+
+  <wj-input-date *ngSwitchCase="'date'" #wjDate [formControlName]="input.key" [id]="input.key" [format]="input.format" [mask]="input.mask"
+    [isRequired]="false" [attr.data-toggle]="'tooltip'" [attr.data-original-title]="errorMessage" [value]="null" [isAnimated]=true
+    (valueChanged)="onDateChanged($event)" [class]="input.inputStyle +' wj-control wj-dropdown wj-content wj-state-collapsed wj-inputdate'">
+  </wj-input-date>
+
+  <wj-auto-complete #wjAuto *ngSwitchCase="'lookup'" [formControlName]="input.key" [id]="input.key" [itemsSource]="input.options"
+    [displayMemberPath]="'DisplayMember'" [selectedValuePath]="'ValueMember'" [isRequired]="false" [isContentHtml]="true" [attr.data-toggle]="'tooltip'"
+    [attr.data-original-title]="errorMessage" [delay]="500" [autoExpandSelection]="true" [isAnimated]=true (gotFocus)="onGotFocus(input)"
+    (lostFocus)="onLostFocus(input)" (initialized)="init(input)" (isDroppedDownChanging)="onDroppedDownChanging(input,$event)"
+    [itemsSourceFunction]="getQueries" [class]="input.inputStyle + ' wj-control wj-dropdown wj-content wj-combobox wj-autocomplete'"
+    (textChanged)="onTextChanged(input)"
+    >
+  </wj-auto-complete>
+
+  <wj-multi-select #wjMultiSelect *ngSwitchCase="'multiselect'" [formControlName]="input.key" [id]="input.key" [itemsSource]="input.options"
+    [maxHeaderItems]="10" [displayMemberPath]="'DisplayMember'" [selectedValuePath]="'ValueMember'" [checkedMemberPath]="'State'"
+    [isRequired]="false" [isContentHtml]="true" [attr.data-toggle]="'tooltip'" [attr.data-original-title]="errorMessage" [autoExpandSelection]="true"
+    [isAnimated]=true (initialized)="init(input)" (gotFocus)="onGotFocus(input)" (lostFocus)="onLostFocus(input)" (isDroppedDownChanging)="onDroppedDownChanging(input,$event)"
+    [class]="input.inputStyle + ' wj-control wj-dropdown wj-content wj-combobox wj-multiselect'">
+  </wj-multi-select>
+
+  <button *ngSwitchCase="'button'" [class]="'col-md-8 col-xs-8 btn btn-load btn-info'" [id]="input.key" type="button" (click)="clickCustom()">
+    {{input.label}}
+  </button>
+
+  <label *ngSwitchCase="'file'" [id]="input.key" [class]="input.inputStyle + ' wj-form-control btn custom-file-upload' " [ngStyle]="{ 'background-color': input.fileName != '' ? '#ddf7be' : '#FFFCFC', 'display': input.isOnlyDownload != true ? 'inline-block' : 'none' }">
+    <input #fileInput [class]="input.class" [formControlName]="input.key" [type]="input.type" (change)="fileChanged()" />
+    <i class="fa fa-upload" aria-hidden="true"></i> {{input.fileName || 'Nhấn để chọn file' }}
+  </label>
+  <button *ngSwitchCase="'file'" [ngStyle]="{ 'display': input.fileNameDownLoad != '' ? 'inline-block' : 'none' }" [attr.data-toggle]="'tooltip'"
+    [attr.data-original-title]="'Tải '+ input.fileNameDownLoad" class="btn fa fa-download" style="color:red;margin-left: 2px;" type="button"
+    (click)="download(false)"></button>
+
+  <button *ngSwitchCase="'file'" [ngStyle]="{ 'display': input.fileNameDownLoad.endsWith('docx')||input.fileNameDownLoad.endsWith('doc')||input.fileNameDownLoad.endsWith('xls')||input.fileNameDownLoad.endsWith('xlsx') ? 'inline-block' : 'none' }"
+    [attr.data-toggle]="'tooltip'" [attr.data-original-title]="'Xem '+ input.fileNameDownLoad" class="btn fa fa-file-pdf-o "
+    type="button" (click)="download(true)"></button>
+
+  <label *ngSwitchCase="'image'" [id]="input.key" [class]="input.inputStyle + ' wj-form-control btn custom-file-upload' " [ngStyle]="{ 'background-color': input.fileName != '' ? '#ddf7be' : '#FFFCFC', 'display': input.isOnlyDownload != true ? 'inline-block' : 'none' }">
+    <input #imageInput [class]="input.class" [formControlName]="input.key" [type]="input.type" (change)="imageChanged($event)"
+      accept="image/*" />
+    <i class="fa fa-upload" aria-hidden="true"></i> Chọn hình ảnh
+  </label>
+  <div>
+    <img *ngSwitchCase="'image'" [src]='input.src' width="200" height="200" id='image-field' style="position: absolute;float: left;margin-top: 32px;margin-left: -200px;">
+  </div>
+
+  <textarea rows="1" *ngSwitchCase="'richtextbox'" [class]="input.inputStyle + ' wj-form-control btn richtextbox' " [formControlName]="input.key" [id]="input.key"></textarea>
+
+</div>

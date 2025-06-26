@@ -1,0 +1,196 @@
+<!-- Main content -->
+<section class="content" style="min-height:800px;">
+  <!-- Default box -->
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <div id='cssmenu'>
+      <ul>
+        <li class='active'>
+          <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)"><i class="fa fa-shopping-cart"></i>&nbsp;&nbsp;&nbsp;Đặt hàng</a>
+        </li>
+        <li>
+          <a href="#tab2" data-toggle="tab"><i class="fa fa-bars"></i>&nbsp;&nbsp;&nbsp;Vật tư</a>
+        </li>
+      </ul>
+    </div>
+
+
+    <div class="tab-content">
+      <div class="tab-pane active" id="tab1">
+        <section id="new">
+          <div class="textareacontainer" id="container-editor-left" style="display:block;">
+            <!-- <div id = "textareacontainer" style="width:49%;height:100%;"> -->
+            <div class="box-header with-border">
+              <h3 class="box-title" id="titleName">Đề nghị mua hàng</h3>
+              <div class="box-tools pull-right">
+                <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid">Đặt hàng</button>
+                <button class="btn btn-warning" type="button" (click)="onSubmit(editorFrm,true)" [disabled]="!editorFrm.valid">Gửi duyệt</button>
+                <button class="btn btn-primary" type="button" (click)=onClick() [disabled]="!editorFrm.valid">Duyệt đề nghị</button>
+                <a class="btn btn-default" [routerLink]="['/main','proposedpurchase','index']">Quay lại</a>
+                <!-- <h3 class="box-title">
+                        <a id="pinRight"  class="btn fa fa-thumb-tack fa-rotate-270"  title="Ghim tab sang phải" style="font-weight:bold; color:red; display:block;" (click)="pinToRight()"></a>
+                        <a id="pinLeft" class="btn fa fa-thumb-tack fa-rotate-90"  title="Ghim tab sang trái" style="font-weight:bold; color:red; display:none;"  (click)="pinToLeft()"></a>
+                      </h3> -->
+              </div>
+            </div>
+            <div class="box-body">
+              <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                <strong>{{editorFrm.errors['error']}}</strong>
+              </div>
+              <div *ngFor="let panel of _layoutDeclare.panels" class="form-row" [ngStyle]="setDisplayPanel()">
+                <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                </df-panel>
+                <div style="clear:both"></div>
+              </div>
+
+              <div style="clear:both"></div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <button title="Ẩn/ Hiện đầu phiếu" class="btn btn-info fa fa-arrows-v" type="button" [disabled]="editorFrm.disabled" style="margin-bottom:10px;"
+                (click)=onclickCollapsablePanel([grid])>
+                <span style="font-size:12pt;"></span>
+              </button>
+
+              <div class="form-row" style="border:1px solid #ddd;">
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                    <section id="new">
+                      <wj-flex-grid class="grid" #grid style="width:100%;height:380px" (draggedRow)="resetBuiltinOrder(grid)" (rowAdded)="rowAddedEvent(grid)" (sortedColumn)="resetBuiltinOrder(grid)">
+
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                        <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          <a  class="fa fa-arrow-up"  style="color:green;cursor: pointer;" title="Di chuyển dòng lên trên" (click)="moveUpRow(cell.row)"></a>
+                        </template> -->
+                        <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                          <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid)>
+                            <a class="fa fa-trash-o" style="color:red;"></a>
+                          </button>
+                        </template>
+          
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+
+                </div>
+
+
+              </div>
+              <!-- </div> -->
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="tab-pane" id="tab2">
+        <section id="new">
+          <div class="iframecontainer" id="container-editor-right" style="display:block;">
+            <div class="box-header with-border" style="padding:8px;">
+              <h3 class="box-title" style="color:darkcyan;">
+                  <label>
+                    <input type="checkbox" name="filterItemAdded" (click)="filterItemAdded()"> <span class="label-text"  style="font-size: 12pt;">Mặt hàng đã đặt&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" name="seperateItemAdded"> <span class="label-text"  style="font-size: 12pt;">Tách mặt hàng</span>
+                  </label>
+              </h3>
+              
+              <div class="box-tools pull-right">
+                <form id="search-form_3">
+                  <input type="text" class="search_3" placeholder="GÕ VẬT TƯ CẦN TÌM" #searchItemText (keydown)="searchItem()">
+                  <button type="button" class="submit_3" (click)="searchItem()">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </form>
+
+              </div>
+            </div>
+            <div class="items">
+              <div class="agile_top_brand_left_grid w3l_agile_top_brand_left_grid" *ngFor="let item of dataItem">
+                <div class="agile_top_brand_left_grid1">
+                  <figure>
+                    <div class="snipcart-item block">
+                      <div class="snipcart-thumb">
+                        <a (click)="showPopup(item,popupDetail)">
+                          <img src="{{urlImg + item.ImagePath}}" alt=" " class="img-responsive">
+                        </a>
+                        <p>{{item.Name}}</p>
+                        <div value="someValue" format="n2" class="ng-isolate-scope wj-control wj-inputnumber wj-input-show-spinner wj-state-focused"
+                          role="spinbutton" tabindex="-1" style="width:10em;">
+                          <div class="wj-input">
+                            <div class="wj-input-group">
+                              <span wj-part="btn-dec" class="wj-input-group-btn" tabindex="-1">
+                                <button class="button-custom" type="button" tabindex="-1" (click)="subItemToRow(item,0,{'ItemCode':'{EXPR=Code}','Description':'{EXPR=Name}','Unit':'{EXPR=Unit}','ConvertRate9':'1','Quantity9':inputQuantityWeb.value})">-</button>
+                              </span>
+                              <input format="n2" type="tel" style="text-align:right;font-size:12.5pt;width: 4em;margin: 0px 3px; border-radius: 5px;border:none;border-bottom: solid 1px gray;padding-right: 2px;"
+                                value="{{item.QuantityInputWeb}}" #inputQuantityWeb>
+                              <span wj-part="btn-inc" class="wj-input-group-btn" tabindex="-1">
+                                <button class="button-custom" type="button" tabindex="-1" (click)="addItemToRow(item,0,{'ItemCode':'{EXPR=Code}','Description':'{EXPR=Name}','Unit':'{EXPR=Unit}','ConvertRate9':'1','Quantity9':inputQuantityWeb.value})">+</button>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+
+                      </div>
+                      <div class="ribbon new">
+                        <div class="theribbon" [ngStyle]="{'background-color': item.QuantityShowWeb=='0' ? '' : '#47e897'}">
+                          <b>SL: {{item.QuantityShowWeb}}</b>
+
+                        </div>
+                        <div class="ribbon-background"></div>
+                      </div>
+                    </div>
+                  </figure>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+    </div>
+  </form>
+  <!-- /.box -->
+</section>
+<!-- /.content -->
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+<!-- *ngFor="let item of dataItem" -->
+
+<wj-popup #popupDetail>
+  <div class="fancybox-wrap fancybox-desktop fancybox-type-ajax fancybox-opened" tabindex="-1" style="width: 35%;height: 400px;position: fixed;top: 20%;left: 32%;opacity: 1;overflow: visible;">
+    <div class="fancybox-skin" style="padding: 15px; width: auto; height: 375px;">
+      <div class="fancybox-outer">
+        <div class="fancybox-inner" style="width: 100%; height: 340px;">
+          <div class="quick-shop row product-page" *ngIf="viewDetail">
+            <div class="product-photos desktop-6 mobile-3">
+              <div id="bigimage" class="bigimage-168494176 desktop-10">
+                <img class="mainimage" src="{{urlImg + viewDetail.ImagePath}}" alt="">
+              </div>
+            </div>
+            <div class="product-right desktop-6 mobile-3">
+              <div class="product-description">
+                <h4>Mã vật tư: {{viewDetail.Code}}</h4>
+                <h4>Tên vật tư: {{viewDetail.Name}}</h4>
+                <h5>Đơn vị tính: {{viewDetail.Unit}}</h5>
+                <!-- <p class="product-prices">
+                  <span class="product-price" itemprop="price">£5.00</span>
+                </p>  -->
+                <div class="rte">....</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <a title="Close" class="fancybox-item fancybox-close" (click)="popupDetail.hide();"><i class="fa fa-window-close"></i></a>
+    </div>
+  </div>
+</wj-popup>

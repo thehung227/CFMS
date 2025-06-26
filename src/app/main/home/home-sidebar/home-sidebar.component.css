@@ -1,0 +1,103 @@
+.sidebar-menu > li:hover > a
+{
+  background: #69b6e2;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.sidebar-menu > li.active > a
+{
+  background: #69b6e2;
+  color: #ffffff;
+}
+
+
+.treeview-menu > li > a 
+{
+    background: #69b6e2;
+    color: #ffffff;
+}
+
+.treeview-menu > li:hover > a 
+{
+    background: #69b6e2;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.sidebar-menu > li > .treeview-menu
+{
+    background: #c5b137;
+    margin: 3px 1px;
+
+
+} 
+
+.sidebar-menu > li > .treeview-menu li:before {
+    background: #deffab;
+    bottom: auto;
+    
+    height: 8px;
+    left: 15px;
+    margin-top: 12px;
+    position: absolute;
+    right: auto;
+    width: 8px;
+    z-index: 1;
+    border-radius: 50%;
+}
+
+.sidebar-menu > li > .treeview-menu li:after {
+    border-left: 1px solid #140cb6;
+    bottom: 0;
+    left: 19px;
+    position: absolute;
+    top: 0;
+}
+
+.sidebar-menu > li > .treeview-menu li.active:before{
+    content: "";
+    background: red;
+}
+
+.sidebar-menu > li > .treeview-menu li:first-child{
+    margin-top: 2px;
+}
+
+.sidebar-menu > li > .treeview-menu li{
+    position: relative;
+    display: block;
+    padding-left: 3px;
+}
+
+.sidebar-menu .treeview-menu > li > a{
+    padding: 6px 0 6px 10px;
+    font-size: inherit;
+}
+
+
+/* .sidebar-menu > li:hover > a, .sidebar-menu > li.active > a{
+    text-shadow: rgba(0, 0, 0, 0.25) 0 -1px 0;
+    background: linear-gradient(#334556, #2C4257), #2A3F54;
+    box-shadow: rgba(0, 0, 0, 0.25) 0 1px 0, inset rgba(255, 255, 255, 0.16) 0 1px 0;
+} */
+
+.sidebar-menu > li.active{
+    border: none;
+}
+
+
+.sidebar-menu > li > a{
+    /* color: rgba(255, 255, 255, 0.75); */
+    color: #69b6e2;
+}
+
+/* .sidebar-menu > li > .treeview-menu li:hover, .sidebar-menu > li > .treeview-menu li:focus, 
+.sidebar-menu > li > .treeview-menu li.active{
+    background-color: rgba(255, 255, 255, 0.06);
+} */
+
+.sidebar-menu .treeview-menu{
+    padding-left: 0;
+}
+

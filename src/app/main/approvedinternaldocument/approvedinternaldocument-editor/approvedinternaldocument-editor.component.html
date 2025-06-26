@@ -1,0 +1,150 @@
+<!-- Main content -->
+<section class="content">
+  <!-- Default box -->
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <!-- <div class="tab-content">
+      <div class="wrap-content"> -->
+        
+          <div class="box" id="box-content">
+            <div class="box-header with-border">
+              <h3 class="box-title" id="titleName">Duyệt văn bản nội bộ</h3>
+              <div class="box-tools pull-right">
+                <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
+                        <i class="fa fa-times"></i>
+                    </button> -->
+                <!-- <button class="btn btn-danger" type="button" (click)=onClick(2) *ngIf="parentData?.CloseProcess == 1 && parentData?.CompletedApprove != true" [disabled]="!editorFrm.valid">Hủy hồ sơ</button> -->
+                <!-- <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.IdCCMBudget)">
+            Xem KHKK
+          </button> -->
+                <button class="btn btn-warning" type="button" (click)=completeCheck(editorFrm) *ngIf="parentData?.CompletedApprove != true"
+                   [disabled]="!editorFrm.valid || parentData?.EmployeeCode == getEmployeeCode">Hoàn thành Ktra</button>          
+                <button class="btn btn-success" type="button" (click)=onClick(3)
+                  *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
+                <button class="btn btn-danger" type="button" (click)=onClick(0)
+                  *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != '' || parentData?.EmployeeCode != getEmployeeCode">Trả lại</button>
+                <button class="btn btn-primary" type="button" (click)=onClick(1)
+                  *ngIf="parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != '' || parentData?.EmployeeCode != getEmployeeCode">Duyệt</button>
+                <a class="btn btn-default" (click)="backClick()">Thoát</a>
+                <!-- [routerLink]="['/main','consdocument','index']" -->
+              </div>
+            </div>
+            <div class="box-body">
+              <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                <strong>{{editorFrm.errors['error']}}</strong>
+              </div>
+              <div *ngFor="let panel of _layoutDeclare.panels" class="form-row">
+                <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                </df-panel>
+                <div style="clear:both"></div>
+              </div>
+
+              <div style="clear:both"></div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <!-- <button title="Ẩn/ Hiện đầu phiếu" class="btn btn-info fa fa-arrows-v" type="button" [disabled]="editorFrm.disabled" style="margin-bottom:10px;"
+          (click)=onclickCollapsablePanel([grid,grid1])>
+          <span style="font-size:12pt;"></span>
+        </button> -->
+              <div class="form-row" style="border:1px solid #ddd;">
+                <div id="cssmenu">
+                  <ul>
+                    
+                    <li class="active">
+                      <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">
+                        Đính kèm
+                      </a>
+                    </li>
+                   
+                    <li>
+                      <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
+                        Bước duyệt
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
+                        WorkFlow
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                    <h4 style="color: red; font-weight: bold;"> Click vào dòng cần mở file</h4>
+                    <section id="new">
+                      <wj-flex-grid class="grid" #grid style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                  <div class="tab-pane" id="tab2">
+                    <section id="new">
+                      <wj-flex-grid class="grid1" #grid1 style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                  <div class="tab-pane" id="tab3">
+                    <section id="new">
+                      <wj-flex-grid class="grid2" #grid2 style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                 
+                  <!-- <div class="tab-pane active" id="glyphicons">
+                    <section id="new">
+                    </section>
+                </div> -->
+                </div>
+              </div>
+            </div>
+          <!-- </div> -->
+        
+      
+        <!-- </div>
+      </div> -->
+    </div>
+  </form>
+  <!-- /.box -->
+</section>
+<!-- /.content -->
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+  <div class="box" style="height: 400px;overflow-y: auto;">
+    <div class="box-header with-border"
+      style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+      <h3 class="box-title" style="color: white;">Ý kiến</h3>
+      <div class="box-tools pull-right">
+        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+          (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body" style="margin-top: 35px;">
+      <p #contentPopupTooltip></p>
+    </div>
+  </div>
+</wj-popup>

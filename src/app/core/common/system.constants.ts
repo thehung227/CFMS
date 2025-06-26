@@ -1,0 +1,33 @@
+export class SystemConstants {
+    public static API_ENDPOINT = 'API_ENDPOINT';
+    public static CURRENT_USER = 'CURRENT_USER';
+    public static CURRENT_BRANCH = 'CURRENT_BRANCH';
+    public static CURRENT_USERID = 'CURRENT_USERID';
+    public static CURRENT_USERNAME = 'CURRENT_USERNAME';
+    public static MAIL_TOKEN = 'MAIL_TOKEN';
+    public static CURRENT_USERFULLNAME = 'CURRENT_USERFULLNAME';
+    public static CURRENT_EMPLOYEE = 'CURRENT_EMPLOYEE';
+    public static POSITION_EMPLOYEE = 'POSITION_EMPLOYEE';
+    public static CURRENT_USERISADMIN= 'CURRENT_USERISADMIN';
+    public static CURRENT_ISSYSADMIN = 'CURRENT_ISSYSADMIN';
+    public static CURRENT_ISSUBADMIN = 'CURRENT_ISSUBADMIN';
+    public static EXPLORER_PARRENTKEY_VALUE = 'EXPLORER_PARRENTKEY_VALUE';
+    public static PERMISSION_DATA = 'PERMISSION_DATA';
+    public static ALLOW_DBLCLICK = 'ALLOW_DBLCLICK';
+    public static PARAMETER_LINKREPORT = 'PARAMETER_LINKREPORT';
+    public static ID_VOUCHER = 'ID_VOUCHER';
+    public static LAST_ACTION_AT = 'LAST_ACTION_AT';
+    public static MODULE_ALLOW = 'MODULE_ALLOW';
+    public static PRODUCTCOSTID = 'PRODUCTCOSTID';
+    public static PRODUCTCOSTID_PARENT = 'PRODUCTCOSTID_PARENT';
+    public static PRODUCTNAME = 'PRODUCTNAME';
+    public static PERMISSION_DATA_POSITION = 'PERMISSION_DATA_POSITION';
+    public static INFO_LINKCOMMAND = 'INFO_LINKCOMMAND';
+    public static FILTER_DATA = 'FILTER_DATA';
+    public static LINKREDIRECT = 'LINKREDIRECT';
+    public static SECRET_KEY = 'SECRET_KEY';
+    public static BRANCH_USESSO = 'BRANCH_USESSO';
+    public static SSO_DATA = 'SSO_DATA';
+    public static RETURN_URL = 'RETURN_URL';
+    public static TOKEN_EXPIRES_AT = 'TOKEN_EXPIRES_AT';
+}
