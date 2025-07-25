@@ -168,7 +168,7 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
                     }
                 },
                 {
-                    Name: 'vB30BizDocContactInfo_Edit',
+                    Name: 'vB30BizDocContactInfo_Approved',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -773,6 +773,12 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
         }
     ]  
     childColumns3 = [
+        {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
         {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',

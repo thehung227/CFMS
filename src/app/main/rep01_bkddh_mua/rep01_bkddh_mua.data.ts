@@ -9,6 +9,7 @@ export class LayoutData {
             ctorArg: { 'Commandkey': 'REP01_BKDDH_MUA', 'DocGroup': '1', 'CurrencyCode0': 'VND', 'Ma_Dvcs': 'N01' },
             subTotals: { '0': 'ProductName,ItemGroupCode,DocNo' },
             nCollapseNodesOnCreate: { '0': 2 },
+            bAllowGrandTotal: [0],
             parameters: [
                 {
                     className: 'DateBoxInput',
@@ -111,6 +112,7 @@ export class LayoutData {
                         binding: 'Quantity9',
                         width: 120,
                         dataType: 'Number',
+                        aggregate: 'Sum',
                         format: 'N2'
                     },
                     {
@@ -118,6 +120,7 @@ export class LayoutData {
                         binding: 'Quantity',
                         width: 120,
                         dataType: 'Number',
+                        aggregate: 'Sum',
                         format: 'N2'
                     },
                     {

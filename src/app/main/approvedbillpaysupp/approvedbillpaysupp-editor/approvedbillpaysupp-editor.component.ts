@@ -115,6 +115,7 @@ async saveData(formData: any,state: any) {
     let params = new Array<ParameterContract>();
     const param1 = new ParameterContract();
     const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
 
     param1.ParameterName = Global.convertParameterName('BizDocId');
     param1.ParameterValue = this.parentData['BizDocId'];
@@ -124,14 +125,31 @@ async saveData(formData: any,state: any) {
     param2.ParameterValue = this.editorFrm.controls['EmployeeCode'].value.toString();
     params.push(param2);
 
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
+
+
     let _data: any = null;
 
     try {
-      _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params)
-      .toPromise().then();
-    
-      this.output = <Array<Object>>(_data['output']);
-   
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid3.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['data']);
+   console.log(this.output)
       this._errItemSets = this.output['@_Error'];
       this._errMess = this.output['@_ErrorMessage'];
     }
@@ -145,14 +163,13 @@ async saveData(formData: any,state: any) {
     }
     else
     {
-       const output = _data && _data.output ? _data.output : _data;
       // Lấy phần tử đầu tiên nếu output là mảng
       // if (Array.isArray(output) && output.length > 0) {
       //   this.dataPopupContent = output[0]; // 👈 lấy hóa đơn đầu tiên
       // } else {
       //   this.dataPopupContent = output || _data;
       // }
-      this.dataPopupContent = _data;
+      this.dataPopupContent = this.output[0];
 
       console.log('Data để show popup:', this.dataPopupContent);
       if (this.dataPopup) {

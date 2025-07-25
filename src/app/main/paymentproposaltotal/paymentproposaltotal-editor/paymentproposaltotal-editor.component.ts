@@ -128,7 +128,9 @@ export class PaymentProposalTotalEditorComponent extends BaseEditorComponent imp
     let _errorSave = false;
     for (let item of this.grid1.itemsSource.items) {
       if (item['OpenPlanAmount'] + 500 < item['AmountApproved'] && item['AmountApproved'] != 0 && item['IsTitleRow'] == false) {
-    
+        console.log(item['OpenPlanAmount'])
+        console.log(item['AmountApproved'])
+        console.log(item['CustomerCode'])
         _errorSave = true;
         break;
       }

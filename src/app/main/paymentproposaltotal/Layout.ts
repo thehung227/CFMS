@@ -710,13 +710,19 @@ export class LayoutPaymentProposalTotalEditor implements IEditorFormulaDeclarati
             isReadOnly: 'true',
         },
       
+          {
+            header: 'BCH đề xuất',
+            binding: 'OriginalAmount',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true',
+        },   
         {
-            header: 'Số tiền thanh toán',
+            header: 'Kế toán đề xuất',
             binding: 'PaymentAmount',
             dataType: 'Number',
             width: 150,
             isReadOnly: 'true',
-            
         },   
         {
             header: 'Tên công trường',
@@ -859,8 +865,15 @@ export class LayoutPaymentProposalTotalEditor implements IEditorFormulaDeclarati
             dataType: 'Number',
             width: 100, 
         },   
+         {
+            header: 'BCH đề xuất',
+            binding: 'OriginalAmount',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true',
+        },   
         {
-            header: 'Số tiền thanh toán',
+            header: 'Kế toán đề xuất',
             binding: 'PaymentAmount',
             dataType: 'Number',
             width: 150,

@@ -54,13 +54,16 @@ export class NotificationsExplorerComponent {
   showLoading = false;
 
   pathPage = ['/main', 'notifications', 'detail'];
+ 
 
   constructor(private srv: BaseExplorerService,
     private router: Router,
     private ics: InputControlService, titleService: Title) {
   }
+  nUserId: string;
 
   async ngOnInit() {
+    this.nUserId = localStorage.getItem(SystemConstants.CURRENT_USERID);
     this.data = new wjcCore.CollectionView();
     this.grid.autoGenerateColumns = false;
     this.grid.isReadOnly = true;
@@ -110,6 +113,58 @@ export class NotificationsExplorerComponent {
     this.data = new wjcCore.CollectionView(_data['data']);
     this.grid.itemsSource = new wjcCore.CollectionView(_data['data']);
     this.showLoading = false;
+  }
+
+  async ApprovedAll(resetProductCostId: boolean = false) {
+    this.showLoading = true;
+    const params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param4 = new ParameterContract();
+
+    param1.ParameterName = this.convertParameterName('EmployeeCode');
+    param1.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_EMPLOYEE).replace(/"/gi, '');
+    params.push(param1);
+
+    param2.ParameterName = this.convertParameterName('BranchCode');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+    params.push(param2);
+
+    param4.ParameterName = this.convertParameterName('UserId');
+    param4.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID);
+    params.push(param4);
+
+    const rawData = this.grid.itemsSource._pgView;
+
+    const selectedColumns = ['Id','IdDoc', 'DocCode', 'BizDocId', 'ProductCostId','RowId','ApproveGroup']; // <-- Chỉ định các cột bạn muốn lấy
+
+    const filteredData = this.grid.itemsSource._pgView.map(row => {
+      let newRow = {};
+      selectedColumns.forEach(key => newRow[key] = row[key]);
+      return newRow;
+    });
+
+  const jsonData = JSON.stringify(filteredData);
+
+    let paramJson = new ParameterContract();
+    paramJson.ParameterName = '@_JsonData';
+    paramJson.ParameterValue = jsonData;
+    params.push(paramJson);
+    
+    await this.srv.getDataOutput(
+      Global.DATA_ENDPOINT,
+      BravoCtorEnum.StoreProcedure,
+      'usp_DuyetTheoLo',
+      params
+    ).toPromise();
+
+    this.LoadStore();
+    // let _data = await this.srv.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Coteccons_ApproveNotifications', params)
+    //   .toPromise().then();
+
+    // this.data = new wjcCore.CollectionView(_data['data']);
+    // this.grid.itemsSource = new wjcCore.CollectionView(_data['data']);
+    // this.showLoading = false;
   }
 
   ngAfterViewInit() {

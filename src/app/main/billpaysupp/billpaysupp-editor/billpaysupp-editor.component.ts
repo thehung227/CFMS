@@ -66,6 +66,7 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
     this.grid2.allowAddNew = false;
     this.grid3.isReadOnly = true;
     this.grid4.allowAddNew = false;
+    this.grid5.allowAddNew = false;
 
     this.dbClickCellContent(this.grid3);
   }

@@ -475,7 +475,7 @@ export class LayoutBillInternalEquipEditor implements IEditorFormulaDeclaration 
         'Evaluator_ServerUpdated_CreateFormula_BizDocCCMDetail': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId',
-            Command: 'usp_Coteccons_CreateFormula_BizDocCCMDetail'
+            Command: 'usp_Coteccons_CreateFormula_BizDocCCMDetail_TB'
         },
         'Evaluator_ServerUpdated_BuiltinOrder': {
             EvaluatorName: 'EvaluatorQuery',

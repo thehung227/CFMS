@@ -15,6 +15,9 @@ import { Title } from "@angular/platform-browser";
 import { LayoutPrinterWordFlow } from "../../_printerlayout/workflow/workflow-printer.data";
 import { Console } from "console";
 import { FormGroup } from "@angular/forms";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { Global } from "../../../shared/global";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
   selector: 'app-settlement-editor-form',
@@ -70,7 +73,9 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
   ngOnDestroy() {
     this.destroy();
   }
-
+  output: any;
+  _err: boolean = false;
+  _errMess: any;
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
     for (let i in this.gridArray) {
@@ -121,6 +126,10 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
           if (_errorSave2 == false) {
             if (_errorSave4 == false) {
               if (isApproveSend == true) {
+          this.checkData(formData).then(() => {
+              
+              if (this._err == false) {
+
                 let _errorSave = false;
                 for (let item of this.grid.itemsSource.items) {
                   if ((item['Attached'] == true && (item['FilePath'] == '' || item['FilePath'] == undefined) && formData.get('PayTeamType').value =='02' && this.parentData['ProductType'] == '1')) {
@@ -164,6 +173,12 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
                     alert('Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị')
                 }
               }
+                else {
+                  alert(this._errMess);
+                  this.showLoading = false;
+                }
+              })
+              }
               else
                 this.submit(formData, this.indexPage_Editor);
               // this.submit(formData, this.indexPage_Editor).then(()=>{
@@ -182,6 +197,61 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
     }
     else
       alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+  }
+
+async checkData(formData: any) {
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('Id');
+    param1.ParameterValue = this.id;
+    params.push(param1);
+
+    try {
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid3.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_B30BizDocCCM_CheckBilSetlement', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['output']);
+      this._err = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+  }
+
+ async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
   }
 
   showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {

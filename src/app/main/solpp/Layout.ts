@@ -388,8 +388,8 @@ export class LayoutSolPPEditor implements IEditorFormulaDeclaration {
             ConstraintKey: "ProductCostId,DocCode,{VAR=Branch.Ma_Dvcs}",
             Command: "ufn_SOL_CheckNhapKho",
             MessageText: "Tồn tại đơn hàng chưa làm phiếu nhập kho. Yêu cầu làm phiếu nhập kho trước khi làm đề nghị.",
-            IgnoreError: 0,
-            zExpr: 'ApproveSend == true'
+            IgnoreError: 0
+          
         },
         'Evaluator_ServerConstraint_Check_PurchasePlan': {
             EvaluatorName: "EvaluatorValidate",

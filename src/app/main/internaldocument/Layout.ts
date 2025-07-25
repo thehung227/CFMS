@@ -23,7 +23,7 @@ export class LayoutInternalDocumentExplorer implements IExplorerFormulaDeclarati
             Parent: {
                 Name: 'vB30BizDocVB_Explorer',
                 FilterKey: "(ProductCostId = '{VAR=Filter.ProductCostId}' OR ProductCostId0 = '{VAR=Filter.ProductCostId}') AND DocCode = 'V1' AND IsActive = 1 AND ISNULL(BranchCode,'') = '{VAR=Branch.Ma_Dvcs}'",
-                OrderBy: 'Id', //rất quan trọng, lỗi méo tìm đc đâu
+                OrderBy: 'Id DESC', //rất quan trọng, lỗi méo tìm đc đâu
                 RowPage: 50
             },
 			Child: {

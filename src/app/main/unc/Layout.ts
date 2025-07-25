@@ -23,7 +23,7 @@ export class LayoutUNCExplorer implements IExplorerFormulaDeclaration {
         Structure: {
             Parent: {
                 Name: 'vB30AccDoc_ExploreCashPayment',
-                FilterKey: "BranchCode='{VAR=Branch.Ma_Dvcs}' AND DocCode='BN' AND IsActive=1 AND ApproveSend = 1 AND (EmployeeCode = '{VAR=User.Ma_CbNv}' OR '{VAR=User.IsAdmin}'='True' OR EmployeeCode IN (SELECT Ma_CbNv FROM B00UserList WHERE ParentId = 4508))",
+                FilterKey: "BranchCode='{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('BN','GN') AND IsActive=1 AND ApproveSend = 1 AND (EmployeeCode = '{VAR=User.Ma_CbNv}' OR '{VAR=User.IsAdmin}'='True' OR EmployeeCode IN (SELECT Ma_CbNv FROM B00UserList WHERE ParentId = 4508))",
                 OrderBy: 'DocStatusName, DocDate DESC,DocNo DESC',
                 RowPage: 50
             },

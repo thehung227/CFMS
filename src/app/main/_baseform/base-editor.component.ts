@@ -452,6 +452,10 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
   async exportHtml(name: string, fileName: string, folderPath: string, _idTT?: number) {
     this.showLoading = true;
+    console.log(name)
+    console.log(fileName)
+    console.log(folderPath)
+    console.log(_idTT)
 
     let _command = this._layoutDeclare.layout.PrintDocument.Command;
 

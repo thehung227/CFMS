@@ -300,23 +300,32 @@ export class LayoutApprovedUNCEditor implements IEditorFormulaDeclaration {
                     isReadOnly: 'true',
                     labelCol: 5
                 }),   
-                new LookupBoxInput({
-                    key: 'BankAccountNoB',
-                    label: 'Tài khoản đến',
-                    lookupKey: 'CustomerBankAccount',
-                    hideValueMember: false,
-                    isReadOnly: 'true',
-                    col: 12,
-                    labelCol: 5
-                }, this.srv, this.parentData),  
                 new TextBoxInput({
-                    key: 'BankNameB',
-                    label: 'Ngân hàng',
+                    key: 'PaymentsType',
+                    label: 'Hình thức thanh toán',
                     type: 'text',  
                     col: 12,
                     isReadOnly: 'true',
                     labelCol: 5
-                }),             
+                }),   
+                new TextBoxInput({
+                    key: 'PeriodSend',
+                    label: 'Kỳ hạn',
+                    type: 'text',  
+                    col: 12,
+                    isReadOnly: 'true',
+                    labelCol: 5
+                }),  
+                new NumberBoxInput({
+                    key: 'InterestRate',
+                    label: 'Lãi suất',
+                    type: 'number',
+                    labelCol: 5,
+                    col: 12,
+                    format: 'P2',
+                    isReadOnly: 'true',
+                    style: 'background-color:#F8F0D7;border-radius:8px;'
+                }),           
                 new LookupBoxInput({
                     key: 'PositionCode',
                     label: 'Cấp bậc duyệt',
@@ -373,12 +382,12 @@ export class LayoutApprovedUNCEditor implements IEditorFormulaDeclaration {
                     style: 'background-color:#F1EDED;border-radius:8px;',
                     labelCol: 5
                 }),
-                new TextBoxInput({
-                    key: 'Comment',
-                    label: 'Ý kiến',
-                    col: 12,
-                    // style: 'background-color:#F8F0D7;border-radius:8px;'
-                }),
+                // new TextBoxInput({
+                //     key: 'Comment',
+                //     label: 'Ý kiến',
+                //     col: 12,
+                //     // style: 'background-color:#F8F0D7;border-radius:8px;'
+                // }),
                 // new ButtonInput({
                 //     key: 'btnHdPl',
                 //     label: 'Bổ sung file',

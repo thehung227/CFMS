@@ -171,6 +171,16 @@ export class LayoutApprovedBillPayEquipmentEditor implements IEditorFormulaDecla
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                {
+                    Name: 'vB30BizDocContactInfo_Approved',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
                 }
             ]
         },
@@ -1007,4 +1017,84 @@ export class LayoutApprovedBillPayEquipmentEditor implements IEditorFormulaDecla
         //     isReadOnly: 'true'
         // }
     ]    
+     childColumns4 = [
+         {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
+          {
+            header: 'Số hóa đơn',
+            binding: 'AtchDocNo',
+            width: 150,
+            dataType: 'Array',
+            isReadOnly: 'true',
+
+            lookupKey: 'InvoiceBizzi',
+             bindingList: {
+                IssuedDate: 'AtchDocDate',
+                InvoiceId: 'InvoiceId',
+                InvoiceSeries: 'AtchFormNo',
+                TotalAmountWithoutVat: 'AmountBeforeTax',
+                TotalAmountWithVat: 'Amount'
+            },
+            lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
+        },
+        {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+        // {
+        //     header: 'Số hóa đơn',
+        //     binding: 'AtchDocNo',
+        //     allowEditing: true,
+        //     width: 150,
+        //     validators: "{EXPR=AtchDocNo} == ''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        // },
+        {
+            header: 'Ký hiệu',
+            binding: 'AtchFormNo',
+            allowEditing: true,
+            width: 150,
+            isReadOnly: 'true',
+            validators: "{EXPR=AtchDocNo} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+        },
+        {
+            header: 'Giá trị trước thuế',
+            binding: 'AmountBeforeTax',
+            width: 150,
+            isReadOnly: 'true',
+            dataType: 'Number'
+        },
+        {
+            header: 'Giá trị sau thuế',
+            binding: 'Amount',
+            width: 150,
+            isReadOnly: 'true',
+            dataType: 'Number'
+        },
+        {
+            header: 'Ngày nhận đủ hồ sơ',
+            binding: 'DateReceive',
+            width: 150,
+            dataType: 'Date',
+
+            format: 'dd/MM/yyyy'
+        },
+        {
+            header: 'Hóa đơn Bizzi',
+            binding: 'InvoiceId',
+            allowEditing: true,
+            width: 0,
+            isReadOnly: 'true',
+            validatorMessage: 'Không được bỏ trắng giá trị',
+        },
+    ];
 }

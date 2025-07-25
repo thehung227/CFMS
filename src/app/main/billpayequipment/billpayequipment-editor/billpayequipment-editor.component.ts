@@ -100,7 +100,7 @@ export class BillPayEquipmentEditorComponent extends BaseEditorComponent impleme
 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
-    if ((this.gridArray[0].itemsSource.items.length == 0 && formData.get('PayTeamType').value != '00') || (this.gridArray[2].itemsSource.items.length == 0) || (this.gridArray[1].itemsSource.items.length == 0)) {
+    if (((this.gridArray[0].itemsSource.items.length == 0) && formData.get('PayTeamType').value != '00') || (this.gridArray[2].itemsSource.items.length == 0) || (this.gridArray[1].itemsSource.items.length == 0)) {
       _numEror += 1;
     }
 
@@ -137,65 +137,28 @@ export class BillPayEquipmentEditorComponent extends BaseEditorComponent impleme
             // this.dfpanel.runConstraint('Evaluator_UpdateApproveSend').then();
             // window.close();
             if (_errorSave1 == false) {
-              // this.checkHanMucTaiChinh(formData).then(() => {
-              //   if (this._errBCTC == false) {
+              this.checkData(formData).then(() => {
+            
+            if (this._errBCTC == false) {
               this.submit(formData, this.indexPage, isApproveSend).then(() => {
                 if (this.allowSendMail) {
                   this.sendMail(formData, 'P5', this.id, false, '1');
                 }
               });
-              // }
-              // else {
-              //   alert(this._errMess);
-              //   this.showLoading = false;
-              // }
-              // });
+              }
+              else {
+                alert(this._errMess);
+                this.showLoading = false;
+              }
+              });
             } else
               alert('Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị')
           }
         }
         else
-          // if (this.parentData["CompletedApprove"] == false) {
+          
             this.submit(formData, this.indexPage_Editor);
-          // }
-          // else {
-          //   this.showLoading = true;
-          //   this._layoutDeclare.panels.forEach(panel => {
-          //     panel.controls.forEach(control => {
-          //       if (control instanceof UploadInput) {
-          //         if (control.file)
-          //           this.filesUpload.push(control.file);
-          //       }
-          //     })
-          //   });
-          //   // if (this.filesUpload.length > 0)
-          //   //   this.upLoadFiles().then(async (result) => {
-          //   //     if (result) {
-          //   //       const params = new Array<ParameterContract>();
-          //   //       const param1 = new ParameterContract();
-          //   //       const param2 = new ParameterContract();
-          //   //       const param3 = new ParameterContract();
-
-          //   //       param1.ParameterName = this.convertParameterName('FilePath');
-          //   //       param1.ParameterValue = this.editorFrm.controls["FilePath"].value;
-          //   //       params.push(param1);
-
-          //   //       param2.ParameterName = this.convertParameterName('Id');
-          //   //       param2.ParameterValue = this.id;
-          //   //       params.push(param2);
-
-          //   //       param3.ParameterName = this.convertParameterName('DocCode');
-          //   //       param3.ParameterValue = this.parentData['DocCode'];
-          //   //       params.push(param3);
-
-          //   //       let _data = await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_SOL_UpdateFilePath', params).toPromise().then(() => { location.reload(); });
-          //   //     }
-          //   //   });
-          //   // else {
-          //   //   alert('Chưa có hồ sơ để thực hiện đính kèm');
-          //   //   this.showLoading = false;
-          //   // }
-          // }
+        
       }
       else {
         alert('Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.');
@@ -203,6 +166,38 @@ export class BillPayEquipmentEditorComponent extends BaseEditorComponent impleme
     }
     else
       alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+  }
+
+async checkData(formData: any) {
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('Id');
+    param1.ParameterValue = this.id;
+    params.push(param1);
+
+    try {
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid3.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_B30BizDocCCM_P5_CheckBilPaySupp', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['output']);
+      this._errBCTC = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
   }
 
   async checkHanMucTaiChinh(formData: any) {

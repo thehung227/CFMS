@@ -351,8 +351,24 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
                     Layout: "MAU1",
                     Name: "TBTT CP_BCH",
                     FileName: "TBTT CP_BCH - {EXPR=ProductName} - {EXPR=DocNo}",
-                    WordName: "7.TBTT_CP_BCH.docx",
+                    WordName: "BM_CCM_017.docx",
                     ExcelName: "",
+                    FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                },
+                 {
+                    Layout: "MAU2",
+                    Name: "KLTT CPBCH",
+                    FileName: "KLTT CP_BCH - {EXPR=ProductName} - {EXPR=DocNo}",
+                    WordName: "PKT_BangKhoiLuongChiTiet1.docx",
+                    ExcelName: "PKT_BangKhoiLuongChiTiet.xlsx",
+                    FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                },
+                {
+                    Layout: "MAU3",
+                    Name: "Template import bill BCH",
+                    FileName: "Template nhap hoa don BCH",
+                    WordName: "",
+                    ExcelName: "Template nhap hoa don BCH.xlsx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ],
@@ -807,125 +823,99 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
             width: 50
         },
       
-        {
-            header: 'Loại chi phí',
-            binding: 'ExpenseCatgCode',
-            dataType: 'Array',
-            lookupKey: 'ExpenseCatg',
-            bindingList: {
-                Name: 'Description'
-            },
-            lookupfilter: 'IsGroup=0',
-            width: 200
-        },
-        {
-            header: 'Mã công việc',
-            binding: 'EquipTypeCode',
-            dataType: 'Array',
-            lookupKey: 'Job_CCM',
-            bindingList: {
-            
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND ActivityCode='LV-012'",
-            multiSelection: false,
-            width: 100
-        },
+      
         {
             header: 'Diễn giải',
             binding: 'Description',
             width: 250
-        },
-        // {
-        //     header: 'Lũy kế đến kỳ trước (gồm VAT)',
-        //     binding: 'PaymentAmount',
-        //     dataType: 'Number',
-        //     width: 150
-        // },
-        {
-            header: 'Giá trị kỳ này (chưa VAT)',
-            binding: 'OriginalAmount',
-            dataType: 'Number',
-            width: 120
-        },
-        {
-            header: 'Loại thuế',
-            binding: 'TaxCode',
-            width: 100,
-            dataType: 'Array',
-            lookupKey: 'Tax',
-            bindingList: {
-                Rate: 'TaxRate'
-            },
-            lookupfilter: "Type=1 AND IsActive=1 AND IsGroup=0 AND IsDefault = 1",
-        },
-        {
-            header: '% VAT',
-            binding: 'TaxRate',
-            width: 80
-        },
-        {
-            header: 'Tiền thuế',
-            binding: 'OriginalAmount3',
-            dataType: 'Number',
-            width: 120
-        },
-        {
-            header: 'Tổng tiền',
-            binding: 'TotalOriginalAmount',
-            dataType: 'Number',
-            width: 100
-        },
-        {
-            header: 'Ngày hóa đơn',
-            binding: 'AtchDocDate',
-            width: 100,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy'
         },
         {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
             width: 100
         },
-        // {
-        //     header: 'Mẫu số',
-        //     binding: 'AtchFormNo',
-        //     width: 100
-        // },
-        {
-            header: 'Số seri',
-            binding: 'AtchSerialNo',
-            width: 100
+   
+       
+         {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
         },
+      
         // {
         //     header: 'Đối tượng VAT',
         //     binding: 'TaxRegName',
         //     width: 200
         // },
-        // {
-        //     header: 'Mã số VAT',
-        //     binding: 'TaxRegNo',
-        //     allowEditing: true,
-        //     width: 100
-        // },
-        // {
-        //     header: 'Số tài khoản ngân hàng',
-        //     binding: 'BankAccountNo',
-        //     width: 100
-        // },
         {
-            header: 'Tài khoản',
-            binding: 'Account',
-            width: 0,
+            header: 'MST NCC',
+            binding: 'TaxRegNo',
+            allowEditing: true,
+            width: 100
+        },
+         {
+            header: 'Người nhận tiền',
+            binding: 'DesignerEmployeeCode',
+            width: 100,
             dataType: 'Array',
-            lookupKey: 'ChartOfAccount',
-            lookupfilter: "IsActive=1 AND IsGroup=0 AND IsParentAccount=0 AND Code LIKE '62%'"
+             bindingList: {
+                Name: 'EmployeeName'
+            },
+            lookupKey: 'Customer',
+            lookupfilter: "IsActive=1 AND IsGroup=0 AND Code LIKE 'E-%'"
             // lookupfilter: "IsGroup=0 AND IsParentAccount=0 AND LEFT(Code,3) IN (SELECT Val FROM dbo.ufn_sys_SplitString((SELECT ListAccount FROM dbo.B20ExpenseCatg WHERE Code = '{EXPR=ExpenseCatgCode}'), ','))"
         },
+         
+          {
+            header: 'Giá trị thanh toán',
+            binding: 'OriginalAmount',
+            dataType: 'Number',
+            width: 100
+        },
+         {
+            header: 'Người nhận tiền',
+            binding: 'EmployeeName',
+            isReadOnly: 'true',
+            width: 200
+        },
+          {
+            header: 'Số seri',
+            binding: 'AtchSerialNo',
+            width: 100
+        },
+        {
+            header: 'Giá trị hóa đơn (chưa VAT)',
+            binding: 'Amount_ThNotVAT',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+       
+        {
+            header: 'VAT',
+            binding: 'Amount3_Th',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+         {
+            header: 'Giá trị hóa đơn (gồm VAT)',
+            binding: 'Amount_Th',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+      
+       
+       
+        
         {
             header: 'Dòng tiêu đề',
             binding: 'IsTitleRow',
             dataType: 'Boolean',
+            isReadOnly: 'true',
             width: 50
         },
         {
@@ -933,12 +923,21 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
             binding: 'Level',
             dataType: 'Number',
             width: 50,
+            isReadOnly: 'true',
             format: 'n0'
         },
         {
             header: 'Công thức',
             binding: 'Formula',
-            width: 200
+            width: 200,
+            isReadOnly: 'true'
+        },
+
+         {
+            header: 'Invoice',
+            binding: 'InvoiceId',
+            width: 200,
+            isReadOnly: 'true'
         }
     ];
 

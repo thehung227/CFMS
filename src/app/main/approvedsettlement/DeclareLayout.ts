@@ -199,7 +199,7 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
                     }
                 },
                 {
-                    Name: 'vB30BizDocContactInfo_Edit',
+                    Name: 'vB30BizDocContactInfo_Approved',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {

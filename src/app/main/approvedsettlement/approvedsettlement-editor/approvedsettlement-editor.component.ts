@@ -15,6 +15,9 @@ import { Title } from "@angular/platform-browser";
 import { Location } from "@angular/common";
 import { CryptoExtension } from "../../../core/extensions/crypto.extension";
 import { Global } from "../../../shared/global";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { Popup } from "wijmo/wijmo.input";
 
 @Component({
   selector: 'app-approvedsettlement-editor-form',
@@ -30,9 +33,13 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
+    @ViewChild('dataPopup') dataPopup: Popup;
+  
 
   indexPage = ['/main', 'settlement', 'index'];
   folderName = '04.Quyet_Toan_Hop_Dong';
+
+ dataPopupContent: any = null;
 
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
@@ -101,6 +108,78 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
       // this.backClick();
     }
   }
+output: any;
+  _err: boolean = false;
+  _errMess: any;
+  _errItemSets: boolean = false;
+
+async saveData(formData: any,state: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('BizDocId');
+    param1.ParameterValue = this.parentData['BizDocId'];
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('EmployeeCodeBill');
+    param2.ParameterValue = this.editorFrm.controls['EmployeeCode'].value.toString();
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
+
+
+    let _data: any = null;
+
+    try {
+      _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params)
+      .toPromise().then();
+    
+      this.output = <Array<Object>>(_data['output']);
+   
+      this._errItemSets = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+
+    if (this._errItemSets) {
+      alert(this._errMess)
+      this.showLoading = true;
+    }
+    else
+    {
+       const output = _data && _data.output ? _data.output : _data;
+      // Lấy phần tử đầu tiên nếu output là mảng
+      // if (Array.isArray(output) && output.length > 0) {
+      //   this.dataPopupContent = output[0]; // 👈 lấy hóa đơn đầu tiên
+      // } else {
+      //   this.dataPopupContent = output || _data;
+      // }
+      this.dataPopupContent = _data;
+
+      console.log('Data để show popup:', this.dataPopupContent);
+      if (this.dataPopup) {
+        this.dataPopup.show(true);
+      }
+      // location.reload()
+      // console.log(this.parentData['Id'])
+      // this.indexPage_Editor.push(this.parentData['Id']);
+      // this.router.navigate(['main']).then(() => {
+      //   this.router.navigate(this.indexPage_Editor).then(() => {
+      //     if (this.indexPage_Editor.length > 3)
+      //     this.indexPage_Editor.pop();
+      //   })
+      // });
+    }
+  }
+
   doubleClickGrid(grid: wjcGrid.FlexGrid) {
     let navigateUrl: any[] = [];
     let host = grid.hostElement;

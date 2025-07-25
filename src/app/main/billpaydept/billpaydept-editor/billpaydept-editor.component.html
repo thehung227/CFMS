@@ -20,13 +20,21 @@
           <ul class="dropdown-menu" style="margin-left: 10%;border-color: antiquewhite;background-color: antiquewhite;width: 115%;">
             <li>
               <a class="dropdown-item" style="height: 39px;" *ngFor="let layout of listLayoutPrint"> {{layout.Name}}
-                <button class="btn " type="button" (click)="exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath)"
-                  style="color:white;float: right;margin-left:5px;background-color:orange;height: 100%;">
+                <button class="btn " type="button" (click)="exportHtml(layout.WordName,layout.FileName, layout.FolderPath)"
+                  style="color:white;float: right;margin-left:5px;background-color:orange;height: 100%;"
+                  *ngIf="layout.WordName != ''">
                   <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </button>
-                <button class="btn " type="button" (click)="exportWord(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath)"
-                  style="color:white;float: right;margin-left:5px;background-color:rgb(7, 104, 201);height: 100%;">
+                <button class="btn " type="button" (click)="exportWord(layout.WordName,layout.FileName, layout.FolderPath)"
+                  style="color:white;float: right;margin-left:5px;background-color:rgb(7, 104, 201);height: 100%;"
+                   *ngIf="layout.WordName != ''">
                   <i class="fa fa-file-word-o" aria-hidden="true"></i>
+                </button> 
+                <button class="btn " type="button"
+                  (click)="exportExcel(layout.ExcelName,layout.FileName, layout.FolderPath)"
+                  style="color:white;float: right;margin-left:5px;background-color:rgba(0, 128, 0, 0.871);height: 100%;"
+                  *ngIf="layout.ExcelName != ''">
+                  <i class="fa fa-file-excel-o" aria-hidden="true"></i>
                 </button>
               </a>
             </li>

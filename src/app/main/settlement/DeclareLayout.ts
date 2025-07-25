@@ -579,6 +579,13 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
             MessageText: 'Giá trị đề nghị thanh toán chưa khớp với Tổng giá trị hóa đơn !!!',
             IgnoreError: 0
         },
+         'Evaluator_ServerConstraint_Load_InvoiceBizzi': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,CustomerCode,BizDocId',
+            Command: 'usp_CFMS_InvoiceBizzi_LoadData',
+            DataMember: '',
+            OutputTable: 3
+        },
     }
 
     serverConstraint = [
@@ -621,6 +628,11 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
         //
         'Evaluator_ServerConstraint_DocumentDetail_GetData',
         'Evaluator_ServerConstraint_Approve_GetData',
+    ];
+
+buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi',
+       
     ];
 
     buttonCommand: string[] = [
@@ -756,7 +768,8 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
                         JobCode: 'JobCode',
                         ActivityCode: 'ActivityCode',
                         Id: 'Id_HdPl',
-                        DocCode: 'DocCode_HdPl'
+                        DocCode: 'DocCode_HdPl',
+                        DayOfWarranty: 'DayOfWarranty'
                     },
                     col: 12
                 }, this.srv, this.parentData),
@@ -1019,6 +1032,7 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
                     key: 'DayOfWarranty',
                     label: 'Thời hạn bảo hành(tháng)',
                     type: 'number',
+                    isDisabled: 'true',
                     col: 6
                 }),
                 new NumberBoxInput({
@@ -1357,27 +1371,51 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
         }
     ]
 
-    childColumns3 = [
+     childColumns3 = [
+         {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
+          {
+            header: 'Số hóa đơn',
+            binding: 'AtchDocNo',
+            width: 150,
+            dataType: 'Array',
+            isReadOnly: 'true',
+            lookupKey: 'InvoiceBizzi',
+             bindingList: {
+                IssuedDate: 'AtchDocDate',
+                InvoiceId: 'InvoiceId',
+                InvoiceSeries: 'AtchFormNo',
+                TotalAmountWithoutVat: 'AmountBeforeTax',
+                TotalAmountWithVat: 'Amount'
+            },
+            lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
+        },
         {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',
             width: 150,
             dataType: 'Date',
+            isReadOnly: 'true',
             format: 'dd/MM/yyyy'
         },
-        {
-            header: 'Số hóa đơn',
-            binding: 'AtchDocNo',
-            allowEditing: true,
-            width: 150,
-            validators: "{EXPR=AtchDocNo} == ''",
-            validatorMessage: 'Không được bỏ trắng giá trị',
-        },
+        // {
+        //     header: 'Số hóa đơn',
+        //     binding: 'AtchDocNo',
+        //     allowEditing: true,
+        //     width: 150,
+        //     validators: "{EXPR=AtchDocNo} == ''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        // },
         {
             header: 'Ký hiệu',
             binding: 'AtchFormNo',
             allowEditing: true,
             width: 150,
+            isReadOnly: 'true',
             validators: "{EXPR=AtchDocNo} == ''",
             validatorMessage: 'Không được bỏ trắng giá trị',
         },
@@ -1385,12 +1423,14 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
             header: 'Giá trị trước thuế',
             binding: 'AmountBeforeTax',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
         {
             header: 'Giá trị sau thuế',
             binding: 'Amount',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
         {
@@ -1398,7 +1438,16 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'DateReceive',
             width: 150,
             dataType: 'Date',
+
             format: 'dd/MM/yyyy'
         },
-    ]
+        {
+            header: 'Hóa đơn Bizzi',
+            binding: 'InvoiceId',
+            allowEditing: true,
+            width: 0,
+            isReadOnly: 'true',
+            validatorMessage: 'Không được bỏ trắng giá trị',
+        },
+    ];
 }

@@ -292,7 +292,7 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             },
             Child: [
                 {
-                    Name: 'vB30BizDocDetail_Edit',
+                    Name: 'vB30BizDocDetail_EditHHBT',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',

@@ -31,6 +31,7 @@ export class ApprovedBillPayEquipmentEditorComponent extends BaseEditorComponent
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+    @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
     @ViewChild('dataPopup') dataPopup: Popup;
 
@@ -56,7 +57,7 @@ export class ApprovedBillPayEquipmentEditorComponent extends BaseEditorComponent
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     this.grid.isReadOnly = true;
     this.grid.allowAddNew = false;
@@ -141,6 +142,7 @@ async saveData(formData: any,state: any) {
     let params = new Array<ParameterContract>();
     const param1 = new ParameterContract();
     const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
 
     param1.ParameterName = Global.convertParameterName('BizDocId');
     param1.ParameterValue = this.parentData['BizDocId'];
@@ -150,10 +152,14 @@ async saveData(formData: any,state: any) {
     param2.ParameterValue = this.editorFrm.controls['EmployeeCode'].value.toString();
     params.push(param2);
 
+  param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
     let _data: any = null;
 
     try {
-      _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params)
+      _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_PhanBo', params)
       .toPromise().then();
     
       this.output = <Array<Object>>(_data['output']);

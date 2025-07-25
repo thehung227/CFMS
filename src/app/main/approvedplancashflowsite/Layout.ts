@@ -186,7 +186,7 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
                     key: 'ProcessCode',
                     label: 'Quy trình duyệt',
                     lookupKey: 'Approve',
-                    lookupfilter: "IsActive=1 AND ParentId=70",
+                    lookupfilter: "IsActive=1",
                     validators: [Validators.required],
                     hideValueMember: false,
                     isReadOnly: 'true',

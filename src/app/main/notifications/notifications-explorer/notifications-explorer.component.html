@@ -72,6 +72,9 @@
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
                             <div class="toolbox">
+                                <button type="button" class="btn btn-danger" (click)="ApprovedAll(true)" title="Duyệt theo lô" *ngIf="nUserId==5333">
+                                    <i class="fa fa-thumbs-o-up " aria-hidden="true"></i>
+                                </button>
                                 <button type="button" class="btn btn-success" (click)="editExplorer(grid)" title="Mở">
                                     <i class="fa fa-pencil-square-o " aria-hidden="true"></i>
                                 </button>
@@ -89,6 +92,7 @@
                     </div>
                 </nav>
                 <wj-flex-grid [itemsSource]="data" #grid (itemsSourceChanged)="itemsSourceChangedHandler()" style="height:100%;min-height: 650px;">
+                    
                     <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
                         <input type="checkbox" value="">
                     </template>

@@ -78,22 +78,22 @@ export class BillPayDeptEditorComponent extends BaseEditorComponent implements O
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
         let data = s.rows[e.row].dataItem;
 
-        // if (e.panel.cellType == wjcGrid.CellType.Cell) {
-        //   if (data['NoChangeInBill'] == false) {
-        //     wjcCore.setCss(e.cell, {
-        //       color: 'red',
-        //       // fontWeight: '',
-        //       // backgroundColor: ''
-        //     });
-        //   }
-        //   else {
-        //     wjcCore.setCss(e.cell, {
-        //       color: '',
-        //       // fontWeight: '',
-        //       // backgroundColor: ''
-        //     });
-        //   }
-        // }
+        if (e.panel.cellType == wjcGrid.CellType.Cell) {
+                  if (data['IsTitleRow'] == true) {
+                    wjcCore.setCss(e.cell, {
+                      color: '',
+                      fontWeight: 'bold',
+                       backgroundColor: '#CCF381'
+                    });
+                  }
+                  else {
+                    wjcCore.setCss(e.cell, {
+                      color: '',
+                      fontWeight: '',
+                      backgroundColor: ''
+                    });
+                  }
+                }
       }
     });
   }
@@ -128,12 +128,12 @@ export class BillPayDeptEditorComponent extends BaseEditorComponent implements O
     }
 
     let _errorSave2 = false;
-    for (let item of this.grid.itemsSource.items) {
-      if ((item['EquipTypeCode'] == '' || item['ExpenseCatgCode'] == '') && formData.get('PayTeamType').value != '00') {
-        _errorSave2 = true;
-        break;
-      }
-    }
+    // for (let item of this.grid.itemsSource.items) {
+    //   if ((item['EquipTypeCode'] == '' || item['ExpenseCatgCode'] == '') && formData.get('PayTeamType').value != '00') {
+    //     _errorSave2 = true;
+    //     break;
+    //   }
+    // }
 
     this.checkUniqueColGrid(this.grid, 'ItemNo');
     if (this._errorUnique == false) {

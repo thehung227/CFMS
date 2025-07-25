@@ -614,7 +614,9 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
                         JobCode: 'JobCode',
                         ActivityCode: 'ActivityCode',
                         Id: 'Id_HdPl',
-                        DocCode: 'DocCode_HdPl'
+                        DocCode: 'DocCode_HdPl',
+                        DayOfWarranty: 'DayOfWarranty'
+
                     },
                     col: 12
                 }, this.srv, this.parentData),

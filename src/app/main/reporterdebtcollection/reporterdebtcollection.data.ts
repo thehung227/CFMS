@@ -54,7 +54,7 @@ export class LayoutData {
                         header: 'Dự kiến giá trị Quyết toán',
                         binding: 'ContractValue',
                         dataType: 'Number',
-                   aggregate: 'Sum',
+                        aggregate: 'Sum',
                         width: 120
                     },
                     {
@@ -139,6 +139,12 @@ export class LayoutData {
                         header: 'Lý do/Vướng mắc chưa hoàn thành các mốc cam kết',
                         binding: 'Note',
                         width: 350,
+                        wordWrap: 'true'
+                    },
+                    {
+                        header: 'Mã dự án',
+                        binding: 'ProductCode',
+                        width: 200,
                         wordWrap: 'true'
                     },
                     {

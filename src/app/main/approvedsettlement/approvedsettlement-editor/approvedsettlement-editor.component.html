@@ -18,6 +18,8 @@
           <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.Id_TT)">
             Bảng KLQT
           </button>
+           <button class="btn btn-success" type="button" (click)=saveData(editorFrm,1) *ngIf="parentData?.ApproveSend == true  && parentData?.PositionCode == 'CB-006'"
+            [disabled]="!editorFrm.valid">Duyệt hóa đơn</button>
           <!-- <button class="btn btn-danger" type="button" (click)=onClick(2) *ngIf="parentData?.CloseProcess == 1 && parentData?.CompletedApprove != true" [disabled]="!editorFrm.valid">Hủy hồ sơ</button> -->
           <button class="btn btn-success" type="button" (click)=onClick(3) *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
