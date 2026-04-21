@@ -785,6 +785,21 @@ export class LayoutIncurredEditor implements IEditorFormulaDeclaration {
             width: 200
         },
         {
+            header: 'Duyệt chủ trương'	,
+            binding: 'PolicyStatus',
+            width:100,
+            isRequired: true,
+            dataType: 'Array',
+            lookupKey: 'Class',
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='POLICYSTATUS'",								
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'PolicyRemark',
+            isRequired: true,
+            width: 200
+        },
+        {
         header: 'Giá trị đánh giá PS đã trình (Chưa VAT)',
         binding: 'RowInheris',
         dataType: 'Number',

@@ -69,7 +69,7 @@ export class LayoutSolPOConcreteExplorer implements IExplorerFormulaDeclaration 
                     State: "1"
                 },
                 FolderPath: "/5.TemplateMail/",
-                FileName: "PO_GuiNhaCungCap.docx"
+                FileName: "PO_GuiNhaCungCapBetong.docx"
             },
             FileAttach: {
                 Command: "usp_B30BizDoc_VoucherForm",
@@ -77,7 +77,7 @@ export class LayoutSolPOConcreteExplorer implements IExplorerFormulaDeclaration 
                     DocCode: "PO",
                     Id: "{EXPR=Id}"
                 },
-                SourcePath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/BM-F006a-Rev01 Don Dat Hang Mua - Approved.docx",
+                SourcePath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/Don_Hang_Mua - Be tong - Approved.docx",
                 DestinationPath: "{VAR=Filter.ProductCostId}/Don_Hang_Mua/{EXPR=Id}/",
                 FileName: "{EXPR=DocNo}.pdf"
             },
@@ -332,7 +332,18 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                     Name: 'vB30BizDocApproveLog_Edit',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId'
-                }
+                },
+                {
+                    Name: 'vB30BizDocContactInfo_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
+                },   
+
             ]
         },
         PrintDocument: {
@@ -343,8 +354,8 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                 {
                     Layout: "MAU1",
                     Name: "Đơn đặt hàng mua",
-                    FileName: "Đơn hàng mua - {EXPR=CustomerName} - {EXPR=DocNo}",
-                    WordName: "BM-F006a-Rev01 Don Dat Hang Mua.docx",
+                    FileName: "Đơn hàng mua bê tông - {EXPR=CustomerName} - {EXPR=DocNo}",
+                    WordName: "Don_Hang_Mua - Be tong - Approved.docx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ]
@@ -613,6 +624,18 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                     col: 12
                 }, this.srv, this.parentData),
                 new LookupBoxInput({
+                    key: 'ParentBizDocId',
+                    label: 'Hợp đồng',
+                    lookupKey: 'BizDoc_CTC',
+                    binding: {
+                        CustomerCode: 'CustomerCode'
+                    },
+                     validators: [Validators.required],
+                    lookupfilter: "(((DocCode = 'C3' OR (DocCode = 'C4' AND IsSubContractPay = 1)) AND ProductCostId='{EXPR=ProductCostId}' AND ContractTypeFilter='B4') OR (DocCode='C3' AND IsSubContractPay = 1)) AND Closed = 0 AND DocDate <= '{EXPR=DocDate}' AND BranchCode='{VAR=Branch.Ma_Dvcs}'",
+                    hideValueMember: true,
+                    col: 12
+                }, this.srv, this.parentData),
+                new LookupBoxInput({
                     key: 'CustomerCode',
                     label: 'Đối tượng',
                     lookupKey: 'Customer',
@@ -620,7 +643,7 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                         Address: "Address",
                         // Person: "ContactPerson"
                     },
-                    lookupfilter: "IsGroup=0 AND IsActive=1",
+                    lookupfilter: "IsGroup=0 AND IsActive=1 AND IsStopWorking=0",
                     validators: [Validators.required],
                     hideValueMember: true,
                     col: 12
@@ -631,7 +654,7 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                     type: 'text',
                     validators: [Validators.required],
                     col: 12,
-                    isDisabled: 'true'
+                    // isDisabled: 'true'
                 }),
                 new LookupBoxInput({
                     key: 'ItemGroupCode',
@@ -645,52 +668,45 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
                     isDisabled: 'true'
                 }, this.srv, this.parentData),
                 new TextBoxInput({
-                    key: 'ContactPhoneNo',
-                    label: 'SĐT người nhận',
+                    key: 'NguoiNhanHang',
+                    label: 'Người liên hệ (QS)',
                     type: 'text',
-                    col: 6
-                }),
-                new TextBoxInput({
-                    key: 'ContactPerson',
-                    label: 'Người nhận hàng',
-                    type: 'text',
-                    col: 6
-                }),
-                new DateBoxInput({
-                    key: 'EstimatedTimeDelivery',
-                    label: 'Ngày dự kiến giao',
-                    type: 'date',
-                    format: 'dd/MM/yyyy',
+                    isNewRow: true,
                     validators: [Validators.required],
                     col: 6
                 }),
                 new TextBoxInput({
+                    key: 'CMNDNguoiNhan',
+                    label: 'SĐT người liên hệ',
+                    validators: [Validators.required],
+                    type: 'text',
+                    col: 6
+                }),
+                
+                new TextBoxInput({
                     key: 'PortOfLoading',
                     label: 'Địa điểm giao hàng',
+                    validators: [Validators.required],
+
                     type: 'text',
                     col: 12
                 }),
-                new TextBoxInput({
-                    key: 'DieuKienThanhToan',
-                    label: 'Điều kiện thanh toán',
-                    type: 'text',
-                    col: 12
-                }),
+               
                 new TextBoxInput({
                     key: 'Description',
                     label: 'Thỏa thuận khác',
                     type: 'text',
                     col: 12
                 }),
-                new LookupBoxInput({
-                    key: 'ProcessCode',
-                    label: 'Quy trình duyệt',
-                    lookupKey: 'Approve',
-                    lookupfilter: "IsActive=1 AND DocStatus=4 AND Ma_Ct='{EXPR=DocCode}'",
-                    validators: [Validators.required],
-                    hideValueMember: false,
-                    col: 12
-                }, this.srv, this.parentData),
+                // new LookupBoxInput({
+                //     key: 'ProcessCode',
+                //     label: 'Quy trình duyệt',
+                //     lookupKey: 'Approve',
+                //     lookupfilter: "IsActive=1 AND DocStatus=4 AND Ma_Ct='{EXPR=DocCode}'",
+                //     validators: [Validators.required],
+                //     hideValueMember: false,
+                //     col: 12
+                // }, this.srv, this.parentData),
                 new LookupBoxInput({
                     key: 'TaxCode',
                     label: 'Thuế',
@@ -750,53 +766,68 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
 
     childColumns = [
         {
-            header: 'Mã hàng',
-            binding: 'ItemCode',
-            isReadOnly: 'true',
-            dataType: 'Array',
-            lookupKey: 'Item',
-            bindingList: {
-                Name: 'Description0',
-                ConvertRate: 'ConvertRate9',
-                Unit: 'Unit'
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentId IN (SELECT Id FROM B20Item WHERE Code = '{EXPR=ItemGroupCode}')",
-            width: 150
+            header: 'Stt',
+            binding: 'ItemNo',
+            width: 100
         },
+        {
+            header: 'Ngày đổ',
+            binding: 'Ngay_Cap',
+            width: 80,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy',
+            isRequired: false	
+        },
+        {
+            header: 'Thời gian bắt đầu đổ',
+            binding: 'ProductDesignNo',
+            width: 80
+        },
+       
+        // {
+        //     header: 'Mã hàng',
+        //     binding: 'ItemCode',
+        //     isReadOnly: 'true',
+        //     dataType: 'Array',
+        //     lookupKey: 'Item',
+        //     bindingList: {
+        //         Name: 'Description0',
+        //         ConvertRate: 'ConvertRate9',
+        //         Unit: 'Unit'
+        //     },
+        //     lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentId IN (SELECT Id FROM B20Item WHERE Code = '{EXPR=ItemGroupCode}')",
+        //     width: 150
+        // },
         {
             header: 'Tên hàng hóa',
-            binding: 'Description0',
-            isReadOnly: 'true',
+            binding: 'Description',
             width: 250
         },
-        {
-            header: 'Đvt',
-            dataType: 'Array',
-            bindingList: {
-                ConvertRate: 'ConvertRate9'
-            },
-            lookupKey: 'ItemUnit',
-            lookupfilter: "ItemCode = '{EXPR=ItemCode}'",
-            binding: 'Unit',
-            width: 80,
-            isReadOnly: 'true'
-        },
+        
         {
             header: 'Cường độ',
             dataType: 'Array',
-            lookupKey: 'Size',
+            lookupKey: 'SizeDes',
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            binding: 'ProductSize',
+            bindingList: {
+                Code: 'ProductSize'
+            },
+            binding: 'ProductSizeName',
             width: 100
         },
+        
         {
             header: 'Độ sụt',
             dataType: 'Array',
-            lookupKey: 'Species',
+            lookupKey: 'SpeciesName',
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            binding: 'ItemSpeciesCode',
+            bindingList: {
+                Code: 'ItemSpeciesCode'
+            },
+            binding: 'ItemSpeciesName',
             width: 100
         },
+        
         {
             header: 'Phụ gia',
             dataType: 'Array',
@@ -807,40 +838,75 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
         },
         {
             header: 'Cấu kiện',
+            dataType: 'Array',
+            lookupKey: 'CauKienDes',
+            bindingList: {
+                Code: 'TradeMarkCode',
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1",
             binding: 'Note',
             width: 150
         },
         {
-            header: 'Ngày dự kiến giao',
-            binding: 'EstimatedTimeDelivery',
-            width: 80,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy'
+            header: 'Khu vực',
+            binding: 'Khu_Vuc',
+            width: 150
         },
         {
-            header: 'Số lượng',
+            header: 'Vị trí',
+            binding: 'Vi_Tri',
+            width: 150
+        },
+        {
+            header: 'Đvt',
+            dataType: 'Array',
+            // bindingList: {
+            //     ConvertRate: 'ConvertRate9'
+            // },
+            lookupKey: 'ItemUnit',
+            
+            binding: 'Unit',
+            width: 80,
+        },
+        // {
+        //     header: 'Ngày dự kiến giao',
+        //     binding: 'EstimatedTimeDelivery',
+        //     width: 80,
+        //     dataType: 'Date',
+        //     format: 'dd/MM/yyyy'
+        // },
+        {
+            header: 'KL tính toán',
+            binding: 'Quantity8',
+            dataType: 'Number',
+            width: 150,
+         
+             format: 'n2',
+        },
+        {
+            header: 'KL đặt hàng',
             binding: 'Quantity9',
             dataType: 'Number',
             width: 100,
             format: 'n3'
         },
+        // {
+        //     header: 'Hệ số quy đổi',
+        //     binding: 'ConvertRate9',
+        //     dataType: 'Number',
+        //     width: 100,
+        //     isReadOnly: 'true',
+        //     format: 'n4'
+        // },
+        // {
+        //     header: 'Số lượng quy đổi',
+        //     binding: 'Quantity',
+        //     dataType: 'Number',
+        //     width: 90,
+        //     format: 'n3'
+        // },
         {
-            header: 'Hệ số quy đổi',
-            binding: 'ConvertRate9',
-            dataType: 'Number',
-            width: 100,
-            isReadOnly: 'true',
-            format: 'n4'
-        },
-        {
-            header: 'Số lượng quy đổi',
-            binding: 'Quantity',
-            dataType: 'Number',
-            width: 90,
-            format: 'n3'
-        },
-        {
-            header: 'Đơn giá',
+            header: 'Đơn giá bê tông (VNĐ)',
             binding: 'OriginalUnitCost',
             dataType: 'Number',
             width: 100,
@@ -854,7 +920,7 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
             format: 'n2'
         },
         {
-            header: 'Thành tiền',
+            header: 'Thành tiền bê tông (VNĐ)',
             binding: 'OriginalAmount',
             dataType: 'Number',
             width: 120,
@@ -901,13 +967,73 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
             format: "n2",
             width: 0
         },
-        {
-            header: "Số lượng (Lũy kế)",
-            dataType: "Number",
-            binding: "Quantity8",
-            format: "n3",
-            width: 85
+         {
+            header: "Phương pháp đổ",
+            dataType: "Array",
+            bindingList: {
+            },
+            lookupKey: "Class",
+            lookupfilter: "IsGroup=0 AND IsActive = 1 AND ParentCode = 'PPD'",
+            binding: "TransCode",
+            multiSelection: true,
+            maxRow: 20,
+            width: 100
         },
+        {
+            header: 'Mô tả chi tiết nhu cầu về bơm',
+            binding: 'PhuongPhapDo',
+     
+            width: 250
+        },
+        {
+            header: "NCC bơm",
+            dataType: "Array",
+            bindingList: {
+                Name: "CustomerName1"
+            },
+            lookupKey: "Customer",
+            lookupfilter: "IsGroup=0 AND IsActive = 1 AND Code LIKE 'SI-%'",
+            binding: "CustomerCode1",
+            maxRow: 20,
+            width: 100
+        },
+           {
+            header: 'Tên NCC bơm',
+            binding: 'CustomerName1',
+     
+            width: 250
+        },
+         {
+            header: "NTP thi công",
+            dataType: "Array",
+            bindingList: {
+                Name: "CustomerName2"
+            },
+            lookupKey: "Customer",
+            lookupfilter: "IsGroup=0 AND IsActive = 1 AND Code LIKE 'SI-%'",
+            binding: "CustomerCode2",
+            maxRow: 20,
+            width: 100
+        },
+           {
+            header: 'Tên NTP thi công',
+            binding: 'CustomerName2',
+     
+            width: 250
+        },
+          {
+            header: 'Tên giám sát',
+            binding: 'CustomerName3',
+     
+            width: 250
+        },
+        // {
+        //     header: "Số lượng (Lũy kế)",
+        //     dataType: "Number",
+        //     binding: "Quantity8",
+        //     format: "n3",
+        //     width: 85
+        // },
         {
             header: 'Ghi chú',
             binding: 'Remark',
@@ -924,7 +1050,22 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
             binding: 'DocDate',
             isReadOnly: 'true',
             width: 0
-        }
+        },
+        {
+            header: 'Tên hàng hóa',
+            binding: 'ProductSize',
+            width: 0
+        },
+        {
+            header: 'Tên hàng hóa',
+            binding: 'ItemSpeciesCode',
+            width: 0
+        },
+         {
+            header: 'Tên hàng hóa',
+            binding: 'TradeMarkCode',
+            width: 0
+        },
     ];
 
     childColumns1 = [
@@ -1081,4 +1222,38 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
             width: 150
         }
     ]
+     childColumns4 = [
+        {
+            header: 'Tên người liên lạc',
+            binding: 'ContactName',
+            width: 200,
+            validators: "{EXPR=ContactName} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        },
+        {
+            header: 'Chức vụ',
+            binding: 'JobTitleName',
+            width: 200,
+            validators: "{EXPR=JobTitleName} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        },
+        {
+            header: 'Số điện thoại',
+            binding: 'PhoneNo',
+            width: 150,
+            validators: "{EXPR=PhoneNo} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        },
+        {
+            header: 'Địa chỉ Email',
+            binding: 'Email',
+            width: 200,
+            validators: "{EXPR=Email} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        }   
+    ]   
 }

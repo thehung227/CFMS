@@ -389,6 +389,18 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                {
+                    Name: 'vB30CCMBudgetDebt',
+                    ParentKey: 'CCMBudgetId',
+                    ChildKey: 'CCMBudgetId',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        CCMBudgetId: 'Parent.CCMBudgetId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
                 }
                
                
@@ -601,6 +613,13 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             zExpr: "ProductCostId != ''",
             OutputTable: 0
         },
+        'Evaluator_ServerConstraint_Debt_Load': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId',
+            Command: 'usp_Debt_LoadCongNo',
+            zExpr: "ProductCostId != ''",
+            OutputTable: 6
+        },
         'Evaluator_ServerConstraint_KE_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
             ConstraintKey: 'DocDate,ProductCostId,{VAR=Branch.Ma_Dvcs}',
@@ -676,8 +695,8 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
     ];
 
     serverUpdating = [
-        'Evaluator_ServerConstraint_Check_OriginalAmount',
-        'Evaluator_ServerConstraint_Check_Amount_DoanhThu',
+        // 'Evaluator_ServerConstraint_Check_OriginalAmount',
+        // 'Evaluator_ServerConstraint_Check_Amount_DoanhThu',
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange'
     ]
 
@@ -699,8 +718,8 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Approve_GetData',
         'Evaluator_ServerConstraint_K6_LoadPrevious_Thep',
         'Evaluator_ServerConstraint_K6_LoadPrevious_CLaim',
-        'Evaluator_ServerConstraint_DefaultDocNo'
-        
+        'Evaluator_ServerConstraint_DefaultDocNo',
+        'Evaluator_ServerConstraint_Debt_Load'
     ];
 
     buttonLoadChild2: string[] = [
@@ -708,6 +727,14 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
         'Evaluator_Amount_Limit_Calculate',
        
         'Evaluator_ServerConstraint_KE_LoadPrevious'
+        
+    ];
+
+     buttonLoadChild3: string[] = [
+        'Evaluator_ThuChiKyTruoc_Calculate',
+        'Evaluator_Amount_Limit_Calculate',
+       
+        'Evaluator_ServerConstraint_K6_LoadPrevious_Thep'
         
     ];
 
@@ -1377,7 +1404,6 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             binding: 'PaymentAmount',
             dataType: 'Number',
             width: 150,
-            isReadOnly: 'true'
         },   
        
         {
@@ -1459,6 +1485,15 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             binding: 'CustomerCode',
             width: 0
         },
+         {
+            header: 'STT',
+            binding: 'BuiltinOrder',
+            dataType: 'Number',
+            width: 50,
+            align: 'center',
+            isReadOnly: 'true'
+
+        },
         {
             header: 'Gói thầu',
             binding: 'BizDocDescription',
@@ -1487,11 +1522,41 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             }
         },
         {
-            header: 'Số tiền nợ',
+            header: 'Giá trị thanh toán claim đã duyệt',
+            binding: 'AmountClaimApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Giá trị đã thanh toán',
+            binding: 'AmountClaimPayment',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Giá trị còn lại chưa thanh toán',
             binding: 'DebtAmount',
             dataType: 'Number',
             width: 150,
             isReadOnly: 'true'
+        },
+          {
+            header: 'Giá trị thanh toán claim chưa duyệt',
+            binding: 'AmountClaimNotApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+
+        },
+         {
+            header: 'Hạn thanh toán',
+            binding: 'DateDue',
+            isRequired: false,
+            format: 'dd/MM/yyyy',
+            width: 120,
+            dataType: 'Date',
         },
         {
             header: 'Số ngày quá hạn',
@@ -1501,19 +1566,7 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             isReadOnly: 'true'
         },
         {
-            header: 'Chưa có KH TT',
-            binding: 'IsNotPlan',
-            dataType: 'Boolean',
-            width: 90
-        }, 
-        {
-            header: 'Kế hoạch CĐT Thanh toán',
-            binding: 'PlanPaymentAmount',
-            dataType: 'Number',
-            width: 150
-        },
-        {
-            header: 'Ngày CĐT dự kiến TT',
+            header: 'Ngày dự kiến tiền về',
             binding: 'EstimatedTimeDelivery',
             isRequired: false,
             format: 'dd/MM/yyyy',
@@ -1719,5 +1772,190 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             lookupfilter: "ParentCode='PAYMENTTYPE' AND Code IN ('VAY','LCUPAS')"
             // lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId0='{EXPR=ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
         }, 
+    ];
+    childColumns6 = [
+        {
+            header: 'Tiêu đề',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            width: 60,
+             
+        },
+        {
+            header: 'Mã công trình',
+            binding: 'ProductCostId',
+            dataType: 'Array',
+            lookupKey: 'ProductCost',
+            bindingList: {
+                ProductName: 'Description0'
+            },
+            lookupfilter: "ProductType IN ('1','3','2') AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
+            hideValueMember: true,
+            width: 100
+        },
+        // {
+        //     header: 'Tên dự án',
+        //     binding: 'ProductName',
+        //     width: 180,
+        //     wordWrap: 'true',
+        //      isReadOnly: 'true'
+        // },
+       
+        {
+            header: 'Gói thầu',
+            binding: 'Description0',
+            width: 400,
+            wordWrap: 'true'
+        },
+        {
+            header: 'Id hợp đồng CĐT',
+            binding: 'BizDocId_C2',
+            width: 0,
+             isReadOnly: 'true'
+        },
+       
+        
+        {
+            header: 'Id Claim',
+            binding: 'Stt_CL',
+            width: 0,
+             isReadOnly: 'true'
+        },
+        {
+            header: 'IPC số',
+            binding: 'ClaimNo',
+            width: 200,
+            wordWrap: 'true'
+        },
+        {
+            header: 'Dự kiến giá trị Quyết toán',
+            binding: 'ContractValue',
+            dataType: 'Number',
+            isRequired: true,
+            width: 120
+        },
+        {
+            header: 'CĐT đã thanh toán',
+            binding: 'DaThuLuyKe',
+            dataType: 'Number',
+            isRequired: true,
+            width: 120
+        },
+     
+        {
+            header: '% TT',
+            binding: 'RateTT',
+            dataType: 'Number',
+            format: 'p2',
+            isRequired: true,
+            min: 0,
+            max: 1,
+            width: 60
+        },
+        {
+            header: 'Dự kiến số tiền phải thu',
+            binding: 'TienNo',
+            dataType: 'Number',
+            isRequired: true,
+            width: 120
+        },
+        // {
+        //     header: 'Cam kết ký PLHĐ chốt phát sinh'	,
+        //     binding: 'DatePS',
+        //     dataType: 'Date',
+        //     isRequired: false,
+        //     format: 'dd/MM/yyyy',
+        //     width:100
+        // },
+        // {
+        //     header: 'Hoàn thành PLHĐ',
+        //     binding: 'IsDatePS',
+        //     dataType: 'Boolean',
+        //     width: 80,
+        //     // isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Cam kết TOC'	,
+        //     binding: 'DateTOC',
+        //     dataType: 'Date',
+        //     isRequired: false,
+        //     format: 'dd/MM/yyyy',
+        //     width:100							
+        // },
+        // {
+        //     header: 'Hoàn thành TOC',
+        //     binding: 'IsDateTOC',
+        //     dataType: 'Boolean',
+        //     width: 80,
+        //     // isReadOnly: 'true'
+        // },
+        {
+            header: 'Cam kết ký QT/Xuất HĐ'	,
+            binding: 'DateQT',
+            dataType: 'Date',
+            isRequired: false,
+            format: 'dd/MM/yyyy',
+            width:100							
+        },
+        {
+            header: 'Hoàn thành QT',
+            binding: 'IsDateQT',
+            dataType: 'Boolean',
+            width: 80,
+            // isReadOnly: 'true'
+        },
+        // {
+        //     header: 'Ngày đến hạn'	,
+        //     binding: 'DueDate',
+        //     dataType: 'Date',
+        //     isRequired: false,
+        //     format: 'dd/MM/yyyy',
+        //     width:100					
+        // },
+        // {
+        //     header: 'Số ngày quá hạn',
+        //     binding: 'DateDue',
+        //     dataType: 'Number',
+        //     isRequired: true,
+        //     width: 150,
+        //      isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Ngày cam kết thu hồi công nợ'	,
+        //     binding: 'CommitmentDate',
+        //     dataType: 'Date',
+        //     isRequired: false,
+        //     format: 'dd/MM/yyyy',
+        //     width:140					
+        // },
+        {
+            header: 'Lý do/Vướng mắc chưa hoàn thành các mốc cam kết',
+            binding: 'Note',
+            width: 350,
+            wordWrap: 'true'
+        },
+        // {
+        //     header: 'CHT',
+        //     binding: 'EmployeeCodeCHT',
+        //     width: 150,
+        //     wordWrap: 'true'
+        // },
+        // {
+        //     header: 'CHT',
+        //     binding: 'EmployeeNameCHT',
+        //     width: 150,
+        //     wordWrap: 'true'
+        // },
+        {
+            header: 'ProductCostId0',
+            binding: 'ProductCostId0',
+            width: 0,
+             isReadOnly: 'true'
+        },
     ];
 }

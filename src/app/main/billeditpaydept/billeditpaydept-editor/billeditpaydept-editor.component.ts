@@ -229,7 +229,7 @@ export class BillEditPayDeptEditorComponent extends BaseEditorComponent implemen
   }
 
   deleteSelectedRows(flex: wjcGrid.FlexGrid) {
-    this.dfpanel.runConstraint('Evaluator_ServerConstraint_Check_ApproveSent_NotChange').then();
+    // this.dfpanel.runConstraint('Evaluator_ServerConstraint_Check_ApproveSent_NotChange').then();
     if (flex) {
       var selected = [];
       for (let k in flex.selectedRows) {

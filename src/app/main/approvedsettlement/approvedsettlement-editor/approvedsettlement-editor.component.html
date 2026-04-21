@@ -144,6 +144,47 @@
 
 <div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
 <!--/.Loading-->
+<!-- Wijmo Popup hiển thị dữ liệu từ saveData -->
+<wj-popup #dataPopup [modal]="true" [hideTrigger]="'None'" class="popup-custom">
+  <div class="wj-dialog-header">
+    <strong>Kết quả xử lý</strong>
+  </div>
+
+  <div class="wj-dialog-body">
+    <table class="table table-bordered table-striped" *ngIf="dataPopupContent && dataPopupContent.length">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Mã chứng từ</th>
+          <th>Series</th>
+          <th>Ngày phát hành</th>
+          <!-- <th>Thành tiền</th> -->
+          <th>Số phiếu kế toán</th>
+          <th>Thông báo</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataPopupContent; let i = index" [style.color]="item.Color == 'red' ? 'red' : 'inherit'">
+          <td>{{ i + 1 }}</td>
+           <td>{{ item.InvoiceNumber }}</td>
+          <td>{{ item.InvoiceSeries }}</td>
+          <td>{{ item.IssuedDate | date: 'dd/MM/yyyy' }}</td>
+          <!-- <td class="text-right">{{ item.TotalAmountWithVat | number:'1.0-0' }}</td> -->
+          <td>{{ item.AccountNo }}</td>
+          <td>{{ item.Message }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!dataPopupContent || !dataPopupContent.length" class="text-center">
+      <em>Không có dữ liệu hiển thị</em>
+    </div>
+  </div>
+
+  <div class="wj-dialog-footer">
+    <button class="btn btn-primary" (click)="closePopup()">Đóng</button>
+  </div>
+</wj-popup>
 
 <wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
   <div class="box" style="height: 400px;overflow-y: auto;">

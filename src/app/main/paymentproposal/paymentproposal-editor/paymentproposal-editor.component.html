@@ -81,7 +81,11 @@
         <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Cập nhật lại DXTT ME</span>
       
       </button>
-
+        <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
+            style="margin-bottom:10px;" (click)="onClick_3()">
+            <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Cập nhật lại DXTT BPMH</span>
+        
+        </button>
                 <div class="form-row" style="border:1px solid #ddd;">
                     <!-- <div class="nav-tabs-custom">
             <ul class="nav nav-tabs" >
@@ -110,6 +114,9 @@
                             </li>
                             <li>
                                 <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">Công nợ phải thu</a>
+                            </li>
+                            <li>
+                                <a href="#tab7" data-toggle="tab" (click)="onTabClick(grid6)">Cam kết quyết toán</a>
                             </li>
                             <li>
                                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Bước duyệt</a>
@@ -203,6 +210,18 @@
                         <div class="tab-pane" id="tab6">
                             <section id="new">
                                 <wj-flex-grid class="grid5" #grid5 [ngStyle]="setHeightGrid()">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        <label>{{cell.row.index + 1}}</label>
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <!-- <button class="btn fa fa-trash" (click)=deleteSelectedRows(grid1)></button>               -->
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+                        <div class="tab-pane" id="tab7">
+                            <section id="new">
+                                <wj-flex-grid class="grid6" #grid6 [ngStyle]="setHeightGrid()">
                                     <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                                         <label>{{cell.row.index + 1}}</label>
                                     </template>

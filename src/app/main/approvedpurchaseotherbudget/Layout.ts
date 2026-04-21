@@ -382,11 +382,18 @@ export class LayoutApprovedPurchaseOtherBudgetEditor implements IEditorFormulaDe
             ignoreError: 1
         },
         {
-            header: 'Tên mặt hàng',
+            header: 'Tên mặt hàng (Theo TVG)',
             binding: 'ItemName',
             dataType: 'String',
             width: 200,
             // isReadOnly: 'true'
+        },
+         {
+            header: 'Tên mặt hàng (Theo Hợp Đồng NCC)',
+            binding: 'OriginName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
         },
         {
             header: 'Danh mục vật tư',

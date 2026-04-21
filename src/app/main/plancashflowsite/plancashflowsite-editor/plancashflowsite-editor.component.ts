@@ -118,7 +118,7 @@ export class PlanCashFlowSiteEditorComponent extends BaseEditorComponent impleme
           collection: Global.createColection(this.grid3.itemsSource)
         }
       )
-      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_B30CCMBudgetDetail_CheckCashFlowSite', params, ds)
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_B30CCMBudgetDetail_CheckCashFlowSite_Check', params, ds)
         .toPromise().then();
 
       this.output = <Array<Object>>(_data['output']);

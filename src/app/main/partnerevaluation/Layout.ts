@@ -83,18 +83,18 @@ export class LayoutPartnerEvaluationExplorer implements IExplorerFormulaDeclarat
             dataType: 'Date',
             format: 'dd/MM/yyyy'
         },
-        {
-            header: 'Đã gửi duyệt',
-            binding: 'ApproveSend',
-            width: 150,
-            dataType: 'Boolean'
-        },
-        {
-            header: 'Hoàn thiện duyệt',
-            binding: 'CompletedApprove',
-            width: 100,
-            dataType: 'Boolean'
-        },
+        // {
+        //     header: 'Đã gửi duyệt',
+        //     binding: 'ApproveSend',
+        //     width: 150,
+        //     dataType: 'Boolean'
+        // },
+        // {
+        //     header: 'Hoàn thiện duyệt',
+        //     binding: 'CompletedApprove',
+        //     width: 100,
+        //     dataType: 'Boolean'
+        // },
         {
             header: 'Đang xử lý',
             binding: 'XuLyTiepTheo',
@@ -340,12 +340,13 @@ export class LayoutPartnerEvaluationEditor implements IEditorFormulaDeclaration 
             zExpr: 'ApproveSend == false',
             OutputTable: 6
         },
-        'Evaluator_ServerConstraint_Approve_GetData': {
-            EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'DocDate,ProcessCode,{VAR=Branch.Ma_Dvcs},ProductCostId,{VAR=EmptyField_ParentBizDocId}',
-            Command: 'usp_B30BizDocApprove_GetData',
-            OutputTable: 2
-        },
+        // 'Evaluator_ServerConstraint_Approve_GetData': {
+        //     EvaluatorName: 'EvaluatorQueryLoadChild',
+        //     ConstraintKey: 'DocDate,ProcessCode,{VAR=Branch.Ma_Dvcs},ProductCostId,{VAR=EmptyField_ParentBizDocId}',
+        //     Command: 'usp_B30BizDocApprove_GetData',
+        //     OutputTable: 2
+        // },
+        
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: 'BizDocId,DocCode,{VAR=Branch.Ma_Dvcs}',
@@ -359,19 +360,19 @@ export class LayoutPartnerEvaluationEditor implements IEditorFormulaDeclaration 
             Command: 'usp_Load_Evaluation',
             OutputTable: 0
         },
-        'Evaluator_ServerConstraint_Document_GetData': {
-            EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'DocCode',
-            Command: 'usp_Load_Docment01',
-            OutputTable: 1
-        },
+        // 'Evaluator_ServerConstraint_Document_GetData': {
+        //     EvaluatorName: 'EvaluatorQueryLoadChild',
+        //     ConstraintKey: 'DocCode',
+        //     Command: 'usp_Load_Docment01',
+        //     OutputTable: 1
+        // },
         //không đổi tên
-        'Evaluator_UpdateInfo_WhenApproveSend': {
-            EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=User.EmployeeCode},BizDocId,{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode',
-            Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend_SongSong',
-            zExpr: 'ApproveSend == true AND CompletedApprove == false'
-        },
+        // 'Evaluator_UpdateInfo_WhenApproveSend': {
+        //     EvaluatorName: 'EvaluatorQuery',
+        //     ConstraintKey: '{VAR=User.EmployeeCode},BizDocId,{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode',
+        //     Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend_SongSong',
+        //     zExpr: 'ApproveSend == true AND CompletedApprove == false'
+        // },
         'Evaluator_ServerUpdated_BizDocDetail_UpdateFromParent': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId',
@@ -381,23 +382,23 @@ export class LayoutPartnerEvaluationEditor implements IEditorFormulaDeclaration 
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
-        'Evaluator_ServerConstraint_Approve_GetData'
+        // 'Evaluator_ServerConstraint_Approve_GetData'
 
     ]
 
     serverUpdating: string[] = [
-       
+       'Evaluator_ServerConstraint_Check_ApproveSent_NotChange'
     ]
 
     serverUpdated: string[] = [    
         'Evaluator_ServerUpdated_BizDocDetail_UpdateFromParent',
-        'Evaluator_UpdateInfo_WhenApproveSend'
+        // 'Evaluator_UpdateInfo_WhenApproveSend'
     ]
 
     buttonLoadChild: string[] = [
         'Evaluator_ServerConstraint_Detail_GetData',
-        'Evaluator_ServerConstraint_Document_GetData',
-        'Evaluator_ServerConstraint_Approve_GetData',
+        // 'Evaluator_ServerConstraint_Document_GetData',
+        // 'Evaluator_ServerConstraint_Approve_GetData',
         'Evaluator_ServerConstraint_BizDocVBDetail3_GetData'
     ]
 
@@ -574,16 +575,16 @@ export class LayoutPartnerEvaluationEditor implements IEditorFormulaDeclaration 
                     },
                     col: 12
                 }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'ProcessCode',
-                    label: 'Quy trình duyệt',
-                    lookupKey: 'Approve',
-                    validators: [Validators.required],
-                    lookupfilter: "IsGroup=0 AND IsActive=1 AND DocStatus=4 AND Ma_Ct='{EXPR=DocCode}'",
-                   // validators: [Validators.required],
-                    hideValueMember: false,
-                    col: 12
-                }, this.srv, this.parentData),
+                // new LookupBoxInput({
+                //     key: 'ProcessCode',
+                //     label: 'Quy trình duyệt',
+                //     lookupKey: 'Approve',
+                //     validators: [Validators.required],
+                //     lookupfilter: "IsGroup=0 AND IsActive=1 AND DocStatus=4 AND Ma_Ct='{EXPR=DocCode}'",
+                //    // validators: [Validators.required],
+                //     hideValueMember: false,
+                //     col: 12
+                // }, this.srv, this.parentData),
                 new NumberBoxInput({
                     key: 'NumberCol1',
                     label: 'Điểm đánh giá',
@@ -611,19 +612,19 @@ export class LayoutPartnerEvaluationEditor implements IEditorFormulaDeclaration 
                     col: 12
                 }),
        
-                new CheckBoxInput({
-                    key: 'ApproveSend',
-                    label: 'Đã gửi duyệt',
-                    col: 6,
-                    isNewRow: true,
-                    isDisabled: 'true'
-                }),
-                new CheckBoxInput({
-                    key: 'CompletedApprove',
-                    label: 'Đã hoàn thiện duyệt',
-                    isDisabled: 'true',
-                    col: 6
-                })
+                // new CheckBoxInput({
+                //     key: 'ApproveSend',
+                //     label: 'Đã gửi duyệt',
+                //     col: 6,
+                //     isNewRow: true,
+                //     isDisabled: 'true'
+                // }),
+                // new CheckBoxInput({
+                //     key: 'CompletedApprove',
+                //     label: 'Đã hoàn thiện duyệt',
+                //     isDisabled: 'true',
+                //     col: 6
+                // })
             ]
         })
     ];

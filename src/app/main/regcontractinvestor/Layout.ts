@@ -460,6 +460,12 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
             zExpr: 'ApproveSend == false',
             OutputTable: 1
         },
+         'Evaluator_ServerConstraint_BizDocPayment_GetData': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ParentBizDocId',
+            Command: 'usp_Web_B30BizDocPayment_GetData_CĐT',
+            OutputTable: 0
+        },
         'Evaluator_ServerConstraint_Approve_GetData': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
             ConstraintKey: 'DocDate,ProcessCode,{VAR=Branch.Ma_Dvcs},ProductCostId,{VAR=EmptyField_ParentBizDocId},ProductCostId0',
@@ -547,7 +553,8 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
         'Evaluator_ServerConstraint_SubContractBeforeValue',
-        'Evaluator_ServerConstraint_GetContractValue'
+        'Evaluator_ServerConstraint_GetContractValue',
+        'Evaluator_ServerConstraint_BizDocPayment_GetData'
     ]
 
     serverUpdating: string[] = [
@@ -563,9 +570,10 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
 
     buttonLoadChild: string[] = [
         // 'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo',
-        'Evaluator_ServerConstraint_Check_ApproveSent_NotChange', 
+        // 'Evaluator_ServerConstraint_Check_ApproveSent_NotChange', 
         'Evaluator_ServerConstraint_DocumentDetail_GetData',
-        'Evaluator_ServerConstraint_Approve_GetData'
+        'Evaluator_ServerConstraint_Approve_GetData',
+        'Evaluator_ServerConstraint_BizDocPayment_GetData'
     ]
 
     buttonCommand: string[] = [
@@ -1032,12 +1040,20 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
                     key: 'NumDayPayment',
                     label: 'Số ngày thanh toán theo HĐ',
                     type: 'number',
+                     isNewRow: true,
                     col: 6,
                    
                 }),
                 new CheckBoxInput({
+                    key: 'IsFixPrice',
+                    label: 'Ngày kế hoạch không gồm T7, CN',
+                    col: 6
+                }),
+                new CheckBoxInput({
                     key: 'IsQt',
                     label: 'Đã có biên bản quyết toán',
+                     isNewRow: true,
+
                     col: 6
                 }),
                 new CheckBoxInput({

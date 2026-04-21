@@ -131,11 +131,11 @@ export class ApprovedInternalDocumentEditorComponent extends BaseEditorComponent
       const param2 = new ParameterContract();
   
       param1.ParameterName = Global.convertParameterName('Id');
-      param1.ParameterValue = this.editorFrm.controls['Id'].value.toString();
+      param1.ParameterValue = this.id;
       params.push(param1);
     
-      param2.ParameterName = Global.convertParameterName('Comment');
-      param2.ParameterValue = this.editorFrm.controls['Comment'].value.toString();
+      param2.ParameterName = Global.convertParameterName('EmployeeCodeReal');
+      param2.ParameterValue = this.editorFrm.controls['EmployeeCodeReal'].value.toString();
       params.push(param2);
 
       param3.ParameterName = Global.convertParameterName('nUserId');

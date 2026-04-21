@@ -184,17 +184,17 @@ export class PartnerEvaluationEditorComponent extends BaseEditorComponent implem
   async onSubmit(formData: any, isApproveSend?: boolean) {
     
     let _errorSave1 = false;
-    for (let item of this.grid2.itemsSource.items) {
-      if (item['EmployeeCode'] == '') {
-        _errorSave1 = true;
-        break;
-      }
-      else
-        if (item['EmployeeCode'].toString().indexOf(',') > 0 && item['EmployeeCodeReal'] == '') {
-          _errorSave1 = true;
-          break;
-        }
-    }
+    // for (let item of this.grid2.itemsSource.items) {
+    //   if (item['EmployeeCode'] == '') {
+    //     _errorSave1 = true;
+    //     break;
+    //   }
+    //   else
+    //     if (item['EmployeeCode'].toString().indexOf(',') > 0 && item['EmployeeCodeReal'] == '') {
+    //       _errorSave1 = true;
+    //       break;
+    //     }
+    // }
 
         if (isApproveSend == true) {
           if (_errorSave1 == false) {

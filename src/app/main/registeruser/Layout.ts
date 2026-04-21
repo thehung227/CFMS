@@ -254,6 +254,17 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
                     }
                 },
                 {
+                    Name: 'vB30BizDocVBDetail2_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
+                },
+                {
                     Name: 'vB30BizDocDocument',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
@@ -283,6 +294,17 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                {
+                    Name: 'vB30BizDocVBDetail3_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
                 }
             ]
         }
@@ -300,14 +322,35 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
             ConstraintKey: 'DocDate,ProcessCode,{VAR=Branch.Ma_Dvcs},ProductCostId,ParentBizDocId',
             Command: 'usp_B30BizDocApprove_GetData',
             DataMember: '',
-            OutputTable: 2
+            OutputTable: 3
         },
         'Evaluator_ServerConstraint_Detail_GetData': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'ProductCostId',
+            ConstraintKey: 'ProductCostId,ProcessCode',
             Command: 'usp_RegisterDetail_GetData',
             DataMember: '',
             OutputTable: 0
+        },
+          'Evaluator_ServerConstraint_Detail_GetData_PBLQ': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,ProcessCode',
+            Command: 'usp_RegisterDetail_GetData_PBLienQuan',
+            DataMember: '',
+            OutputTable: 1
+        },
+          'Evaluator_ServerConstraint_Detail_GetAtch': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProcessCode',
+            Command: 'usp_Newtecons_GetAtchFile_Approve',
+            DataMember: '',
+            OutputTable: 2
+        },
+         'Evaluator_ServerConstraint_Detail_GetData_PTB': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,ProcessCode',
+            Command: 'usp_RegisterDetail_GetData_PTB',
+            DataMember: '',
+            OutputTable: 5
         },
         'Evaluator_UpdateInfo_WhenApproveSend': {
             EvaluatorName: 'EvaluatorQuery',
@@ -330,7 +373,11 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
     ]
 
     buttonLoadChild: string[] = [
-        'Evaluator_ServerConstraint_Detail_GetData'
+        'Evaluator_ServerConstraint_Detail_GetData',
+        'Evaluator_ServerConstraint_Detail_GetData_PBLQ',
+        'Evaluator_ServerConstraint_Approve_GetData',
+        'Evaluator_ServerConstraint_Detail_GetData_PTB',
+        'Evaluator_ServerConstraint_Detail_GetAtch'
     ];
 
     buttonCommand: string[] = [
@@ -422,6 +469,65 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
     ];
 
     childColumns = [
+         {
+            header: 'Vai trò',
+            dataType: 'Array',
+            lookupKey: 'Position',
+            // 
+            bindingList: {
+                Name: 'PositionName'
+            },
+            lookupfilter: 'IsActive=1',
+            exprReadOnly: "{EXPR=EmployeeCode} != ''",
+            binding: 'PositionCode',
+            width: 100,
+         
+
+        },
+        {
+            header: 'Vai trò',
+            binding: 'PositionName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeCode1',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName1',
+                Email: 'Email1',
+                 Mobile: 'Mobile1'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 150
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeName1',
+            width: 200,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220
+        },
+        {
+            header: 'Email công ty',
+            binding: 'Email1',
+            width: 220,
+            isReadOnly: 'true'
+        },
+       
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
         {
             header: 'Nhân viên hiện tại',
             binding: 'EmployeeCode',
@@ -434,16 +540,28 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
                 Email: 'Email'
             },
             lookupfilter: 'IsActive=1',
-            width: 150
+            width: 0
         },
         {
             header: 'Nhân viên hiện tại',
             binding: 'EmployeeName',
-            width: 200,
+            width: 0,
             isReadOnly: 'true'
         },
+       
         {
-            header: 'Chức vụ hiện tại',
+            header: 'Email công ty',
+            binding: 'Email',
+            width: 0,
+            isReadOnly: 'true'
+        },
+      
+      
+    ]
+
+childColumns1 = [
+     {
+            header: 'Vai trò',
             dataType: 'Array',
             lookupKey: 'Position',
             // 
@@ -454,49 +572,86 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
             exprReadOnly: "{EXPR=EmployeeCode} != ''",
             binding: 'PositionCode',
             width: 100
+
         },
         {
-            header: 'Chức vụ hiện tại',
+            header: 'Vai trò',
             binding: 'PositionName',
-            width: 150,
-            isReadOnly: 'true'
-        },
-        {
-            header: 'Email công ty',
-            binding: 'Email',
-            width: 220,
+            width: 200,
             isReadOnly: 'true'
         },
        {
-            header: 'Nhân viên mới',
+            header: 'Nhân sự tham gia',
             binding: 'EmployeeCode1',
             dataType: 'Array',
             lookupKey: 'HrisEmployee',
             // 
             bindingList: {
                 EmployeeName: 'EmployeeName1',
-                Email: 'Email1'
+                Email: 'Email1',
+                Mobile: 'Mobile1'
+
             },
             lookupfilter: 'IsActive=1',
             width: 150
         },
         {
-            header: 'Nhân viên mới',
+            header: 'Nhân sự tham gia',
             binding: 'EmployeeName1',
             width: 200,
             isReadOnly: 'true'
         },
-        
+          {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220
+        },
         {
             header: 'Email công ty',
             binding: 'Email1',
             width: 220,
             isReadOnly: 'true'
         },
+        
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeCode',
+            isReadOnly: 'true',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName',
+                Email: 'Email'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 0
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeName',
+            width: 0,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Email công ty',
+            binding: 'Email',
+            width: 0,
+            isReadOnly: 'true'
+        },
+      
+      
       
     ]
 
-    childColumns1 = [
+    childColumns2 = [
         // {
         //     header: 'Mã tài liệu',
         //     binding: 'DocumentCode',
@@ -518,7 +673,7 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
         }
     ]
 
-    childColumns2 = [
+    childColumns3 = [
         {
             header: 'STT',
             binding: 'ApproveGroup',
@@ -606,7 +761,7 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
         // }
     ]
 
-    childColumns3 = [
+    childColumns4 = [
         {
             header: 'STT',
             binding: 'ApproveGroup',
@@ -650,5 +805,94 @@ export class LayoutRegisterUserEditor implements IEditorFormulaDeclaration {
             format: 'dd/MM/yyyy HH:mm',
             width: 150
         }
-    ]    
+    ]  
+    
+    childColumns5 = [
+         {
+            header: 'Vai trò',
+            dataType: 'Array',
+            lookupKey: 'Position',
+            // 
+            bindingList: {
+                Name: 'PositionName'
+            },
+            lookupfilter: 'IsActive=1',
+            exprReadOnly: "{EXPR=EmployeeCode} != ''",
+            binding: 'PositionCode',
+            width: 100,
+         
+
+        },
+        {
+            header: 'Vai trò',
+            binding: 'PositionName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeCode1',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName1',
+                Email: 'Email1',
+                 Mobile: 'Mobile1'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 150
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeName1',
+            width: 200,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220
+        },
+        {
+            header: 'Email công ty',
+            binding: 'Email1',
+            width: 220,
+            isReadOnly: 'true'
+        },
+       
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeCode',
+            isReadOnly: 'true',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName',
+                Email: 'Email'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 0
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeName',
+            width: 0,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Email công ty',
+            binding: 'Email',
+            width: 0,
+            isReadOnly: 'true'
+        },  
+    ]
 }

@@ -41,7 +41,7 @@
           </ul>
           <!-- <button class="btn btn-warning" type="button" (click)="showPrintVoucher(parentData?.Id)" [disabled]="parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">Mẫu in</button>                       -->
           <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
-          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true ||  showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
+          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid  || parentData?.ApproveSend==true || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
           <a class="btn btn-default" [routerLink]="['/main','billpaydept','index']">Thoát</a>
           <!-- (click)="closeWindow()" -->
         </div>

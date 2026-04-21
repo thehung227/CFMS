@@ -524,24 +524,19 @@ export class LayoutPurchaseBchOrderEditor implements IEditorFormulaDeclaration {
     };
 
     serverConstraint = [
-        'Evaluator_ServerConstraint_GetInfo'
+        
     ];
 
     serverUpdating = [
-        'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',
-        'Evaluator_ServerConstraint_Check_UserModified',
-        'Evaluator_ServerConstraint_Check_PurchasePlan',
-        'Evaluator_ServerConstraint_Check_BCTC'
+       
     ]
 
     serverUpdated = [
-        'Evaluator_ServerUpdated_CreateDocNo',
-        'Evaluator_UpdateInfo_AfterSave',
-        'Evaluator_UpdateInfo_WhenApproveSend'
+       
     ];
 
     buttonLoadChild: string[] = [
-        'Evaluator_ServerConstraint_Approve_GetData'
+       
     ]
 
     buttonCommand: string[] = [
@@ -552,9 +547,7 @@ export class LayoutPurchaseBchOrderEditor implements IEditorFormulaDeclaration {
 
     columnChanged = {
         ProcessCode: {
-            Evaluators: [
-                'Evaluator_ServerConstraint_Approve_GetData'
-            ]
+   
         }
     };
 
@@ -562,32 +555,7 @@ export class LayoutPurchaseBchOrderEditor implements IEditorFormulaDeclaration {
         {
             Tables: 0,
             columnChanged: {
-                Quantity9: {
-                    Evaluators: [
-                        'Evaluator_BizDocDetail_OriginalAmount',
-                        'Evaluator_BizDocDetail_Quantity'
-                    ]
-                },
-                OriginalUnitCost: {
-                    Evaluators: [
-                        'Evaluator_BizDocDetail_OriginalAmount'
-                    ]
-                },
-                ConvertRate9: {
-                    Evaluators: [
-                        'Evaluator_BizDocDetail_Quantity'
-                    ]
-                },
-                OriginalAmount: {
-                    Evaluators: [
-                        'Evaluator_BizDocDetail_OriginalAmount3'
-                    ]
-                },
-                TaxCode: {
-                    Evaluators: [
-                        'Evaluator_BizDocDetail_OriginalAmount3'
-                    ]
-                }
+                
             }
         }
     ];
@@ -764,6 +732,12 @@ export class LayoutPurchaseBchOrderEditor implements IEditorFormulaDeclaration {
                 new CheckBoxInput({
                     key: 'AdjustedPay',
                     label: 'Ẩn công trình trên PO',
+                    type: 'boolean',
+                    col: 6
+                }),
+                new CheckBoxInput({
+                    key: 'IsGiftItem',
+                    label: 'Gói giữ giá',
                     type: 'boolean',
                     col: 6
                 }),

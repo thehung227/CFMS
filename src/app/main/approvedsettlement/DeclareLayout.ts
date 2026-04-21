@@ -901,6 +901,12 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
     ]
 
     childColumns4 = [
+         {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
         {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',
@@ -913,16 +919,16 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
             binding: 'AtchDocNo',
             allowEditing: true,
             width: 150,
-            validators: "{EXPR=AtchDocNo} == ''",
-            validatorMessage: 'Không được bỏ trắng giá trị',
+        
+       
         },
         {
             header: 'Ký hiệu',
             binding: 'AtchFormNo',
             allowEditing: true,
             width: 150,
-            validators: "{EXPR=AtchDocNo} == ''",
-            validatorMessage: 'Không được bỏ trắng giá trị',
+         
+          
         },
         {
             header: 'Giá trị trước thuế',

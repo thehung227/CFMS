@@ -68,6 +68,22 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
         let column = e.panel.columns[e.col].binding;
         let data = s.rows[e.row].dataItem;
+        
+        // if (e.panel.cellType == wjcGrid.CellType.Cell) {
+        //           if (data["IsTitleRow"] == true) {
+        //             wjcCore.setCss(e.cell, {
+        //               color: "red",
+        //               fontWeight: "",
+        //               backgroundColor: "",
+        //             });
+        //           } else {
+        //             wjcCore.setCss(e.cell, {
+        //               color: "",
+        //               fontWeight: "",
+        //               backgroundColor: "",
+        //             });
+        //           }
+        //         }
 
         if (e.panel.cellType == wjcGrid.CellType.Cell) {
           if (column == 'QuantityTTCDT') {
@@ -85,7 +101,14 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
                 backgroundColor: ''
               });
             }
-
+          else
+            if (column == 'Quantity1') {
+              wjcCore.setCss(e.cell, {
+                color: 'red',
+                fontWeight: 'bold',
+                backgroundColor: ''
+              });
+            }
             else {
               wjcCore.setCss(e.cell, {
                 color: '',
@@ -204,6 +227,31 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
       this.submit(formData, this.indexPage_Editor);
   }
 
+protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
+      if (flex) {
+        // get list of selected items
+        var selected = [];
+  
+        for (let k in flex.selectedRows) {
+          let _idrowdel = flex.selectedRows[k]._idx;
+          for (var i = 0; i < flex.rows.length; i++) {
+            if (i == _idrowdel) {
+              let data = flex.rows[i].dataItem;
+              // Không xóa những dòng là tiêu đề
+              if (data && (data['IsGiftItem'] == true || data['IsGiftItem'] == 1 || data['IsGiftItem'] == 1)) {
+                continue;
+              }
+              selected.push(data);
+              break;
+            }
+          }
+        }
+  
+        for (var i = 0; i < selected.length; i++) {
+          flex.itemsSource.remove(selected[i]);
+        }
+      }
+    }
   showDocumentInNewTab(id: any) {
     //exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath, parentData?.IdCCMBudget)
     let _command = this._layoutDeclare.layout.PrintDocument.Command;

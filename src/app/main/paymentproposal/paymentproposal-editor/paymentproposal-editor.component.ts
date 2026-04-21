@@ -32,6 +32,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
+  @ViewChild('grid6') grid6: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
 
@@ -59,7 +60,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6];
     this.init();
     //this.grid1.isReadOnly = true;
     this.grid.allowAddNew = false;
@@ -70,6 +71,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
     this.grid4.allowAddNew = false;
     this.grid5.allowAddNew = false;
     this.grid5.isReadOnly = true;
+    this.grid6.allowAddNew = false;
     // this.grid5.allowAddNew = false;
 
     this.dbClickCellContent(this.grid2);
@@ -167,6 +169,36 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
         }
       }
     });
+
+    this.grid6.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+
+      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+        let data = s.rows[e.row].dataItem;
+
+        if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          if (data['EstimatedTimeDelivery'] < this.parentData["DocDate"] && data['IsTitleRow'] == false) {
+            wjcCore.setCss(e.cell, {
+              color: 'red',
+              fontWeight: ''
+            });
+          }
+          else
+            if (data['IsTitleRow'] == true) {
+              wjcCore.setCss(e.cell, {
+                color: 'black',
+                fontWeight: 'bold'
+              });
+            }
+            else {
+              wjcCore.setCss(e.cell, {
+                color: '',
+                fontWeight: '',
+                // backgroundColor: ''
+              });
+            }
+        }
+      }
+    });
     // this.grid5.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
     //   if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
@@ -198,7 +230,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
     for (let i in this.gridArray) {
-      if (this.gridArray[i].itemsSource.items.length == 0 && i != '0' && i != '2' && i != '3' && i != '4' && i != '5') {
+      if (this.gridArray[i].itemsSource.items.length == 0 && i != '0' && i != '2' && i != '3' && i != '4' && i != '5' && i != '6') {
         _numEror += 1;
         break;
       }
@@ -372,6 +404,29 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
       }
 
       for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
+
+  async onClick_3(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild3) {
         if (this.editorFrm.valid)
           await this.dfpanel.runConstraint(command).then();
       }

@@ -96,6 +96,7 @@ export class BaseEditorService extends BaseService {
 
   //Dương replace post 1305
   post(model: any, useXML: boolean = false, id: number = -1): Observable<any> {
+   
     const _url = this._puchaseUrl;
     let _body = JSON.stringify(model);
     _body = Global.convertConfig(_body);
@@ -158,13 +159,15 @@ export class BaseEditorService extends BaseService {
       xmlstruct += '\n</NewDataSet>';
       paramStruct.ParameterValue = xmlstruct;
 
-      console.log(params);
+     
       return this.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_sys_DataCRUD0', params, model.EditorData);
 
     } else {
+     
       return this._http.post(_url + 'save', _body, options)
         .map((response: Response) => <any>response.json())
         .catch(this.handleError);
+     
     }
   }
 

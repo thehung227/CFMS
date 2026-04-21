@@ -410,7 +410,7 @@ export class LayoutMaterialMeUsageStatusEditor implements IEditorFormulaDeclarat
         },
         'Evaluator_ServerConstraint_Detail_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'ProductCostId,TypeXDME,{VAR=Branch.Ma_Dvcs}',
+            ConstraintKey: 'ProductCostId,DocCode,TypeXDME,{VAR=Branch.Ma_Dvcs}',
             Command: 'usp_Vct_BaoCaoTinhTrangSuDungHaoHutVTXD',
             OutputTable: 0
         },

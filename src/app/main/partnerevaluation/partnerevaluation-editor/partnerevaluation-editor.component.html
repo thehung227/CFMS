@@ -7,9 +7,9 @@
                 <h3 class="box-title" id="titleName">Module đánh giá đối tác</h3>
                 <div class="box-tools pull-right">
 
-                    <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)"
+                    <!-- <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)"
                         [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true || parentData?.Id < 0"
-                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button> -->
                     <button class="btn btn-success" type="submit"
                         [disabled]="!editorFrm.valid || (parentData?.ApproveSend==true && (nUserId!=5426 && nUserId!=4676 && nUserId!=4)) || showLoading==true"
                         *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
@@ -51,13 +51,13 @@
                             <li>
                                 <a href="#tab7" data-toggle="tab" (click)="onTabClick(grid6)">Thông tin</a>
                             </li>             
-                            <li>
+                             <li style="display:none;">
                                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Tài liệu đính kèm</a>
                             </li>
-                            <li>
+                            <li style="display:none;">
                                 <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">Bước duyệt</a>
                             </li>
-                            <li>
+                             <li style="display:none;">
                                 <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">WorkFlow</a>
                             </li>
                             <li>

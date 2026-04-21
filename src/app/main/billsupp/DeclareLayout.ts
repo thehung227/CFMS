@@ -204,7 +204,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             },
             Child: [
                 {
-                    Name: 'vB30BizDocCCMDetail_Edit',
+                    Name: 'vB30BizDocCCMDetail_EditP4',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -216,7 +216,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     }
                 },
                 {
-                    Name: 'vB30BizDocCCMDetail01_Edit',
+                    Name: 'vB30BizDocCCMDetail01_EditP4',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -228,7 +228,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     }
                 },
                 {
-                    Name: 'vB30BizDocCCMDetail02_Edit',
+                    Name: 'vB30BizDocCCMDetail02_EditP4',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -240,7 +240,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     }
                 },
                 {
-                    Name: 'vB30BizDocCCMDetail03_Edit',
+                    Name: 'vB30BizDocCCMDetail03_EditP4',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -252,7 +252,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     }
                 },
                 {
-                    Name: 'vB30BizDocCCMDetail04_Edit',
+                    Name: 'vB30BizDocCCMDetail04_EditP4',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -653,14 +653,14 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             MessageText: 'Giá trị hoàn trả tạm ứng không được vượt quá giá trị tạm ứng',
             IgnoreError: 0
         },
-        'Evaluator_ServerConstraint_Check_UserModified': {
-            EvaluatorName: 'EvaluatorValidate',
-            ConstraintKey: '{VAR=User.Id},BizDocId,DocCode',
-            Command: 'ufn_Coteccons_CheckUser_ModifiedBy',
-            MessageText: 'Không được điều chỉnh dữ liệu của người dùng khác',
-            IgnoreError: 0,
-            zExpr: 'Id > 0 && ApproveSend == false'
-        },
+        // 'Evaluator_ServerConstraint_Check_UserModified': {
+        //     EvaluatorName: 'EvaluatorValidate',
+        //     ConstraintKey: '{VAR=User.Id},BizDocId,DocCode',
+        //     Command: 'ufn_Coteccons_CheckUser_ModifiedBy',
+        //     MessageText: 'Không được điều chỉnh dữ liệu của người dùng khác',
+        //     IgnoreError: 0,
+        //     zExpr: 'Id > 0 && ApproveSend == false'
+        // },
         //không đổi tên 
         'Evaluator_ServerConstraint_LoadDataImport': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
@@ -701,28 +701,28 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         },
         'Evaluator_ServerUpdated_BuiltinOrder': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail},{VAR=Keys_B30BizDocCCMDetail},{VAR=FieldOrders_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_Web_SetBuiltionOrder'
+            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail},{VAR=Keys_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId',
+            Command: 'usp_Coteccons_Web_SetBuiltionOrder_Opt2016'
         },
         'Evaluator_ServerUpdated_BuiltinOrder01': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail01},{VAR=Keys_B30BizDocCCMDetail},{VAR=FieldOrders_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_Web_SetBuiltionOrder'
+           ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail01},{VAR=Keys_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId',
+            Command: 'usp_Coteccons_Web_SetBuiltionOrder_Opt2016'
         },
         'Evaluator_ServerUpdated_BuiltinOrder02': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail02},{VAR=Keys_B30BizDocCCMDetail},{VAR=FieldOrders_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_Web_SetBuiltionOrder'
+            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail02},{VAR=Keys_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId',
+            Command: 'usp_Coteccons_Web_SetBuiltionOrder_Opt2016'
         },
         'Evaluator_ServerUpdated_BuiltinOrder03': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail03},{VAR=Keys_B30BizDocCCMDetail},{VAR=FieldOrders_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_Web_SetBuiltionOrder'
+            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail03},{VAR=Keys_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId',
+            Command: 'usp_Coteccons_Web_SetBuiltionOrder_Opt2016'
         },
         'Evaluator_ServerUpdated_BuiltinOrder04': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail04},{VAR=Keys_B30BizDocCCMDetail},{VAR=FieldOrders_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_Web_SetBuiltionOrder'
+            ConstraintKey: '{VAR=TableNames_B30BizDocCCMDetail04},{VAR=Keys_B30BizDocCCMDetail},{VAR=EmptyField_CCMBudgetId},BizDocId',
+            Command: 'usp_Coteccons_Web_SetBuiltionOrder_Opt2016'
         },
         'Evaluator_ServerUpdated_BizDocCCMDetail_UpdateFromParent': {
             EvaluatorName: 'EvaluatorQuery',
@@ -737,7 +737,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerUpdated_BizDocCCM_RoundAmount': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId',
-            Command: 'usp_Newtecons_BizDocCCM_UpdateAmountFromChild'
+            Command: 'usp_Newtecons_BizDocCCM_UpdateAmountFromChild_B4'
         }
     }
 
@@ -760,8 +760,8 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
        
         ////'Evaluator_ServerConstraint_Check_GiaTriThiCong',
       
-        'Evaluator_ServerConstraint_Amount_TamUng_Compare_Amount_HoanTra',
-        'Evaluator_ServerConstraint_Check_UserModified'
+        // 'Evaluator_ServerConstraint_Amount_TamUng_Compare_Amount_HoanTra',
+        // 'Evaluator_ServerConstraint_Check_UserModified'
     ]
 
     serverUpdated: string[] = [
@@ -786,8 +786,9 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Exists_Settlement',
         
         // 'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',
-        'Evaluator_ServerConstraint_Check_UserModified',
+        // 'Evaluator_ServerConstraint_Check_UserModified',
         'Evaluator_ServerConstraint_Amount_HDPL',
+        'Evaluator_ServerConstraint_Amount_KHKK_BCTC',
         'Evaluator_Amount_HoanTra_Query',
       'Evaluator_ServerConstraint_Get_PercentTemp',
         'Evaluator_ServerConstraint_Amount_TTKyTruoc',
@@ -1572,28 +1573,75 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
-        {
-            header: 'Dòng kế thừa PL',
-            binding: 'InheritanceRowIdPL',
-            width: 0,
-            isReadOnly: 'true'
-        },
-        {
-            header: 'Dòng kế thừa',
-            binding: 'InheritanceRowId',
-            width: 120
-        },
-        {
-            header: 'Key',
-            binding: 'RowId',
-            width: 120
-        },
+        // {
+        //     header: 'Dòng kế thừa PL',
+        //     binding: 'InheritanceRowIdPL',
+        //     width: 0,
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Dòng kế thừa',
+        //     binding: 'InheritanceRowId',
+        //     width: 0,
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Key',
+        //     binding: 'RowId',
+        //     width: 0,
+        //     isReadOnly: 'true'
+        // },
         {
             header: 'Tên QLKL',
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+        {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns1 = [
@@ -1774,7 +1822,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
-        {
+         {
             header: 'Dòng kế thừa PL',
             binding: 'InheritanceRowIdPL',
             width: 0,
@@ -1783,7 +1831,13 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         {
             header: 'Dòng kế thừa',
             binding: 'InheritanceRowId',
-            width: 120,
+            width: 0,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Key',
+            binding: 'RowId',
+            width: 0,
             isReadOnly: 'true'
         },
         {
@@ -1791,7 +1845,52 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+        {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns2 = [
@@ -1972,7 +2071,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
-        {
+         {
             header: 'Dòng kế thừa PL',
             binding: 'InheritanceRowIdPL',
             width: 0,
@@ -1981,19 +2080,66 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         {
             header: 'Dòng kế thừa',
             binding: 'InheritanceRowId',
-            width: 120
+            width: 0,
+            isReadOnly: 'true'
         },
         {
             header: 'Key',
             binding: 'RowId',
-            width: 120
+            width: 0,
+            isReadOnly: 'true'
         },
         {
             header: 'Tên QLKL',
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+        {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns3 = [
@@ -2183,19 +2329,66 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         {
             header: 'Dòng kế thừa',
             binding: 'InheritanceRowId',
-            width: 120
+            width: 0,
+            isReadOnly: 'true'
         },
         {
             header: 'Key',
             binding: 'RowId',
-            width: 120
+            width: 0,
+            isReadOnly: 'true'
         },
         {
             header: 'Tên QLKL',
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+        {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns4 = [
@@ -2385,7 +2578,13 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         {
             header: 'Dòng kế thừa',
             binding: 'InheritanceRowId',
-            width: 120,
+            width: 0,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Key',
+            binding: 'RowId',
+            width: 0,
             isReadOnly: 'true'
         },
         {
@@ -2393,7 +2592,52 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+        {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ]
    
 }

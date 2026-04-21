@@ -361,6 +361,12 @@ export class LayoutBillInternalEquipEditor implements IEditorFormulaDeclaration 
             Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_DocDate',
             DataMember: 'DocNo'
         },
+         'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: '{VAR=EmptyField_ParentBizDocId},DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,DocDate,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_DocDate',
+            DataMember: 'DocNoUnique'
+        },
         'Evaluator_ServerConstraint_CheckUniqueDocNo': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},BizDocId,DocCode,DocNo',
@@ -507,6 +513,7 @@ export class LayoutBillInternalEquipEditor implements IEditorFormulaDeclaration 
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_Check_ImportedExcel',
         'Evaluator_ServerConstraint_Amount_TTKyTruoc',
         'Evaluator_ServerConstraint_DefaultPayRequireNum'

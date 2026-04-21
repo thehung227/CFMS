@@ -202,4 +202,8 @@ export class TenderSelectionEditorComponent extends BaseEditorComponent implemen
   ngOnDestroy() {
     this.destroy();
   }
+
+  exportHtmlWorkFlow(input: any, extInput?: string) {
+    this.exportHtml_WorkFlow('WorkFlow_SSG.docx', 'WorkFlow TP.NCC - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}', '/3.Mau_In/{VAR=Branch.Ma_Dvcs}/', input, extInput, 'DocCode');
+  }
 }

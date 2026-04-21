@@ -17,6 +17,8 @@
             (click)="showDocumentInNewTab(parentData?.IdCCMBudget)">
             Xem KHKK
           </button> -->
+          <button class="btn btn-warning" type="button" (click)=saveData(editorFrm,1) *ngIf="parentData?.CompletedApprove != true"
+          [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Lưu</button>
           <button class="btn btn-success" type="button" (click)=onClick(3)
             *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>

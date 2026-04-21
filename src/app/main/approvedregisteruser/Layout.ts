@@ -146,7 +146,7 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
                     Id: -1
                 }
             },
-            Child: [
+           Child: [
                 {
                     Name: 'vB30BizDocVBDetail_Edit',
                     ParentKey: 'BizDocId',
@@ -154,15 +154,31 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
                     DefaultValues: {
                         BizDocId: 'Parent.BizDocId',
                         BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate'
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
+                },
+                {
+                    Name: 'vB30BizDocVBDetail2_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
                 },
                 {
                     Name: 'vB30BizDocDocument',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
-                    Sort: 'BuiltinOrder'
-                },                
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                    }
+                },
                 {
                     Name: 'vB30BizDocApprove_AEditBizDocVB',
                     ParentKey: 'BizDocId',
@@ -173,16 +189,26 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
-                },                
+                },
                 {
                     Name: 'vB30BizDocApproveLog_Edit',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
-                    Sort: 'BuiltinOrder',
                     DefaultValues: {
-                        BizDocId: '',
+                        BizDocId: 'Parent.BizDocId',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
+                },
+                 {
+                    Name: 'vB30BizDocVBDetail3_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
                         BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate'
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
                 }
             ]
@@ -210,15 +236,7 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             label: 'Panel 1',
             col: 12,
             controls: [
-                new NumberBoxInput({
-                    key: 'IdBizDocVB',
-                    label: '_Id',
-                    type: 'number',
-                    dataType: 'n0',
-                    visible: 'false',
-                    col: 12,
-                    labelCol: 5
-                }),
+               
                 new DateBoxInput({
                     key: 'DocDate',
                     label: 'Ngày lập',
@@ -320,6 +338,69 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
     ];
 
      childColumns = [
+         {
+            header: 'Vai trò',
+            dataType: 'Array',
+            lookupKey: 'Position',
+            // 
+            bindingList: {
+                Name: 'PositionName'
+            },
+            lookupfilter: 'IsActive=1',
+            exprReadOnly: "{EXPR=EmployeeCode} != ''",
+            binding: 'PositionCode',
+            width: 100,
+            isReadOnly: 'true'
+         
+
+        },
+        {
+            header: 'Vai trò',
+            binding: 'PositionName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeCode1',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName1',
+                Email: 'Email1',
+                 Mobile: 'Mobile1'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeName1',
+            width: 200,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Email công ty',
+            binding: 'Email1',
+            width: 220,
+            isReadOnly: 'true'
+        },
+       
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80,
+            isReadOnly: 'true'
+        },
         {
             header: 'Nhân viên hiện tại',
             binding: 'EmployeeCode',
@@ -332,7 +413,7 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
                 Email: 'Email'
             },
             lookupfilter: 'IsActive=1',
-            width: 150
+            width: 100
         },
         {
             header: 'Nhân viên hiện tại',
@@ -340,8 +421,20 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             width: 200,
             isReadOnly: 'true'
         },
+       
         {
-            header: 'Chức vụ hiện tại',
+            header: 'Email công ty',
+            binding: 'Email',
+            width: 150,
+            isReadOnly: 'true'
+        },
+      
+      
+    ]
+
+childColumns1 = [
+     {
+            header: 'Vai trò',
             dataType: 'Array',
             lookupKey: 'Position',
             // 
@@ -352,49 +445,86 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             exprReadOnly: "{EXPR=EmployeeCode} != ''",
             binding: 'PositionCode',
             width: 100
+
         },
         {
-            header: 'Chức vụ hiện tại',
+            header: 'Vai trò',
             binding: 'PositionName',
-            width: 150,
-            isReadOnly: 'true'
-        },
-        {
-            header: 'Email công ty',
-            binding: 'Email',
-            width: 220,
+            width: 200,
             isReadOnly: 'true'
         },
        {
-            header: 'Nhân viên mới',
+            header: 'Nhân sự tham gia',
             binding: 'EmployeeCode1',
             dataType: 'Array',
             lookupKey: 'HrisEmployee',
             // 
             bindingList: {
                 EmployeeName: 'EmployeeName1',
-                Email: 'Email1'
+                Email: 'Email1',
+                Mobile: 'Mobile1'
+
             },
             lookupfilter: 'IsActive=1',
             width: 150
         },
         {
-            header: 'Nhân viên mới',
+            header: 'Nhân sự tham gia',
             binding: 'EmployeeName1',
             width: 200,
             isReadOnly: 'true'
         },
-        
+          {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220
+        },
         {
             header: 'Email công ty',
             binding: 'Email1',
             width: 220,
             isReadOnly: 'true'
         },
+        
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeCode',
+            isReadOnly: 'true',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName',
+                Email: 'Email'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 100
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'Email',
+            width: 150,
+            isReadOnly: 'true'
+        },
+      
+      
       
     ]
 
-    childColumns1 = [
+    childColumns2 = [
         // {
         //     header: 'Mã tài liệu',
         //     binding: 'DocumentCode',
@@ -408,22 +538,22 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             binding: 'Description',
             width: 250,
         },
-        {
+         {
             header: 'File đính kèm',
             binding: 'FilePath',
-            width: 600,
+            width: 300,
             dataType: 'Object',
-            allowRemove: false,
+            // allowRemove: false,
             allowView: true,
             allowDownLoad: true,
-            allowUpload: false,
+            // allowUpload: true,
             folderId: '{EXPR=IdBizDocVB}'
-        }
+        },
     ]
 
-    childColumns2 = [
+    childColumns3 = [
         {
-            header: 'STT duyệt',
+            header: 'STT',
             binding: 'ApproveGroup',
             dataType: 'Number',
             width: 50,
@@ -507,9 +637,9 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
         //     width: 150,
         //     isReadOnly: 'true'
         // }
-    ];
+    ]
 
-    childColumns3 = [
+    childColumns4 = [
         {
             header: 'STT',
             binding: 'ApproveGroup',
@@ -517,11 +647,11 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             width: 50,
             align: 'center',
         },
-        {
-            header: 'Cấp bậc duyệt',
-            binding: 'PositionName',
-            width: 200
-        },
+        // {
+        //     header: 'Cấp bậc duyệt',
+        //     binding: 'PositionName',
+        //     width: 250
+        // },
         {
             header: 'Người thực hiện',
             binding: 'EmployeeName',
@@ -553,5 +683,94 @@ export class LayoutApprovedRegisterUserEditor implements IEditorFormulaDeclarati
             format: 'dd/MM/yyyy HH:mm',
             width: 150
         }
-    ];
+    ]
+
+    childColumns5 = [
+         {
+            header: 'Vai trò',
+            dataType: 'Array',
+            lookupKey: 'Position',
+            // 
+            bindingList: {
+                Name: 'PositionName'
+            },
+            lookupfilter: 'IsActive=1',
+            exprReadOnly: "{EXPR=EmployeeCode} != ''",
+            binding: 'PositionCode',
+            width: 100
+
+        },
+        {
+            header: 'Vai trò',
+            binding: 'PositionName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+       {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeCode1',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName1',
+                Email: 'Email1',
+                Mobile: 'Mobile1'
+
+            },
+            lookupfilter: 'IsActive=1',
+            width: 150
+        },
+        {
+            header: 'Nhân sự tham gia',
+            binding: 'EmployeeName1',
+            width: 200,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Mobile',
+            binding: 'Mobile1',
+            width: 220
+        },
+        {
+            header: 'Email công ty',
+            binding: 'Email1',
+            width: 220,
+            isReadOnly: 'true'
+        },
+        
+         {
+            header: 'Xóa',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeCode',
+            isReadOnly: 'true',
+            dataType: 'Array',
+            lookupKey: 'HrisEmployee',
+            // 
+            bindingList: {
+                EmployeeName: 'EmployeeName',
+                Email: 'Email'
+            },
+            lookupfilter: 'IsActive=1',
+            width: 100
+        },
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'EmployeeName',
+            width: 200,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Nhân viên hiện tại',
+            binding: 'Email',
+            width: 150,
+            isReadOnly: 'true'
+        },
+    ]  
 }

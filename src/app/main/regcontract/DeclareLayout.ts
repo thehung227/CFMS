@@ -1793,8 +1793,8 @@ export class LayoutRegAppendixEditor implements IEditorFormulaDeclaration {
         },
         'Evaluator_ServerConstraint_SubContractBeforeValue': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: 'BizDocId,ParentBizDocId,{VAR=Branch.Ma_Dvcs}',
-            Command: 'usp_Coteccons_C4_GiaTriPhuLucTruoc',
+            ConstraintKey: 'BizDocId,ParentBizDocId,ProductCostId,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_Coteccons_C4_GiaTriPhuLucTruoc_PL',
             DataMember: 'SubContractBeforeValue,SubContractBeforeValueAddVAT'
         },
 
@@ -2332,11 +2332,11 @@ export class LayoutRegAppendixEditor implements IEditorFormulaDeclaration {
                     type: 'number',
                     col: 6,
                 }),
-                new CheckBoxInput({
-                    key: 'IsSubContractPay',
-                    label: 'PL được t.toán (cty TV)',
-                    col: 6,
-                }),
+                // new CheckBoxInput({
+                //     key: 'IsSubContractPay',
+                //     label: 'PL được t.toán (cty TV)',
+                //     col: 6,
+                // }),
                 new LookupBoxInput({
                     key: 'ProcessCode',
                     label: 'Quy trình duyệt',

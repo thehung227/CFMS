@@ -525,7 +525,7 @@ export class LayoutAppendixEditor implements IEditorFormulaDeclaration {
 
     serverUpdating: string[] = [
         'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo',
-        'Evaluator_ServerConstraint_Check_DocDateWithDateOfProduct',
+        // 'Evaluator_ServerConstraint_Check_DocDateWithDateOfProduct',
         'Evaluator_ServerConstraint_Check_GiaTriHDPLHD_BCTC',
         'Evaluator_ServerConstraint_Check_GiaTriHDPLHD_KHKK'
         // 'Evaluator_ServerConstraint_Check_ApproveSent_NotChange'

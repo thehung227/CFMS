@@ -3,12 +3,25 @@
     "ApiEndpoint": "https://cfms.newtecons.vn",
     "BranchCode": "N01",
     "SSO_2": {
-      "Authority": "https://auth.newtecons.vn",
-      "UrlApp": "http://localhost:4200/#/auth",
-      "ClientId": "5ebb890b-a43d-4643-ad7f-6dd42d287ed1",
-      "ClientSecret": "tahXcPxxaAFJ6bHaYJtAAbtlh0JlPHKPKybDZhUkd8k=",
-      "Scope": "openid profile email api",
-       "Logout": "https://auth.newtecons.vn/account/logout?returnUrl=http://localhost:4200/#/logout?expried=1"
+      "Authority": "https://sso.newtecons.vn/realms/Newtecons",
+      "UrlApp": "http://localhost:4200/assets/callback.html",
+      "ClientId": "EEF0DEFE-9369-43A5-93B1-788530C5FBF5",
+      "Scope": "openid profile email",
+      "Logout": "https://sso.newtecons.vn/realms/Newtecons/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/#/login"
+
+    }
+  },
+
+  "cfms.newtecons.vn": {
+    "ApiEndpoint": "https://cfms.newtecons.vn",
+    "BranchCode": "N01",
+    "SSO_2": {
+      "Authority": "https://sso.newtecons.vn/realms/Newtecons",
+      "UrlApp": "https://cfms.newtecons.vn/assets/callback.html",
+      "ClientId": "EEF0DEFE-9369-43A5-93B1-788530C5FBF5",
+      "Scope": "openid profile email",
+      "Logout": "https://sso.newtecons.vn/realms/Newtecons/protocol/openid-connect/logout?redirect_uri=https://cfms.newtecons.vn/#/login"
+
     }
   }
 }

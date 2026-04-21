@@ -398,6 +398,12 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
             Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_New',
             DataMember: 'DocNo'
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: '{VAR=EmptyField_ParentBizDocId},DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,DocDate,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_New',
+            DataMember: 'DocNoUnique'
+        },
         'Evaluator_ServerConstraint_CheckUniqueDocNo': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},BizDocId,DocCode,DocNo',
@@ -546,6 +552,7 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_Check_ImportedExcel',
         'Evaluator_ServerConstraint_Amount_TTKyTruoc',
         'Evaluator_ServerConstraint_DefaultPayRequireNum',
@@ -706,7 +713,7 @@ export class LayoutBillPayDeptEditor implements IEditorFormulaDeclaration {
                     key: 'ProductCostId',
                     label: 'Gói thầu/ PB',
                     lookupKey: 'ProductCost',
-                    lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductType IN (1,3) AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ('{VAR=User.IsAdmin}'='True' OR (RowId = '{VAR=Filter.ProductCostId}' AND RowId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}'))))",
+                    lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductType IN (1,3) AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ('{VAR=User.IsAdmin}'='True' OR (RowId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}'))))",
                     validators: [Validators.required],
                     hideValueMember: true,
                     col: 12,

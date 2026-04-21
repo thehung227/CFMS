@@ -182,19 +182,18 @@ export class LayoutApprovedMaterialUsageStatusEditor implements IEditorFormulaDe
             ]
         },
         PrintDocument: {
-            Key: 'BizDocCCMViewer',
-            Text: 'Bảng chi tiết phiếu xuất kho',
+             Key: 'BizDocViewer',
+            Text: 'Mẫu in đơn hàng mua',
             Command: 'usp_B30Budget_VoucherForm_Approve',
-            // Command_WorkFlow: '',
             LayoutPrint: [
                 {
                     Layout: "MAU1",
-                    Name: "Kế hoạch mua hàng dự án",
-                    FileName: "Kế hoạch mua hàng - {EXPR=DocNo}",
-                    ExcelName: "CCM_KeHoachVLXD.xlsx",
+                    Name: "Tình trạng hao hụt vật tư",
+                    FileName: "Tình trạng hao hụt vật tư - {EXPR=DocNo}",
+                    ExcelName: "CCM_TinhTrangHaoHutVT.xlsx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
-                },
-            ]
+                }
+            ],
    
     },
     };
@@ -344,6 +343,13 @@ export class LayoutApprovedMaterialUsageStatusEditor implements IEditorFormulaDe
         {
             header: 'Tên mặt hàng',
             binding: 'ItemName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Tên mặt hàng (Theo Hợp Đồng NCC)',
+            binding: 'OriginName',
             dataType: 'String',
             width: 200,
             isReadOnly: 'true'

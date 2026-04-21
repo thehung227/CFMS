@@ -149,7 +149,7 @@
             <div class="tab-pane active" id="tab1">
               <section id="new">
                   <!-- [ngStyle]="setHeightGrid()" -->
-                <wj-flex-grid class="grid" #grid style="height:650px;">
+                <wj-flex-grid class="grid" #grid style="height:650px;" (contextmenu)="openRowContextMenu($event, grid)">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>
@@ -215,7 +215,30 @@
   <!-- /.box -->
 </section>
 <!-- /.content -->
+<!-- Right-click menu (ONLY for grid Chi tiết) -->
+<div class="wj-row-context-menu"
+     *ngIf="rowMenuVisible"
+     [ngStyle]="rowMenuStyle"
+     (click)="$event.stopPropagation()"
+     (contextmenu)="$event.preventDefault()">
 
+  <div class="wj-row-context-menu__item"
+       (click)="onInsertRowAtCursor()">
+    + Insert dòng mới tại vị trí này
+  </div>
+
+  <div class="wj-row-context-menu__item"
+       (click)="onInsertRowBelowCursor()">
+    + Insert dòng mới bên dưới
+  </div>
+
+  <div class="wj-row-context-menu__divider"></div>
+
+  <div class="wj-row-context-menu__item danger"
+       (click)="onDeleteRowAtCursor()">
+    🗑 Xóa dòng đang chọn
+  </div>
+</div>
 <!--Loading-->
 <div *ngIf="showLoading" class="bravo-wait">
   <img src="/assets/img/gears.svg" style="width:50%">

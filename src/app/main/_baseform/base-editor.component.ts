@@ -452,10 +452,6 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
   async exportHtml(name: string, fileName: string, folderPath: string, _idTT?: number) {
     this.showLoading = true;
-    console.log(name)
-    console.log(fileName)
-    console.log(folderPath)
-    console.log(_idTT)
 
     let _command = this._layoutDeclare.layout.PrintDocument.Command;
 
@@ -1569,7 +1565,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
               
             } else {
               child_FolderId = this.translate_expr(_col['folderId']);
-              console.log([child_FolderId])
+           
             }
 
             let name = b ? _file + '.pdf' : _file;
@@ -1630,9 +1626,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
                 _div.remove();
               });
             this.subscription.add(prosub);
-           console.log(_folderName)
-           console.log(child_FolderId)
-           console.log(name)
+        
             const sub = this._service.dowload(_folderName, child_FolderId, name).subscribe(blob => {
 
               if (name.toUpperCase().endsWith('PDF') == false || (blob.size / 1024) > 10240)
@@ -2243,7 +2237,6 @@ export abstract class BaseEditorComponent implements OnDestroy {
         Layout: this._layoutDeclare.layout.Structure,
         EditorData: _ds
       }).toPromise();
-   
       if (data instanceof Object) {
       }
       else {
@@ -2828,7 +2821,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
       this.upLoadFiles().then(async (result) => {
         // this.showLoading = true;
-        console.log(result);
+   
         if (result) {
           let IsAttachParentFail = false;
           let ListIdDetail = Array<string>();
@@ -3285,7 +3278,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
   
   upLoadFiles() {
     // if (!this.editorFrm.controls['IdApprove'])
-      console.log(!this.editorFrm.controls['IdApprove'])
+   
     if (this.filesUpload.length > 0) {
       if (!this.parentData['IdApprove'])
         return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['Id']).toPromise();
@@ -4383,7 +4376,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
           file.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + data.controls['DocNo'].value.replace(/\//gi, '-') + '.pdf';
          
           file.source = _configMail[0]['TemplatePath'];
-          console.log(file);
+       
           this.SendMailObject.files.push(file);
          
           if (_configMail[0]['NumOfAttachFile'])
@@ -4526,7 +4519,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
           }
           else
           if (docCode1 == 'CL') {
-            console.log(docCode1);
+         
             await this._service.exportHtml('/5.TemplateMail/CCM_HoanThanhDuyet_Claim.docx', body).toPromise().then(data => {
               _html = data['html'];
               if (_html.toString().indexOf('______________________________') > -1) {

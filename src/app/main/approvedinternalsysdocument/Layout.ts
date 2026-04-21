@@ -340,6 +340,7 @@ export class LayoutApprovedInternalSysDocumentEditor implements IEditorFormulaDe
                     style: 'background-color:#F1EDED;border-radius:8px;',
                     
                 }, this.srv, this.parentData),
+              
                 new TextBoxInput({
                     key: 'Remark',
                     label: 'Ghi chú',

@@ -40,8 +40,7 @@
                         [disabled]="!editorFrm.valid">Trả lại</button>
                     <button class="btn btn-primary" type="button" (click)=onClick(1) *ngIf="parentData?.CompletedApprove != true "
                          [disabled]="!editorFrm.valid">Duyệt</button>
-                    <button class="btn btn-success" type="submit"
-                        [disabled]="!editorFrm.valid || parentData?.CompletedApprove==true || showLoading==true">Lưu</button>
+                    <button class="btn btn-success" type="submit">Lưu</button>
                     <a class="btn btn-default" [routerLink]="['/main','paymentproposaltotal','index']">Thoát</a>
                     <!-- (click)="closeWindow()" -->
                 </div>
@@ -186,7 +185,7 @@
                                     <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                                         <i  class="fa fa-print" style="font-size:12pt;color:#53697c" title="Mở form nhập liệu" (click)="exportHtmlWorkFlow(grid1)"></i>
                                       </template> -->
-                                    <!-- <wj-flex-grid-filter #filter></wj-flex-grid-filter> -->
+                                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
                                 </wj-flex-grid>
                                 <!-- lưới hỗ trợ in detail -->
                                 <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
@@ -202,6 +201,7 @@
                                     <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
                                         <!-- <button class="btn fa fa-trash" (click)=deleteSelectedRows(grid1)></button>               -->
                                     </template>
+                                     <wj-flex-grid-filter #filter></wj-flex-grid-filter>
                                 </wj-flex-grid>
                             </section>
                         </div>

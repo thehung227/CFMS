@@ -368,18 +368,19 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             binding: 'EstimatedTimeDelivery',
             width: 80,
             dataType: 'Date',
-            format: 'dd/MM/yyyy'
+            format: 'dd/MM/yyyy',
+            isReadOnly: 'true',
         },
         {
             header: 'Mã cấu kiện',
             binding: 'TradeMarkCode',
             dataType: 'Array',
             lookupKey: 'Class',
-            bindingList: {
-                Name: 'Description',
-            },
+            // bindingList: {
+            //     Name: 'Description',
+            // },
             lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='CAUKIEN'",
-            width: 100
+            width: 0
         },
         {
             header: 'Tên cấu kiện',
@@ -390,12 +391,14 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
         {
             header: 'Khu vực',
             binding: 'XuatXu',
-            width: 150
+            width: 150,
+            isReadOnly: 'true',
         },
         {
             header: 'Vị trí',
             binding: 'NhanHieu',
-            width: 150
+            width: 150,
+            isReadOnly: 'true',
         },
         {
             header: 'Cường độ',
@@ -403,7 +406,13 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             lookupKey: 'Size',
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
             binding: 'ProductSize',
-            width: 100
+            width: 0
+        },
+         {
+            header: 'Cường độ',
+            binding: 'ProductSizeName',
+            isReadOnly: 'true',
+            width: 150
         },
         {
             header: 'Độ sụt',
@@ -411,31 +420,25 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             lookupKey: 'Species',
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
             binding: 'ItemSpeciesCode',
-            width: 70
+            width: 0
         },
         {
             header: 'Tên độ sụt',
-            binding: 'ItemSpecName',
+            binding: 'ItemSpeciesName',
             isReadOnly: 'true',
             width: 150
         },
+      
         {
             header: 'Phụ gia',
-            dataType: 'Array',
-            lookupKey: 'Surface',
-            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            binding: 'ItemSurfaceCode',
-            width: 70
-        },
-        {
-            header: 'Tên phụ gia',
             binding: 'ItemSurfaceName',
+            
+            width: 150,
             isReadOnly: 'true',
-            width: 150
         },
        
         {
-            header: 'Khối lượng CĐT (m3)',
+            header: 'BOQ CĐT (m3)',
             binding: 'Quantity1',
             dataType: 'Number',
             width: 100,
@@ -446,46 +449,61 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             binding: 'Quantity2',
             dataType: 'Number',
             width: 100,
-            format: 'n3'
+            format: 'n3',
+            isReadOnly: 'true',
         },
         {
-            header: 'Số lượng thực tế',
+            header: 'Khối lượng đặt hàng (m3)',
+            binding: 'Quantity3',
+            dataType: 'Number',
+            width: 100,
+            format: 'n3',
+            isReadOnly: 'true',
+        },
+        {
+            header: 'Khối lượng thực tế',
             binding: 'Quantity9',
             dataType: 'Number',
             width: 100,
-            format: 'n3'
+            format: 'n3',
+            isReadOnly: 'true',
         },
         {
             header: 'NCC',
             binding: 'CustomerName1',
-            width: 200
+            width: 200,
+            isReadOnly: 'true'
         },
-        {
-            header: 'Số đợt Bill NCC',
-            binding: 'DotBill',
-            dataType: 'Number',
-            width: 100,
-            format: 'n0'
-        },
+        // {
+        //     header: 'Số đợt Bill NCC',
+        //     binding: 'DotBill',
+        //     dataType: 'Number',
+        //     width: 100,
+        //     format: 'n0'
+        // },
         {
             header: 'Phương pháp đổ',
             binding: 'PhuongPhapDo',
-            width: 200
+            width: 200,
+            isReadOnly: 'true'
         },
         {
             header: 'NTP bơm',
             binding: 'CustomerName2',
-            width: 200
+            width: 200,
+            isReadOnly: 'true',
         },
         {
             header: 'NTP thi công',
             binding: 'CustomerName3',
-            width: 200
+            width: 200,
+            isReadOnly: 'true',
         },
         {
             header: 'Tên GS',
             binding: 'ReceiptPerson',
-            width: 200
+            width: 200,
+            isReadOnly: 'true',
         },
         
         {
@@ -532,6 +550,13 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             isReadOnly: 'true',
             width: 100,
             format: 'p2'
+        },
+        {
+            header: 'Dữ liệu mới',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80,
+            isReadOnly: 'true'
         },
         {
             header: 'Ngày',

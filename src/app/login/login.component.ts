@@ -82,11 +82,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     .then(userAuthenticated => {
       this.userAuthenticated = userAuthenticated;
     })
+      var __returnUrl = this._getSafeReturnUrl();
+
+      console.log(__returnUrl)
 
       try {
          this.authenService.getConfig().toPromise().then(
             config => {
                let hostname = localStorage.getItem(SystemConstants.BRANCH_USESSO).replace(/"/gi, '');
+               
                if (config[hostname]) {
 
                   let url = config[hostname]['ApiEndpoint'];
@@ -181,6 +185,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         }
                      }
                      else if (_ssoName == 'SSO_2') {
+                  
                         if (!this.userAuthenticated) {
                            this.authenService._userManager.signinRedirect();
                         }
@@ -189,7 +194,11 @@ export class LoginComponent implements OnInit, OnDestroy {
                               this.returnUrl = localStorage.getItem(SystemConstants.RETURN_URL).replace(/"/gi, '');
                               if(this.returnUrl == "/logout") this.returnUrl = ""
                            }
-                                 
+                              if (this.returnUrl == '/main/home/index') {
+                                    this.returnUrl = '/main/notifications/index';   // 👈 đổi mặc định ở đây
+                                    }
+
+                              
                            this.authenService._userManager.getUser().then(_user => {
                               let _branchCode = config[hostname]['BranchCode'];
 
@@ -237,7 +246,13 @@ export class LoginComponent implements OnInit, OnDestroy {
                                                    _urlParams = atob(this.returnUrl);
                                                 else
                                                    _urlParams = this.returnUrl
-                                                this.router.navigateByUrl(_urlParams);
+
+                                                  if (__returnUrl == '/main/home/index') {
+                                                         __returnUrl = '/main/notifications/index';   // 👈 đổi mặc định ở đây
+                                                         }
+
+
+                                                this.router.navigateByUrl(__returnUrl);
                                              }
                                              else {
                                                 this.router.navigate(['/main', 'notifications', 'index']);
@@ -394,5 +409,32 @@ export class LoginComponent implements OnInit, OnDestroy {
       else
          document.getElementById('warningLogin').style.visibility = 'hidden';
    }
+
+
+// === [ADD] Helper: chuẩn hoá returnUrl (decode % và Base64; chỉ cho phép đường dẫn nội bộ) ===
+private _parseReturnUrl(raw: string): string {
+  var DEFAULT = '/main/notifications/index';
+  if (!raw) return DEFAULT;
+
+  try { raw = decodeURIComponent(raw); } catch (e) {}
+
+  // Nếu trông giống Base64 (toàn A-Za-z0-9+/=) và chưa có '/' thì thử atob
+  var re = /^[A-Za-z0-9+/=]+$/;
+  if (re.test(raw) && raw.indexOf('/') === -1) {
+    try { raw = atob(raw); } catch (e) {}
+  }
+
+  // Chỉ cho phép điều hướng nội bộ
+  if (raw.charAt(0) !== '/') return DEFAULT;
+
+  return raw;
+}
+
+// === [ADD] Lấy returnUrl một cách an toàn, ưu tiên query param rồi đến localStorage ===
+private _getSafeReturnUrl(): string {
+  var qp = (this.route && this.route.snapshot && this.route.snapshot.queryParams) ? this.route.snapshot.queryParams : {};
+  var raw = (qp && qp['returnUrl']) ? qp['returnUrl'] : (localStorage.getItem(SystemConstants.RETURN_URL) || '');
+  return this._parseReturnUrl(raw);
+}
 
 }

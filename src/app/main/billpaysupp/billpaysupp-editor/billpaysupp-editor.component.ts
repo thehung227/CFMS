@@ -19,6 +19,7 @@ import { SystemConstants } from "../../../core/common/system.constants";
 import { ParameterContract } from "../../../contracts/parameter.contract";
 import { Global } from "../../../shared/global";
 import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { Popup } from "wijmo/wijmo.input";
 
 @Component({
   selector: 'app-billpaysupp-editor-form',
@@ -33,6 +34,7 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
+  @ViewChild('dataPopup') dataPopup: Popup;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
@@ -53,11 +55,14 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
     this._layoutPrinter_WordFlow = this.layoutPrintWordFlow.Layout;
   }
 
+  
+
   @HostListener('window:resize', [])
   onWindowResize() {
     // this.resizeWidthControls();
   }
   isSubAdmin: string;
+  employeeCode: string = '';
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
     this.init();
@@ -69,6 +74,12 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
     this.grid5.allowAddNew = false;
 
     this.dbClickCellContent(this.grid3);
+    this.employeeCode = localStorage.getItem(SystemConstants.CURRENT_EMPLOYEE);
+   
+    this.employeeCode = (this.employeeCode || '').toString().trim();
+     console.log(this.employeeCode)
+    // console.log(localStorage.getItem(SystemConstants.POSITION_EMPLOYEE))
+ 
   }
 
   ngAfterViewInit() {
@@ -113,9 +124,9 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
       }
     }
     
-    this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
+    // this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
     if (_errorSave2 == false) {
-    if (this._errorUnique == false) {
+    // if (this._errorUnique == false) {
       if (_numEror == 0) {
         if (isApproveSend == true) {
           this.checkData(formData).then(() => {
@@ -161,9 +172,9 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
       else {
         alert('Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.');
       }
-    }
-    else
-      alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+    // }
+    // else
+    //   alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
   }
   else 
   alert('Yêu cầu nhập Ngày tính hạn thanh toán');
@@ -179,7 +190,10 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
     });
   }
 
-
+GetBillSuppCommandKey(docDate) {
+    var year = new Date(docDate).getFullYear();
+    return year === 2024 ? 'billsupp2024-editor' : 'billsupp-editor';
+}
 
 async checkData(formData: any) {
     let params = new Array<ParameterContract>();
@@ -235,6 +249,92 @@ async checkData(formData: any) {
       this.showLoading = false;
     }
   }
+
+_errItemSets: boolean = false;
+dataPopupContent: any = null;
+async saveData(formData: any,state: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('BizDocId');
+    param1.ParameterValue = this.parentData['BizDocId'];
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('nUserId');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID);
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
+
+
+    let _data: any = null;
+
+    try {
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid5.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['data']);
+
+      this._errItemSets = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+
+    if (this._errItemSets) {
+      alert(this._errMess)
+      this.showLoading = true;
+    }
+    else
+    {
+      // Lấy phần tử đầu tiên nếu output là mảng
+      // if (Array.isArray(output) && output.length > 0) {
+      //   this.dataPopupContent = output[0]; // 👈 lấy hóa đơn đầu tiên
+      // } else {
+      //   this.dataPopupContent = output || _data;
+      // }
+      this.dataPopupContent = this.output[0];
+
+      console.log('Data để show popup:', this.dataPopupContent);
+      if (this.dataPopup) {
+        this.dataPopup.show(true);
+        
+      }
+      // location.reload()
+      // console.log(this.parentData['Id'])
+      // this.indexPage_Editor.push(this.parentData['Id']);
+      // this.router.navigate(['main']).then(() => {
+      //   this.router.navigate(this.indexPage_Editor).then(() => {
+      //     if (this.indexPage_Editor.length > 3)
+      //     this.indexPage_Editor.pop();
+      //   })
+      // });
+    }
+  }
+
+  closePopup() {
+    this.dataPopup.hide();     // Ẩn popup
+    location.reload();         // Reload lại trang
+  }
+
 
   showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');

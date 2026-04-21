@@ -445,6 +445,12 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
             Value: "Math.round(OriginalAmount*TaxRate)",
             Tables: 0
         },
+        'Evaluator_B30BudgetDetail_ConcerlossQuantity': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: "ConcerlossQuantity",
+            Value: "Quantity*(1+ConcerlossRate)",
+            Tables: 0
+        },
         // server updated
     
         'Evaluator_UpdateInfo_WhenApproveSend': {
@@ -526,7 +532,14 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
                 },
                 Quantity: {
                     Evaluators: [
-                        'Evaluator_B30BudgetDetail_OriginalAmount'
+                        'Evaluator_B30BudgetDetail_OriginalAmount',
+                        'Evaluator_B30BudgetDetail_ConcerlossQuantity'
+                    ]
+                },
+                 ConcerlossRate: {
+                    Evaluators: [
+                       
+                        'Evaluator_B30BudgetDetail_ConcerlossQuantity'
                     ]
                 },
                 OriginalPrice: {
@@ -684,7 +697,7 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
             format: 'dd/MM/yyyy',
             width:100,
             isRequired: false,	
-            header: 'Thời gian dự kiến sử dụng',
+            header: 'Ngày dự kiến sử dụng',
             binding: 'FromDate',
             exprReadOnly: "{EXPR=IsPO} == true",
         
@@ -703,7 +716,7 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
             exprReadOnly: "{EXPR=IsPO} == true",
         },
         {
-            header: 'Mã hàng',
+            header: 'Mã hàng (Mã TVG)',
             binding: 'ItemCode',
             width: 200,
             dataType: 'Array',
@@ -719,8 +732,16 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
             exprReadOnly: "{EXPR=IsPO} == true",
         },
         {
-            header: 'Tên mặt hàng',
+            header: 'Tên mặt hàng (Theo Mã TVG)',
             binding: 'ItemName',
+            dataType: 'String',
+            width: 200,
+            exprReadOnly: "{EXPR=IsPO} == true",
+            // isReadOnly: 'true'
+        },
+        {
+            header: 'Tên mặt hàng (Theo Hợp Đồng NCC)',
+            binding: 'OriginName',
             dataType: 'String',
             width: 200,
             exprReadOnly: "{EXPR=IsPO} == true",
@@ -818,11 +839,26 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
         },
        
         {
-            header: 'Khối lượng kế hoạch (Tính toán)',
+            header: 'Khối lượng (Tính toán)',
             binding: 'Quantity',
             dataType: 'Number',
             width: 150,
              format: 'n2'
+        },
+         {
+            header: '% hao hụt cho phép',
+            binding: 'ConcerlossRate',
+            dataType: 'Number',
+            width: 150,
+             format: 'p2'
+        },
+         {
+            header: 'Khối lượng kế hoạch (gồm Hao hụt)',
+            binding: 'ConcerlossQuantity',
+            dataType: 'Number',
+            width: 150,
+             format: 'n2',
+            isReadOnly: 'true'
         },
         {
             header: 'Đơn giá NCC',

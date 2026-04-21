@@ -276,7 +276,7 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30BizDoc_Edit',
+                Name: 'vB30BizDoc_EditD3',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'D3',
@@ -292,7 +292,7 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             },
             Child: [
                 {
-                    Name: 'vB30BizDocDetail_EditHHBT',
+                    Name: 'vB30BizDocDetail_Edit',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',
@@ -643,34 +643,38 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             binding: 'EstimatedTimeDelivery',
             width: 80,
             dataType: 'Date',
-            format: 'dd/MM/yyyy'
+            format: 'dd/MM/yyyy',
+            exprReadOnly: "{EXPR=IsGiftItem} != 0"
         },
         {
             header: 'Mã cấu kiện',
             binding: 'TradeMarkCode',
             dataType: 'Array',
             lookupKey: 'Class',
-            bindingList: {
-                Name: 'Description',
-            },
+            // bindingList: {
+            //     Name: 'Description',
+            // },
             lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='CAUKIEN'",
-            width: 100
+            width: 0,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0"
         },
         {
             header: 'Tên cấu kiện',
             binding: 'Description',
-            isReadOnly: 'true',
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
             width: 150
         },
         {
             header: 'Khu vực',
             binding: 'XuatXu',
-            width: 150
+            width: 150,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0"
         },
         {
             header: 'Vị trí',
             binding: 'NhanHieu',
-            width: 150
+            width: 150,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0"
         },
         {
             header: 'Cường độ',
@@ -678,20 +682,28 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             lookupKey: 'Size',
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
             binding: 'ProductSize',
-            width: 100
+            width: 0,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0"
+        },
+         {
+            header: 'Cường độ',
+            binding: 'ProductSizeName',
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
+            width: 150
         },
         {
             header: 'Độ sụt',
             dataType: 'Array',
             lookupKey: 'Species',
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
             lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
             binding: 'ItemSpeciesCode',
-            width: 70
+            width: 0
         },
         {
             header: 'Tên độ sụt',
-            binding: 'ItemSpecName',
-            isReadOnly: 'true',
+            binding: 'ItemSpeciesName',
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
             width: 150
         },
       
@@ -699,13 +711,15 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             header: 'Phụ gia',
             binding: 'ItemSurfaceName',
             
-            width: 150
+            width: 150,
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
        
         {
             header: 'BOQ CĐT (m3)',
             binding: 'Quantity1',
             dataType: 'Number',
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
             width: 100,
             format: 'n3'
         },
@@ -714,46 +728,61 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             binding: 'Quantity2',
             dataType: 'Number',
             width: 100,
-            format: 'n3'
+            format: 'n3',
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
+        },
+        {
+            header: 'Khối lượng đặt hàng (m3)',
+            binding: 'Quantity3',
+            dataType: 'Number',
+            width: 100,
+            format: 'n3',
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         {
             header: 'Khối lượng thực tế',
             binding: 'Quantity9',
             dataType: 'Number',
             width: 100,
-            format: 'n3'
+            format: 'n3',
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         {
             header: 'NCC',
             binding: 'CustomerName1',
-            width: 200
+            width: 200,
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
-        {
-            header: 'Số đợt Bill NCC',
-            binding: 'DotBill',
-            dataType: 'Number',
-            width: 100,
-            format: 'n0'
-        },
+        // {
+        //     header: 'Số đợt Bill NCC',
+        //     binding: 'DotBill',
+        //     dataType: 'Number',
+        //     width: 100,
+        //     format: 'n0'
+        // },
         {
             header: 'Phương pháp đổ',
             binding: 'PhuongPhapDo',
-            width: 200
+            width: 200,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         {
             header: 'NTP bơm',
             binding: 'CustomerName2',
-            width: 200
+            width: 200,
+             exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         {
             header: 'NTP thi công',
             binding: 'CustomerName3',
-            width: 200
+            width: 200,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         {
             header: 'Tên GS',
             binding: 'ReceiptPerson',
-            width: 200
+            width: 200,
+            exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
         
         {
@@ -800,6 +829,13 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             isReadOnly: 'true',
             width: 100,
             format: 'p2'
+        },
+        {
+            header: 'Dữ liệu mới',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 80,
+            isReadOnly: 'true'
         },
         {
             header: 'Ngày',

@@ -180,6 +180,12 @@ async saveData(formData: any,state: any) {
     }
   }
 
+  closePopup() {
+    this.dataPopup.hide();     // Ẩn popup
+    location.reload();         // Reload lại trang
+  }
+
+
   doubleClickGrid(grid: wjcGrid.FlexGrid) {
     let navigateUrl: any[] = [];
     let host = grid.hostElement;

@@ -140,6 +140,7 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
         Structure: {
             Parent: {
                 Name: 'vB30BizDocApprove_CCMBudgetEdit',
+                IsView: 'view',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'K2',
@@ -163,6 +164,7 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
                 {
                     Name: 'vB30BizDocApproveLog_Edit',
                     ParentKey: 'BizDocId',
+                    IsView: 'view',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',
                     DefaultValues: {
@@ -174,6 +176,7 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
                 {
                     Name: 'vB30BizDocApprove_AEditBudget',
                     ParentKey: 'CCMBudgetId',
+                    IsView: 'view',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',
                     DefaultValues: {
@@ -401,11 +404,20 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
     ];
 
     childColumns = [
-        {
+         {
             header: 'STT',
             binding: 'ItemNo',
             isRequired: true,
             width: 100
+        },
+        {
+            header: 'Mã XD/ME',
+            binding: 'CodeMEXD',
+            dataType: 'Array',
+            lookupKey: 'KHC',
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ClassCode1='01'",
+            width: 150,
+            // isReadOnly: 'true'
         },
         {
             header: 'Công việc',
@@ -440,16 +452,7 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
             binding: 'CustomerName',
             width: 250,
         },
-        // {
-        //     header: 'Dự trù BCTC = 1+2+3',
-        //     binding: 'OriginalAmount',
-        //     dataType: 'Number',
-        //     width: 150,
-        //     isReadOnly: 'true',
-        //     validators: "{EXPR=OriginalAmount} < {EXPR=AmountPaid} && {EXPR=AmountPaid} != 0",
-        //     validatorMessage: 'Giá trị dự trù không được nhỏ hơn giá trị đã thực hiện',
-        //     ignoreError: 1
-        // },
+       
         {
             header: 'Dự trù CT & CCM (Trước VAT)',
             binding: 'OriginalAmount1',
@@ -457,40 +460,29 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
             width: 150
          
         },
-        // {
-        //     header: 'Giá trị bổ sung 1 (2)',
-        //     binding: 'OriginalAmount2',
-        //     dataType: 'Number',
-        //     width: 150
-         
-        // },
-        // {
-        //     header: 'Giá trị bổ sung 2 (PKT) (3)',
-        //     binding: 'OriginalAmount3',
-        //     dataType: 'Number',
-        //     width: 150
-         
-        // },
+       
         {
-            header: 'Giá trị đã TH, chưa xuất HĐ',
+            header: 'Giá trị đã TH, Chưa làm bill, chưa xuất HĐ',
             binding: 'OpenPlanAmount',
             dataType: 'Number',
             width: 150,
            
             ignoreError: 1
         },
-        // {
-        //     header: 'Id hợp đồng',
-        //     binding: 'BizDocId_C1',
-        //     width: 0,
-        //     dataType: 'Array',
-        //     lookupKey: 'BizDoc2',
-        //     bindingList: {
-        //         DocInfo: 'DocInfo',
-        //         ContractType: 'ContractType'
-        //     },
-        //     lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('C3','C4') AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (ProductCostId0 = '{EXPR=ProductCostId}' OR ProductCostId = '{EXPR=ProductCostId}' OR IsSubContractPay=1)"
-        // },
+        {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 200,
+            dataType: 'Array',
+            lookupKey: 'BizDoc2',
+            bindingList: {
+                DocInfo: 'DocInfo',
+                ContractType: 'ContractType'
+            },
+            // displayMember: 'DocInfo',
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId0='{EXPR=ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14','HD-07') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
+        },
         {
             header: 'Thông tin hợp đồng',
             binding: 'DocInfo',
@@ -507,7 +499,141 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
             header: 'Ghi chú',
             binding: 'Remark',
             width: 200
-        }
+        },
+       
+        {
+            header: 'Mã ưu tiên chi',
+            binding: 'CodeKHC',
+            dataType: 'Array',
+            lookupKey: 'KHC',
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ClassCode1='02'",
+            width: 150,
+            isReadOnly: 'true'
+        },
+        // {
+        //     header: 'KT kiểm tra LNCT',
+        //     binding: 'AmountLNCT_KT',
+        //     dataType: 'Number',
+        //     width: 150
+        // },
+        // {
+        //     header: 'KT kiểm tra LNKT',
+        //     binding: 'AmountLNKT_KT',
+        //     dataType: 'Number',
+        //     width: 150
+        // },
+        // {
+        //     header: '% dự phòng phí',
+        //     binding: 'CostPercent',
+        //     dataType: 'Number',
+        //     format: 'n3',
+        //     width: 100
+        // },
+        {
+            header: 'Giá trị đã TT',
+            binding: 'AmountPaid',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 100
+        },
+        {
+            header: 'Dự trù BCTC',
+            binding: 'OriginalAmount',
+            dataType: 'Number',
+            width: 0,
+            isReadOnly: 'true',
+            validators: "{EXPR=OriginalAmount} < {EXPR=AmountPaid} && {EXPR=AmountPaid} != 0",
+            validatorMessage: 'Giá trị dự trù không được nhỏ hơn giá trị đã thực hiện',
+            ignoreError: 1
+        },
+         {
+            header: 'Giá trị bổ sung 1 (2)',
+            binding: 'OriginalAmount2',
+            dataType: 'Number',
+            width: 0,
+            isReadOnly: 'true',
+         
+        },
+        {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmount3',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 0
+         
+        },
+        {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmount4',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 0
+         
+        },
+        {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmount5',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmountPlan3',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmountPlus',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'CostAmount',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'NoSign',
+            isReadOnly: 'true',
+     
+            width: 0
+         
+        },
+        // {
+        //     header: 'Dòng tiêu đề',
+        //     binding: 'IsTitleRow',
+        //     dataType: 'Boolean',
+        //     width: 50
+        // },
+        // {
+        //     header: 'Bậc',
+        //     binding: 'Level',
+        //     dataType: 'Number',
+        //     width: 50,
+        //     format: 'n0'
+        // },
+        // {
+        //     header: 'Công thức',
+        //     binding: 'Formula',
+        //     width: 500
+        // },
+        // {
+        //     header: 'Tự áp công thức',
+        //     binding: 'ManualFormula',
+        //     dataType: 'Boolean',
+        //     width: 80
+        // }
     ]
 
     childColumns1 = [

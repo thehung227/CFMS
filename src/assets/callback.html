@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>OIDC Redirect Callback</title>
+  <script src="/assets/js/oidc-client.min.js"></script>
+</head>
+<body>
+<script>
+  // Bật log để debug nếu cần
+  Oidc.Log.logger = console;
+  Oidc.Log.level = Oidc.Log.DEBUG;
+
+  // LẤY ĐÚNG CẤU HÌNH đã lưu bởi app (LoginComponent set SSO_DATA)
+  const raw = localStorage.getItem('SSO_DATA');
+  const sso = raw ? JSON.parse(raw) : {};
+  const origin = window.location.origin;
+
+  // PHẢI trùng authority/client_id/redirect_uri với lúc signinRedirect()
+  const settings = {
+    authority: sso.Authority || 'https://sso.newtecons.vn/realms/Newtecons',
+    client_id: sso.ClientId,
+    redirect_uri: sso.UrlApp || (origin + '/assets/refresh.html'),
+    response_type: 'code',
+    scope: sso.Scope || 'openid profile email',
+    automaticSilentRenew: true,
+    silent_redirect_uri: origin + '/assets/refresh.html'
+  };
+
+  new Oidc.UserManager(settings).signinRedirectCallback()
+    .then(user => {
+      console.log('OIDC login success', user);
+      // Về lại app (hash route tuỳ bạn)
+      window.location.replace('/#/login');
+    })
+    .catch(err => {
+      console.error('OIDC login error:', err);
+      document.body.innerText = 'OIDC login error: ' + (err && (err.message || err));
+    });
+</script>
+</body>
+</html>

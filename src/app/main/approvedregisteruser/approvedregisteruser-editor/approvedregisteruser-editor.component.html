@@ -4,7 +4,7 @@
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Duyệt Đăng ký sử dụng Email</h3>
+        <h3 class="box-title" id="titleName">Duyệt Đăng ký phân quyền CFMS</h3>
         <div class="box-tools pull-right">
           <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
                         <i class="fa fa-minus"></i>
@@ -50,63 +50,111 @@
             <ul>
               <li class="active">
                 <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">
-                  Danh sách đăng ký
+                  Phòng ban/BCH
+                </a>
+              </li>
+              <li>
+                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
+                  Phòng ban liên quan
+                </a>
+              </li>
+              <li>
+                <a href="#tab6" data-toggle="tab" (click)="onTabClick(grid5)">
+                  Phòng thiết bị
+                </a>
+              </li>
+              <li>
+                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
+                  Đính kèm
                 </a>
               </li>              
               <li>
-                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
-                  Tài liệu đính kèm
-                </a>
-              </li>     
-              <li>
-                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
+                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
                   Bước duyệt
                 </a>
-              </li>
+              </li>   
               <li>
-                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
                   WorkFlow
                 </a>
-              </li>
+              </li>                                  
             </ul>
           </div>
           <div class="tab-content">
             <div class="tab-pane active" id="tab1">
               <section id="new">
-                <wj-flex-grid class="grid" #grid style="height:280px;">
+                <wj-flex-grid class="grid" #grid style="height:280px;" [ngStyle]="setHeightGrid()">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>
-                </wj-flex-grid>
-              </section>
-            </div>             
-            <div class="tab-pane" id="tab2">
-              <section id="new">
-                <wj-flex-grid class="grid1" #grid1 style="height:280px;">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
-                </wj-flex-grid>
-              </section>
-            </div>            
-            <div class="tab-pane" id="tab3">
-              <section id="new">
-                <wj-flex-grid class="grid2" #grid2 style="height:280px;">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid)>
+                      <a class="fa fa-trash-o" style="color:red;"></a>
+                    </button>
+                  </template>                  
                 </wj-flex-grid>
               </section>
             </div>
+            <div class="tab-pane" id="tab2">
+                <section id="new">
+                  <wj-flex-grid class="grid1" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
+                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                      {{cell.row.index + 1}}
+                    </template>
+                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                      <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid1)>
+                        <a class="fa fa-trash-o" style="color:red;"></a>
+                      </button>
+                    </template>                  
+                  </wj-flex-grid>
+                </section>
+              </div>         
+            <div class="tab-pane" id="tab3">
+                <section id="new">
+                  <wj-flex-grid class="grid2" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
+                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                      {{cell.row.index + 1}}
+                    </template>
+                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                      <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid2)>
+                        <a class="fa fa-trash-o" style="color:red;"></a>
+                      </button>
+                    </template>                  
+                  </wj-flex-grid>
+                </section>
+              </div>            
             <div class="tab-pane" id="tab4">
               <section id="new">
-                <wj-flex-grid class="grid3" #grid3 style="height:280px;">
+                <wj-flex-grid class="grid3" #grid3 style="height:280px;" [ngStyle]="setHeightGrid()">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
-                  </template>
+                  </template>                  
                 </wj-flex-grid>
               </section>
             </div>
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>                  
+                </wj-flex-grid>
+              </section>
+            </div> 
+            <div class="tab-pane" id="tab6">
+                <section id="new">
+                  <wj-flex-grid class="grid5" #grid5 style="height:280px;" [ngStyle]="setHeightGrid()">
+                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                      {{cell.row.index + 1}}
+                    </template>
+                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                      <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid5)>
+                        <a class="fa fa-trash-o" style="color:red;"></a>
+                      </button>
+                    </template>                  
+                  </wj-flex-grid>
+                </section>
+              </div>         
             <!-- <div class="tab-pane active" id="glyphicons">
                     <section id="new">
                     </section>

@@ -107,7 +107,7 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
 
     let _errorSave3 = false;
     if (formData instanceof FormGroup) {
-      if (formData.get('ValueOfWarranty').value > 0 && (formData.get('DayOfWarranty').value == 0 || formData.get('FromDate').value == '' || formData.get('FromDate').value == null || formData.get('FromDate').value == undefined)) {
+      if (formData.get('ValueOfWarranty').value > 0 && (formData.get('FromDate').value == '' || formData.get('FromDate').value == null || formData.get('FromDate').value == undefined)) {
         _errorSave3 = true;
       }
     }
@@ -119,8 +119,8 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
       }
     }
 
-    this.checkUniqueColGrid(this.grid1, 'ApproveGroup');
-    if (this._errorUnique == false) {
+    // this.checkUniqueColGrid(this.grid1, 'ApproveGroup');
+    // if (this._errorUnique == false) {
       if (_numEror == 0) {
         if (_errorSave3 == false) {
           if (_errorSave2 == false) {
@@ -194,9 +194,9 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
       else {
         alert('Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.');
       }
-    }
-    else
-      alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+    // }
+    // else
+    //   alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
   }
 
 async checkData(formData: any) {

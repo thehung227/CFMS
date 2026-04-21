@@ -755,6 +755,21 @@ export class LayoutIncurredCcmEditor implements IEditorFormulaDeclaration {
             isRequired: true,
             width: 200
         },
+         {
+            header: 'Ghi chú',
+            binding: 'Remark',
+            isRequired: true,
+            width: 200
+        },
+        {
+            header: 'Duyệt chủ trương'	,
+            binding: 'PolicyStatus',
+            width:100,
+            isRequired: true,
+            dataType: 'Array',
+            lookupKey: 'Class',
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='POLICYSTATUS'",								
+        },
         {
         header: 'Giá trị đánh giá PS đã trình (Chưa VAT)',
         binding: 'RowInheris',

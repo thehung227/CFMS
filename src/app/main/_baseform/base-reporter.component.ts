@@ -1686,7 +1686,7 @@ export abstract class BaseReporterComponent implements OnInit, OnDestroy {
             cv.endUpdate();
             if (this.layoutData.Layout[0].showTotalGroup !== undefined){
                 if(this.layoutData.Layout[0].showTotalGroup == false){
-                    console.log(this.layoutData.Layout[0].showTotalGroup);
+                   
                     _grid.groupHeaderFormat = '<b>{value}</b>';
                 }
                 else{
@@ -2075,9 +2075,7 @@ export abstract class BaseReporterComponent implements OnInit, OnDestroy {
                 let _folderName: string = grid.selectedItems[0]['Link'];
                 let child_FolderId: any = grid.selectedItems[0]['Id'];
                 let name: string = grid.selectedItems[0]['FilePath'];
-console.log(_folderName);
-console.log(child_FolderId);
-console.log(name);
+
                 if (name) {
                     const sub = this.srv.dowload(_folderName, child_FolderId, name).subscribe(blob => {
 

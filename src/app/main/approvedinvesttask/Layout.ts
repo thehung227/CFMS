@@ -193,7 +193,31 @@ export class LayoutApprovedInvestTaskEditor implements IEditorFormulaDeclaration
                     style: 'background-color:#F8F0D7;border-radius:8px;',
                 }),
              
-            
+             new NumberBoxInput({
+                    key: 'GiaTriDuTruTong',
+                    label: 'Giá trị dự trù (Tổng)',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'GiaTriDuTruCPVP',
+                    label: 'Giá trị dự trù (CPVP)',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'ChiPhiVP',
+                    label: 'Chi phí VP',
+                    col: 6
+                }),
+               new NumberBoxInput({
+                    key: 'ChiPhiDA',
+                    label: 'Chi phí dự án',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'DayEffect',
+                    label: 'Thời gian khấu hao (Tháng)',
+                    col: 6
+                }),
                 new NumberBoxInput({
                     key: 'AmountBudget',
                     label: 'Kế hoạch đầu tư',

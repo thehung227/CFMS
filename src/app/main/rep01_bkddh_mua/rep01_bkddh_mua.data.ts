@@ -51,6 +51,13 @@ export class LayoutData {
                     hideValueMember: false
                 }, 
                 {
+                    className: 'CheckBoxInput',
+                    key: 'IsGiftItem',
+                 
+                    label: 'Lấy gói giữ giá',
+                    
+                },
+                {
                     className: 'LookupBoxInput',
                     key: 'Ma_Dvcs',
                     lookupKey: 'Branch',
@@ -150,6 +157,11 @@ export class LayoutData {
                         width: 120,
                         dataType: 'Number',
                         aggregate: 'Sum'
+                    },
+                     {
+                        header: 'Loại đơn hàng',
+                        binding: 'StatusPO',
+                        width: 200
                     },
                   
                 ]

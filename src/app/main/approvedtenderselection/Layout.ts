@@ -109,20 +109,42 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
         },
         PrintDocument: {
             Key: 'BizDocCCMViewer',
-            Text: 'WorkFlow Đánh giá QLTC - {VAR=ProductName} - {VAR=DocNo}',
-            Command: 'usp_B30BizDocVB_VoucherForm',
-            Command_WorkFlow: 'usp_Coteccons_WorkFlow_GetPrintData',
+            Text: 'TBTT TP/NCC - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}',
+            Command: 'usp_B30BizDocCCM_VoucherForm',
+            Command_WorkFlow: 'usp_TenderSelection_WorkFlow_GetPrintData',
             LayoutPrint: [
                 {
                     Layout: "MAU1",
-                    Name: "WorkFlow Đánh giá QLTC",
-                    FileName: "WorkFlow Đánh giá QLTC - {EXPR=ProductName} - {EXPR=DocNo}",
-                    WordName: "WorkFlow_DGQLTC.docx",
-                    // ExcelName: "1.Ke_Hoach_Ky_Ket_Hop_Dong.docx",
+                    Name: "TBTT NTP.NCC",
+                    FileName: "TBTT NTP.NCC - {EXPR=ProductName} - {EXPR=CustomerName} - {EXPR=DocNo}",
+                    WordName: "6.TBTT_NTP_NCC.docx",
+                    ExcelName: "",
+                    FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                },
+                {
+                    Layout: "MAU2",
+                    Name: "TBTT_TP_NCC_KBCTC",
+                    FileName: "TBTT TP/NCC - {EXPR=ProductName} - {EXPR=DocNo}",
+                    WordName: "6.TBTT_NTP_NCC_KBCTC.docx",
+                    ExcelName: "",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ],
             PrintGrid: [
+                {
+                    header: 'STT',
+                    binding: 'BuiltinOrder',
+                    width: 50,
+                    dataType: 'Number',
+                    align: 'center'
+                },
+                {
+                    header: 'Tên file',
+                    binding: 'FilePath',
+                    width: 600,
+                    dataType: 'String',
+                    align: 'left'
+                }
             ]
         }
     };
@@ -239,32 +261,22 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
                     isReadOnly: 'true',
                     style: 'background-color:#F8F0D7;border-radius:8px;',
                 }),
-                new NumberBoxInput({
-                    key: 'TotalAmount',
-                    label: 'HQ đàm phán đã vào BCTC',
+               new NumberBoxInput({
+                    key: 'LuyKeThu',
+                    label: 'Dự trù BCTC',
                     type: 'number',
                     
                    
                     col: 6,
                     // isNewRow: true
                 }),
-                new NumberBoxInput({
-                    key: 'TotalAmountBCTCC',
-                    label: 'HQ Khác đã vào BCTC đầu dự án',
-                    type: 'number',
-                    
-                    
-                    col: 6,
-                    // isNewRow: true
-                }),
-                new LookupBoxInput({
-                    key: 'ActivityCode',
-                    label: 'Lĩnh vực',
-                    lookupKey: 'Activity',
+                 new LookupBoxInput({
+                    key: 'CourseCode',
+                    label: 'Gói thầu',
+                    lookupKey: 'BidPackage',
+                    isDisabled: "'{EXPR=ApproveSend}' == 'true'",
                     hideValueMember: false,
-                    col: 6,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F8F0D7;border-radius:8px;',
+                    col: 12
                 }, this.srv, this.parentData),
                 new LookupBoxInput({
                     key: 'SubjectCode',
@@ -593,7 +605,10 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
         {
             header: 'Mã số thuế',
             binding: 'TaxRegNo',
-            width: 150
+            width: 150,
+            validators: "{EXPR=TaxRegNo}==''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
         },
         {
             header: 'NC/NTP/NCC',
@@ -603,23 +618,26 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
             lookupKey: 'Class',
             lookupfilter: "ParentCode = 'CustomerType'"
         },
-        {
-            header: 'Phạm vi thị trường',
-            binding: 'TeritoryCode',
-            width: 150,
-            dataType: 'Array',
-            lookupKey: 'Territory',
-            lookupfilter: "IsGroup=0 AND IsActive=1"
-        },
-        {
-            header: 'Chọn (Có/Không)',
-            binding: 'CousrseCode',
-            width: 100,
-            dataType: 'Array',
-            hideValueMember: true,
-            lookupKey: 'Class',
-            lookupfilter: "ParentCode = 'TypeSelect'"
-        },
+        // {
+        //     header: 'Phạm vi thị trường',
+        //     binding: 'TeritoryCode',
+        //     width: 150,
+        //     dataType: 'Array',
+        //     lookupKey: 'Territory',
+        //     lookupfilter: "IsGroup=0 AND IsActive=1",
+        //     validators: "{EXPR=TeritoryCode}==''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        //     ignoreError: 1
+        // },
+        // {
+        //     header: 'Chọn (Có/Không)',
+        //     binding: 'CousrseCode',
+        //     width: 100,
+        //     dataType: 'Array',
+        //     hideValueMember: true,
+        //     lookupKey: 'Class',
+        //     lookupfilter: "ParentCode = 'TypeSelect'"
+        // },
         {
             header: '% giao thầu',
             binding: 'Rate',
@@ -644,21 +662,38 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
             lookupfilter: "ParentCode = 'LoaiDoiTac'"
         },
         {
-            header: 'Giá báo lần đầu BCH',
-            binding: 'UnitCostFirstBCH',
+            header: 'Giá trị giao thầu',
+            binding: 'OriginalAmount',
             dataType: 'Number',
-            width: 100,
+            width: 150,
        
             format: 'N0'
         },
-        {
-            header: 'Giá báo Final BCH',
-            binding: 'UnitCostFinalBCH',
+         {
+            header: '% LN',
+            binding: 'RateLN',
             dataType: 'Number',
-            width: 100,
-       
-            format: 'N0'
+            width: 70,
+      
+            format: 'P2'
         },
+         {
+            header: '% đã giảm giá',
+            binding: 'Quantity',
+            dataType: 'Number',
+            width: 70,
+            min: 0,
+            max: 1,
+            format: 'P2'
+        },
+        // {
+        //     header: 'Giá báo Final BCH',
+        //     binding: 'UnitCostFinalBCH',
+        //     dataType: 'Number',
+        //     width: 100,
+       
+        //     format: 'N0'
+        // },
       
         {
             header: 'Ghi chú',
@@ -685,40 +720,55 @@ export class LayoutApprovedTenderSelectionEditor implements IEditorFormulaDeclar
             width: 200,
             isReadOnly: 'true'
         },
-        {
-            header: 'Thông tin liên hệ',
-            binding: 'Address',
-            width: 200
-        },
+        // {
+        //     header: 'Địa chỉ liên hệ',
+        //     binding: 'Address',
+        //     width: 200,
+        //     validators: "{EXPR=Address}==''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        //     ignoreError: 1
+        // },
         {
             header: 'Người liên hệ',
             binding: 'ContractPerson',
-            width: 100
+            width: 100,
+            validators: "{EXPR=ContractPerson}==''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
         },
         {
             header: 'Chức danh',
             binding: 'JobTitle',
-            width: 150
+            width: 150,
+            validators: "{EXPR=JobTitle}==''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
         },
         {
             header: 'SĐT liên hệ',
             binding: 'PhoneNo',
-            width: 150
+            width: 150,
+            validators: "{EXPR=PhoneNo}==''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
         },
         {
             header: 'Email',
             binding: 'Email',
             width: 150
         },
-        {
-            header: 'Website',
-            binding: 'Website',
-            width: 150
-        },
+        // {
+        //     header: 'Website',
+        //     binding: 'Website',
+        //     width: 150
+        // },
         {
             header: 'Người giới thiệu',
             binding: 'EmployeeName',
-            width: 150
+            width: 150,
+            validators: "{EXPR=EmployeeName}==''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
         }
     ];
 }

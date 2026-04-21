@@ -207,6 +207,12 @@
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:rgb(245, 170, 9);" (click)="exportHtmlWorkFlow(parentData?.Id,parentData?.DocCode)">
+                        <!-- showPrintVoucher_WorklFlow(parentData?.Id,grid3,parentData?.DocCode) -->
+                        <a class="fa fa-print" style="color:white;"></a>
+                    </button>
+                </template>
                 </wj-flex-grid>
               </section>
             </div>

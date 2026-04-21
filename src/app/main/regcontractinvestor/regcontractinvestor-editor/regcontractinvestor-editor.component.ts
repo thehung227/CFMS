@@ -1,11 +1,18 @@
-import { Component, ViewChild, OnInit, OnDestroy, ElementRef, HostListener } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  HostListener,
+} from "@angular/core";
 import { BaseEditorComponent } from "../../_baseform/base-editor.component";
-import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
-import { WjInputModule } from 'wijmo/wijmo.angular2.input';
+import { WjGridModule } from "wijmo/wijmo.angular2.grid";
+import { WjInputModule } from "wijmo/wijmo.angular2.input";
 
-import * as wjcCore from 'wijmo/wijmo';
-import * as wjcGrid from 'wijmo/wijmo.grid';
-import * as wjcInput from 'wijmo/wijmo.angular2.input';
+import * as wjcCore from "wijmo/wijmo";
+import * as wjcGrid from "wijmo/wijmo.grid";
+import * as wjcInput from "wijmo/wijmo.angular2.input";
 import { DynamicFormPanelComponent } from "../../../ui/form/dynamic-form-panel.component";
 import { BaseEditorService } from "../../../base/base.service-editor";
 import { ActivatedRoute, Router } from "@angular/router";
@@ -14,50 +21,67 @@ import { LayoutRegContractInvestorEditor } from "../Layout";
 import { Title } from "@angular/platform-browser";
 import { LayoutPrinterWordFlow } from "../../_printerlayout/workflow/workflow-printer.data";
 import { SystemConstants } from "../../../core/common/system.constants";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { Global } from "../../../shared/global";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
-  selector: 'app-regcontractinvestor-editor-form',
-  templateUrl: './regcontractinvestor-editor.component.html',
-  styleUrls: ['./regcontractinvestor-editor.component.css']
+  selector: "app-regcontractinvestor-editor-form",
+  templateUrl: "./regcontractinvestor-editor.component.html",
+  styleUrls: ["./regcontractinvestor-editor.component.css"],
 })
+export class RegContractInvestorEditorComponent
+  extends BaseEditorComponent
+  implements OnInit, OnDestroy
+{
+  @ViewChild("grid") grid: wjcGrid.FlexGrid;
+  @ViewChild("grid1") grid1: wjcGrid.FlexGrid;
+  @ViewChild("grid2") grid2: wjcGrid.FlexGrid;
+  @ViewChild("grid3") grid3: wjcGrid.FlexGrid;
+  @ViewChild("grid4") grid4: wjcGrid.FlexGrid;
+  @ViewChild("grid5") grid5: wjcGrid.FlexGrid;
+  @ViewChild("dfpanel") _dfpanel: DynamicFormPanelComponent;
 
-export class RegContractInvestorEditorComponent extends BaseEditorComponent implements OnInit, OnDestroy {
-
-  @ViewChild('grid') grid: wjcGrid.FlexGrid;
-  @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
-  @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
-  @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
-  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
-  @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
-  @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
-
-  @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
+  @ViewChild("gridPrint") gridPrint: wjcGrid.FlexGrid;
   layoutPrintWordFlow: LayoutPrinterWordFlow = new LayoutPrinterWordFlow();
 
-  indexPage = ['/main', 'regcontractinvestor', 'index'];
-  folderName = 'Hop_Dong_Phu_Luc';
-  indexPage_Editor = ['/main', 'regcontractinvestor', 'detail'];
+  indexPage = ["/main", "regcontractinvestor", "index"];
+  folderName = "Hop_Dong_Phu_Luc";
+  indexPage_Editor = ["/main", "regcontractinvestor", "detail"];
 
-  constructor(service: BaseEditorService,
+  constructor(
+    service: BaseEditorService,
     route: ActivatedRoute,
     pcs: PanelControlService,
     elRef: ElementRef,
-    router: Router, titleService: Title) {
-    super(service, route, pcs, elRef, router, titleService)
-    this._layoutDeclare = new LayoutRegContractInvestorEditor(service, this.parentData);
+    router: Router,
+    titleService: Title,
+  ) {
+    super(service, route, pcs, elRef, router, titleService);
+    this._layoutDeclare = new LayoutRegContractInvestorEditor(
+      service,
+      this.parentData,
+    );
     this._layoutPrinter_WordFlow = this.layoutPrintWordFlow.Layout;
   }
 
-  @HostListener('window:resize', [])
+  @HostListener("window:resize", [])
   onWindowResize() {
     // this.resizeWidthControls();
   }
   nUserId: string;
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
+    this.gridArray = [
+      this.grid,
+      this.grid1,
+      this.grid2,
+      this.grid3,
+      this.grid4,
+      this.grid5,
+    ];
     this.init();
     this.nUserId = localStorage.getItem(SystemConstants.CURRENT_USERID);
-    console.log(this.nUserId)
+    console.log(this.nUserId);
     this.grid.allowAddNew = true;
     this.grid1.allowAddNew = false;
     this.grid2.allowAddNew = false;
@@ -67,24 +91,33 @@ export class RegContractInvestorEditorComponent extends BaseEditorComponent impl
   }
 
   ngAfterViewInit() {
-    this.dfpanel = this._dfpanel; this.afterViewInit();
-
+    this.dfpanel = this._dfpanel;
+    this.afterViewInit();
   }
 
   ngOnDestroy() {
     this.destroy();
   }
-
+  output: any;
+  _err: boolean = false;
+  _errMess: any;
   async onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
     for (let i in this.gridArray) {
-      if (this.gridArray[i].itemsSource.items.length == 0 && i != '0' && i != '1' && i != '3' && i != '4' && i != '5') {
+      if (
+        this.gridArray[i].itemsSource.items.length == 0 &&
+        i != "0" &&
+        i != "1" &&
+        i != "3" &&
+        i != "4" &&
+        i != "5"
+      ) {
         _numEror += 1;
         break;
       }
     }
 
-    _numEror = 0
+    _numEror = 0;
 
     let _errorSave = false;
     // for (let item of this.grid1.itemsSource.items) {
@@ -96,8 +129,12 @@ export class RegContractInvestorEditorComponent extends BaseEditorComponent impl
 
     let _errorSave0 = false;
     for (let item of this.grid.itemsSource.items) {
-      if ((item['ClassCode1'] == '03' && item['PayPercent'] == 0) || (item['ClassCode1'] == '05' && item['PayPercent'] == 0) ||
-        (item['ClassCode1'] == '03' && item['NumberOfDay'] == 0) || (item['ClassCode1'] == '05' && item['NumberOfDay'] == 0)) {
+      if (
+        (item["ClassCode1"] == "03" && item["PayPercent"] == 0) ||
+        (item["ClassCode1"] == "05" && item["PayPercent"] == 0) ||
+        (item["ClassCode1"] == "03" && item["NumberOfDay"] == 0) ||
+        (item["ClassCode1"] == "05" && item["NumberOfDay"] == 0)
+      ) {
         _errorSave0 = true;
         break;
       }
@@ -105,20 +142,30 @@ export class RegContractInvestorEditorComponent extends BaseEditorComponent impl
 
     let _errorSave1 = false;
     for (let item of this.grid2.itemsSource.items) {
-      if (item['EmployeeCode'] == '') {
+      if (item["EmployeeCode"] == "") {
+        _errorSave1 = true;
+        break;
+      } else if (
+        item["EmployeeCode"].toString().indexOf(",") > 0 &&
+        item["EmployeeCodeReal"] == ""
+      ) {
         _errorSave1 = true;
         break;
       }
-      else
-        if (item['EmployeeCode'].toString().indexOf(',') > 0 && item['EmployeeCodeReal'] == '') {
-          _errorSave1 = true;
-          break;
-        }
     }
 
     let _errorSave2 = false;
     for (let item of this.grid4.itemsSource.items) {
-      if (item['ContactName'] == '' || item['PhoneNo'] == '' || item['Email'] == '' || item['Address'] == '' || item['ContactName'] == undefined || item['PhoneNo'] == undefined || item['Email'] == undefined || item['Address'] == undefined) {
+      if (
+        item["ContactName"] == "" ||
+        item["PhoneNo"] == "" ||
+        item["Email"] == "" ||
+        item["Address"] == "" ||
+        item["ContactName"] == undefined ||
+        item["PhoneNo"] == undefined ||
+        item["Email"] == undefined ||
+        item["Address"] == undefined
+      ) {
         _errorSave2 = true;
         break;
       }
@@ -126,54 +173,100 @@ export class RegContractInvestorEditorComponent extends BaseEditorComponent impl
 
     // this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
     // if (this._errorUnique == false) {
-      if (formData.controls['NumDayApprove'].value == 0) {
-        alert('Số ngày duyệt theo HĐ phải > 0');
-      }
-      else
-      if (formData.controls['NumDayPayment'].value == 0) {
-        alert('Số ngày thanh toán theo HĐ phải > 0');
-      }
-      else
-      if (_numEror == 0) {
-        // if (_errorSave0 == false) {
-          if (_errorSave2 == false) {
-            if (isApproveSend == true) {
-              // if (_errorSave == false) {
-                if (_errorSave1 == false) {
-                  this.submit(formData, this.indexPage, isApproveSend).then(() => {
+    if (formData.controls["NumDayApprove"].value == 0) {
+      alert("Số ngày duyệt theo HĐ phải > 0");
+    } else if (formData.controls["NumDayPayment"].value == 0) {
+      alert("Số ngày thanh toán theo HĐ phải > 0");
+    } else if (_numEror == 0) {
+      if (_errorSave2 == false) {
+        if (isApproveSend == true) {
+          if (_errorSave1 == false) {
+            this.checkData(formData).then(() => {
+              if (this._err == false) {
+                this.submit(formData, this.indexPage, isApproveSend).then(
+                  () => {
                     if (this.allowSendMail) {
-                      this.sendMail(formData, 'C2', this.id, false, '1');
+                      this.sendMail(formData, "C2", this.id, false, "1");
                     }
-                  });
-                }
-                else
-                  alert('Mã nhân viên quy trình duyệt hoặc nhân viên được chỉ định duyệt, không được bỏ trắng giá trị');
-              // }
-              // else
-              //   alert('Yêu cầu đính kèm tài liệu trước khi gửi duyệt!');
-            }
-            else
-              this.submit(formData, this.indexPage_Editor);
+                  },
+                );
+              } else {
+                alert(this._errMess);
+                this.showLoading = false;
+              }
+            });
           }
+          //  else {
+          //     alert(this._errMess);
+          //     this.showLoading = false;
+          //   }
+          // })
           else
-            alert('Yêu cầu khai báo đầy đủ Tab Thông tin liên lạc của đối tác.');
-        // }
-        // else
-        //   alert('Yêu cầu khai báo % Thanh toán hàng kỳ, % Quyết toán và Thời hạn (ngày) ở Tab "Thanh toán"');
-      }
-      else {
-        alert('Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.');
-      }
+            alert(
+              "Mã nhân viên quy trình duyệt hoặc nhân viên được chỉ định duyệt, không được bỏ trắng giá trị",
+            );
+          // }
+          // else
+          //   alert('Yêu cầu đính kèm tài liệu trước khi gửi duyệt!');
+        } else this.submit(formData, this.indexPage_Editor);
+      } else
+        alert("Yêu cầu khai báo đầy đủ Tab Thông tin liên lạc của đối tác.");
+      // }
+      // else
+      //   alert('Yêu cầu khai báo % Thanh toán hàng kỳ, % Quyết toán và Thời hạn (ngày) ở Tab "Thanh toán"');
+    } else {
+      alert(
+        'Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.',
+      );
     }
+  }
   //   else
   //     alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
   // }
 
-  showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {
-    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-    let html = this.printVoucher_WordFlow(input, 'MAU1', gridForm, extInput, 'DocCode');
+  async checkData(formData: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param3 = new ParameterContract();
 
-    html.then(data => {
+    param3.ParameterName = Global.convertParameterName("Id");
+    param3.ParameterValue = this.id;
+    params.push(param3);
+
+    let _data = await this._service
+      .getDataOutput(
+        Global.DATA_ENDPOINT,
+        BravoCtorEnum.StoreProcedure,
+        "usp_B30BizDoc_CheckContactInvestor",
+        params,
+      )
+      .toPromise()
+      .then();
+
+    this.output = <Array<Object>>_data["output"];
+    this._err = this.output["@_Error"];
+    this._errMess = this.output["@_ErrorMessage"];
+  }
+
+  showPrintVoucher_WorklFlow(
+    input: any,
+    gridForm?: wjcGrid.FlexGrid,
+    extInput?: string,
+  ) {
+    let popupWin = window.open(
+      "",
+      "_blank",
+      "top=0,left=0,height=100%,width=auto",
+    );
+    let html = this.printVoucher_WordFlow(
+      input,
+      "MAU1",
+      gridForm,
+      extInput,
+      "DocCode",
+    );
+
+    html.then((data) => {
       popupWin.document.write(data);
       popupWin.document.close();
     });
@@ -181,16 +274,21 @@ export class RegContractInvestorEditorComponent extends BaseEditorComponent impl
 
   exportHtmlWorkFlow(input: any, extInput?: string) {
     if (this.parentData["CompletedApprove"] == false) {
-      alert('Hồ sơ chưa hoàn thiện duyệt, không thể in ấn workflow');
+      alert("Hồ sơ chưa hoàn thiện duyệt, không thể in ấn workflow");
       return;
-    }
-    else
-    {
-      console.log(this.parentData['DocCode'])
-      this.exportHtml_WorkFlow('WorkFlow_HD_CDT.docx', 'WorkFlow HD,PLHD - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}', '/3.Mau_In/{VAR=Branch.Ma_Dvcs}/', input, extInput, 'DocCode');
+    } else {
+      console.log(this.parentData["DocCode"]);
+      this.exportHtml_WorkFlow(
+        "WorkFlow_HD_CDT.docx",
+        "WorkFlow HD,PLHD - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}",
+        "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/",
+        input,
+        extInput,
+        "DocCode",
+      );
     }
   }
   // this.editorFrm.controls['ApproveSend'].setValue(true);
   // this.dfpanel.runConstraint('Evaluator_UpdateApproveSend').then();
-  // window.close(); 
+  // window.close();
 }

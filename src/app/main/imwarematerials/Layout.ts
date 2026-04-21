@@ -23,7 +23,7 @@ export class LayoutImWareMaterialsExplorer implements IExplorerFormulaDeclaratio
         Structure: {
             Parent: {
                 Name: 'vB30AccDocEquip_ExploreInventory',
-                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'N3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP')",
+                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'N3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP','BETONG')",
                 OrderBy: 'DocDate DESC,DocNo DESC',
                 RowPage: 50
             },
@@ -471,7 +471,7 @@ export class LayoutImWareMaterialsEditor implements IEditorFormulaDeclaration {
         'Evaluator_B30AccDocPurchaseAssess_GetData',
         'Evaluator_B30BizDocDocument_GetData',
         'Evaluator_ServerConstraint_Approve_GetData',
-        'Evaluator_ServerConstraint_AccDocEquip_GetData'
+        // 'Evaluator_ServerConstraint_AccDocEquip_GetData'
     ]
 
     buttonCommand: string[] = [
@@ -499,11 +499,11 @@ export class LayoutImWareMaterialsEditor implements IEditorFormulaDeclaration {
                 'Evaluator_B30BizDocDetail_Set_ItemGroupCode'
             ]
         },
-        BizDocId_PO: {
-            Evaluators: [
-                'Evaluator_ServerConstraint_AccDocEquip_GetData'
-            ]
-        },
+        // BizDocId_PO: {
+        //     Evaluators: [
+        //         'Evaluator_ServerConstraint_AccDocEquip_GetData'
+        //     ]
+        // },
     };
 
     columnChangedChild = [

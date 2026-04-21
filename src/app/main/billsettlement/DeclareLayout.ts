@@ -1476,7 +1476,52 @@ export class LayoutBillSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+         {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ]
 
     childColumns1 = [
@@ -1654,7 +1699,52 @@ export class LayoutBillSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+         {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns2 = [
@@ -1846,7 +1936,52 @@ export class LayoutBillSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+         {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns3 = [
@@ -2024,7 +2159,52 @@ export class LayoutBillSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+         {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ];
 
     childColumns4 = [
@@ -2202,6 +2382,51 @@ export class LayoutBillSettlementEditor implements IEditorFormulaDeclaration {
             binding: 'TenQLKL',
             width: 250,
             isReadOnly: 'true'
-        }
+        },
+         {
+            header: 'Khối lượng trước',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n3'
+        },
+        {
+            header: 'Đơn giá trước',
+            binding: 'ChartUnitCost',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+         {
+            header: 'Giá trị trước',
+            binding: 'AmountAcumPrePeriod',
+            dataType: 'Number',
+            // validators: "{EXPR=Quantity9} > {EXPR=Quantity_Hd}",
+            // validatorMessage: 'Khối lượng thi công không được vượt quá khối lượng hợp đồng',
+            // ignoreError: 1,
+            width: 0,
+            format: 'n2'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'RemarkCCM',
+            allowEditing: true,
+            width: 0
+        },
+         {
+            header: '% thực hiện',
+            binding: 'Rate1',
+            dataType: 'Number',
+            width: 0,
+            min: 0,
+            max: 1,
+            format: 'p2'
+        },
     ]
 }

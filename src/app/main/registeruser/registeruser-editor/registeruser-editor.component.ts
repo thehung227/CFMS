@@ -24,11 +24,13 @@ export class RegisterUserEditorComponent extends BaseEditorComponent implements 
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
+  @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'registeruser', 'index'];
   indexPage_Editor = ['/main', 'registeruser', 'detail'];
-  folderName = 'Dang_Ky_Email';
+  folderName = 'Dang_Ky_User';
 
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
@@ -45,15 +47,122 @@ export class RegisterUserEditorComponent extends BaseEditorComponent implements 
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
     this.init();
     this.grid2.isReadOnly = false;
-    this.grid3.isReadOnly = true;
   }
 
   ngAfterViewInit() {
-    this.dfpanel = this._dfpanel; this.afterViewInit();
-  }
+     this.dfpanel = this._dfpanel; this.afterViewInit();
+ 
+     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+ 
+       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+         let data = s.rows[e.row].dataItem;
+ 
+         if (e.panel.cellType == wjcGrid.CellType.Cell) {
+           if (data['IsTitleRow'] == true) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: 'bold',
+                backgroundColor: '',
+                   textDecorationLine:'line-through'
+             });
+           }
+           else
+           if (data['EmployeeCode1'] != data['EmployeeCode']) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: '',
+               // fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+           else {
+             wjcCore.setCss(e.cell, {
+               color: '',
+               fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+         }
+       }
+     });
+     this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+ 
+        if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+         let data = s.rows[e.row].dataItem;
+ 
+         if (e.panel.cellType == wjcGrid.CellType.Cell) {
+           if (data['IsTitleRow'] == true) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: 'bold',
+                backgroundColor: '',
+                   textDecorationLine:'line-through'
+             });
+           }
+           else
+           if (data['EmployeeCode1'] != data['EmployeeCode']) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: '',
+               // fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+           else {
+             wjcCore.setCss(e.cell, {
+               color: '',
+               fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+         }
+       }
+     });
+     this.grid5.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+ 
+        if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+         let data = s.rows[e.row].dataItem;
+ 
+         if (e.panel.cellType == wjcGrid.CellType.Cell) {
+           if (data['IsTitleRow'] == true) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: 'bold',
+                backgroundColor: '',
+                   textDecorationLine:'line-through'
+             });
+           }
+           else
+           if (data['EmployeeCode1'] != data['EmployeeCode']) {
+             wjcCore.setCss(e.cell, {
+               color: 'red',
+               fontWeight: '',
+               // fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+           else {
+             wjcCore.setCss(e.cell, {
+               color: '',
+               fontWeight: '',
+               backgroundColor: '',
+                  textDecorationLine:''
+             });
+           }
+         }
+       }
+     });
+    
+   }
+ 
 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
@@ -74,15 +183,15 @@ export class RegisterUserEditorComponent extends BaseEditorComponent implements 
 
     let _errorSave = false;
     for (let item of this.grid1.itemsSource.items) {
-      if (this.grid1.itemsSource.items.length > 0)
+      if (this.grid2.itemsSource.items.length > 0)
         if (item['FilePath'] == '' || item['FilePath'] == undefined) {
-          _errorSave = true;
+          _errorSave = false;
           break;
         }
     }
 
     let _errorSave1 = false;
-    for (let item of this.grid2.itemsSource.items) {
+    for (let item of this.grid3.itemsSource.items) {
       if (item['EmployeeCode'] == '') {
         _errorSave1 = true;
         break;
@@ -131,8 +240,37 @@ export class RegisterUserEditorComponent extends BaseEditorComponent implements 
       //   alert('Họ tên hoặc Email cá nhân, không được bỏ trắng giá trị');
     }
     else
-      alert('Các Tab dữ liệu (Danh sách đăng ký, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu cập nhật đầy đủ thông tin.');
+      alert('Các Tab dữ liệu (Danh sách đăng ký, Bước duyệt, Đính kèm) cần có dữ liệu để Lưu. Yêu cầu cập nhật đầy đủ thông tin.');
   }
+
+  deleteSelectedRows(flex: wjcGrid.FlexGrid) {
+      if (flex) {
+        var selected = [];
+        for (let k in flex.selectedRows) {
+          let _idrowdel = flex.selectedRows[k]._idx;
+  
+          if (flex.selectedRows[k].dataItem != undefined) {
+            let _id = flex.selectedRows[k].dataItem["Id"];
+            let _ktrow = flex.selectedRows[k].dataItem["EmployeeCode"];
+  
+            for (var i = 0; i < flex.rows.length; i++) {
+              if (
+                i == _idrowdel &&
+                (_ktrow == false || _ktrow == null || _ktrow == undefined)
+              ) {
+                //(_id < 0 || _id == null || _id == undefined) &&
+                selected.push(flex.rows[i].dataItem);
+                break;
+              }
+            }
+          }
+        }
+  
+        for (var i = 0; i < selected.length; i++) {
+          flex.itemsSource.remove(selected[i]);
+        }
+      }
+    }
 
   showPrintVoucher(input: any) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');

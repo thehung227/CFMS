@@ -768,6 +768,12 @@ export class LayoutPurchaseOrderEditor implements IEditorFormulaDeclaration {
                     col: 6
                 }),
                 new CheckBoxInput({
+                    key: 'IsGiftItem',
+                    label: 'Gói giữ giá',
+                    type: 'boolean',
+                    col: 6
+                }),
+                new CheckBoxInput({
                     key: 'ApproveSend',
                     label: 'Đã gửi duyệt',
                     type: 'boolean',

@@ -21,7 +21,7 @@ export class LayoutInternalDocumentExplorer implements IExplorerFormulaDeclarati
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30BizDocVB_Explorer',
+                Name: 'vB30BizDocVB_ExVBNB',
                 FilterKey: "(ProductCostId = '{VAR=Filter.ProductCostId}' OR ProductCostId0 = '{VAR=Filter.ProductCostId}') AND DocCode = 'V1' AND IsActive = 1 AND ISNULL(BranchCode,'') = '{VAR=Branch.Ma_Dvcs}'",
                 OrderBy: 'Id DESC', //rất quan trọng, lỗi méo tìm đc đâu
                 RowPage: 50

@@ -87,6 +87,7 @@ export const mainRoutes: Routes = [
             { path: 'approvedliquidationasset', loadChildren: './approvedliquidationasset/approvedliquidationasset.module#ApprovedLiquidationAssetModule' },
             { path: 'approveddocumentary', loadChildren: './approveddocumentary/approveddocumentary.module#ApprovedDocumentaryModule' },
             { path: 'approvedexaminationrecords', loadChildren: './approvedexaminationrecords/approvedexaminationrecords.module#ApprovedExaminationRecordsModule' },
+            { path: 'approvedsettlementrecords', loadChildren: './approvedsettlementrecords/approvedsettlementrecords.module#ApprovedSettlementRecordsModule' },
             { path: 'approvedlettertopartner', loadChildren: './approvedlettertopartner/approvedlettertopartner.module#ApprovedLetterToPartnerModule' },
             { path: 'approvedrequestsadvances', loadChildren: './approvedrequestsadvances/approvedrequestsadvances.module#ApprovedRequestsAdvancesModule' },
             { path: 'approvedrequestsreimbursement', loadChildren: './approvedrequestsreimbursement/approvedrequestsreimbursement.module#ApprovedRequestsReimbursementModule' },
@@ -106,6 +107,7 @@ export const mainRoutes: Routes = [
               { path: 'plancostoffice', loadChildren: './plancostoffice/plancostoffice.module#PlanCostOfficeModule' },
              { path: 'plancashflowsite', loadChildren: './plancashflowsite/plancashflowsite.module#PlanCashFlowSiteModule' },
              { path: 'paymentproposal', loadChildren: './paymentproposal/paymentproposal.module#PaymentProposalModule' },
+              { path: 'paymentextraproposal', loadChildren: './paymentextraproposal/paymentextraproposal.module#PaymentExtraProposalModule' },
              { path: 'paymentmeproposal', loadChildren: './paymentmeproposal/paymentmeproposal.module#PaymentMeProposalModule' },
              { path: 'paymentccmproposal', loadChildren: './paymentccmproposal/paymentccmproposal.module#PaymentCcmProposalModule' },
              
@@ -126,10 +128,12 @@ export const mainRoutes: Routes = [
             { path: 'confirmprojectcomplete', loadChildren: './confirmprojectcomplete/confirmprojectcomplete.module#ConfirmProjectCompleteModule' },
             { path: 'debtcollection', loadChildren: './debtcollection/debtcollection.module#DebtCollectionModule' },
             { path: 'setlementstatus', loadChildren: './setlementstatus/setlementstatus.module#SetlementStatusModule' },
+            { path: 'settlementrecords', loadChildren: './settlementrecords/settlementrecords.module#SettlementRecordsModule' },
             { path: 'plansignstatus', loadChildren: './plansignstatus/plansignstatus.module#PlanSignStatusModule' },
             { path: 'deadlineproject', loadChildren: './deadlineproject/deadlineproject.module#DeadlineProjectModule' },
             { path: 'approvedpartnerevaluation', loadChildren: './approvedpartnerevaluation/approvedpartnerevaluation.module#ApprovedPartnerEvaluationModule' },
             { path: 'approvedplansignstatus', loadChildren: './approvedplansignstatus/approvedplansignstatus.module#ApprovedPlanSignStatusModule' },
+            { path: 'reporterhsqtgiatri', loadChildren: './reporterhsqtgiatri/reporterhsqtgiatri.module#ReporterHsqtGiatriModule' },
             { path: 'approvedconfirmprojectcomplete', loadChildren: './approvedconfirmprojectcomplete/approvedconfirmprojectcomplete.module#ApprovedConfirmProjectCompleteModule' },
             // localhost:8888/main/settlement_doc
             { path: 'settlement_doc', loadChildren: './settlement_doc/settlement_doc.module#Settlement_DocModule' },            
@@ -140,6 +144,7 @@ export const mainRoutes: Routes = [
             { path: 'unitprice', loadChildren: './unitprice/unitprice.module#UnitPriceModule' },
             { path: 'unitccmprice', loadChildren: './unitccmprice/unitccmprice.module#UnitCcmPriceModule' },
             { path: 'boqinvestor', loadChildren: './boqinvestor/boqinvestor.module#BOQInvestorModule' },
+            { path: 'concretebudgetdetail', loadChildren: './concretebudgetdetail/concretebudgetdetail.module#ConcreteBudgetDetailModule' },
             { path: 'boqinvestorclaim', loadChildren: './boqinvestorclaim/boqinvestorclaim.module#BOQInvestorClaimModule' },
             // localhost:8888/main/unitprice_view
             { path: 'unitprice_view', loadChildren: './unitprice_view/unitprice_view.module#UnitPrice_ViewModule' },            
@@ -192,6 +197,7 @@ export const mainRoutes: Routes = [
             { path: 'approvedbillpayteam', loadChildren: './approvedbillpayteam/approvedbillpayteam.module#ApprovedBillPayTeamModule' },
             { path: 'approvedproposalquarterly', loadChildren: './approvedproposalquarterly/approvedproposalquarterly.module#ApprovedProposalQuarterlyModule' },
             { path: 'approvedpaymentproposal', loadChildren: './approvedpaymentproposal/approvedpaymentproposal.module#ApprovedPaymentProposalModule' },
+            { path: 'approvedpaymentextraproposal', loadChildren: './approvedpaymentextraproposal/approvedpaymentextraproposal.module#ApprovedPaymentExtraProposalModule' },
             { path: 'approvedpaymentproposalgddh', loadChildren: './approvedpaymentproposalgddh/approvedpaymentproposalgddh.module#ApprovedPaymentProposalGddhModule' },
             { path: 'approvedpaymentccmproposal', loadChildren: './approvedpaymentccmproposal/approvedpaymentccmproposal.module#ApprovedPaymentCcmProposalModule' },
             { path: 'paymentproposaltotal', loadChildren: './paymentproposaltotal/paymentproposaltotal.module#PaymentProposalTotalModule' },
@@ -325,7 +331,8 @@ export const mainRoutes: Routes = [
             { path: 'solpp', loadChildren: './solpp/solpp.module#SolPPModule' },    
             { path: 'solpn', loadChildren: './solpn/solpn.module#SolPNModule' }, 
             { path: 'imwarematerials', loadChildren: './imwarematerials/imwarematerials.module#ImWareMaterialsModule' }, 
-            { path: 'exwarematerials', loadChildren: './exwarematerials/exwarematerials.module#ExWareMaterialsModule' },    
+            { path: 'exwarematerials', loadChildren: './exwarematerials/exwarematerials.module#ExWareMaterialsModule' },   
+            { path: 'imsolpoconcrete', loadChildren: './imsolpoconcrete/imsolpoconcrete.module#ImSolPoConcreteModule' }, 
             { path: 'solpx', loadChildren: './solpx/solpx.module#SolPXModule' },    
             { path: 'safepunish', loadChildren: './safepunish/safepunish.module#SafePunishModule' },    
             // localhost:8888/main/supplierquotesinvite
@@ -362,10 +369,17 @@ export const mainRoutes: Routes = [
             { path: 'supplierinvoice', loadChildren: './supplierinvoice/supplierinvoice.module#SupplierInvoiceModule' },
             // localhost:8888/main/purchasebudget
             { path: 'purchasebudget', loadChildren: './purchasebudget/purchasebudget.module#PurchaseBudgetModule' },
+            { path: 'concretebudget', loadChildren: './concretebudget/concretebudget.module#ConcreteBudgetModule' },
             { path: 'purchaseotherbudget', loadChildren: './purchaseotherbudget/purchaseotherbudget.module#PurchaseOtherBudgetModule' },
+            { path: 'auxiliarymaterialsbuget', loadChildren: './auxiliarymaterialsbuget/auxiliarymaterialsbuget.module#AuxiliaryMaterialsBugetModule' },
+            { path: 'auxiliarymaterialsorder', loadChildren: './auxiliarymaterialsorder/auxiliarymaterialsorder.module#AuxiliaryMaterialsOrderModule' },
             // localhost:8888/main/approvedpurchasebudget
             { path: 'approvedpurchasebudget', loadChildren: './approvedpurchasebudget/approvedpurchasebudget.module#ApprovedPurchaseBudgetModule' },
+            { path: 'approvedauxiliarymaterialsbuget', loadChildren: './approvedauxiliarymaterialsbuget/approvedauxiliarymaterialsbuget.module#ApprovedAuxiliaryMaterialsBugetModule' },
+            { path: 'approvedauxiliarymaterialsorder', loadChildren: './approvedauxiliarymaterialsorder/approvedauxiliarymaterialsorder.module#ApprovedAuxiliaryMaterialsOrderModule' },
+            { path: 'approvedconcretebudget', loadChildren: './approvedconcretebudget/approvedconcretebudget.module#ApprovedConcreteBudgetModule' },
             { path: 'approvedpurchaseotherbudget', loadChildren: './approvedpurchaseotherbudget/approvedpurchaseotherbudget.module#ApprovedPurchaseOtherBudgetModule' },
+            { path: 'approvedsolpoconcrete', loadChildren: './approvedsolpoconcrete/approvedsolpoconcrete.module#ApprovedSolPoConcreteModule' },
             { path: 'approvedsolpp', loadChildren: './approvedsolpp/approvedsolpp.module#ApprovedSolPPModule' },
             { path: 'approveddebtcollection', loadChildren: './approveddebtcollection/approveddebtcollection.module#ApprovedDebtCollectionModule' },
             { path: 'approvedsetlementstatus', loadChildren: './approvedsetlementstatus/approvedsetlementstatus.module#ApprovedSetlementStatusModule' },
@@ -374,6 +388,7 @@ export const mainRoutes: Routes = [
             { path: 'approvedregisterincurred', loadChildren: './approvedregisterincurred/approvedregisterincurred.module#ApprovedRegisterIncurredModule' },
             { path: 'approvedsolpn', loadChildren: './approvedsolpn/approvedsolpn.module#ApprovedSolPNModule' },
             { path: 'approvedimwarematerials', loadChildren: './approvedimwarematerials/approvedimwarematerials.module#ApprovedImWareMaterialsModule' },
+            { path: 'approvedimsolpoconcrete', loadChildren: './approvedimsolpoconcrete/approvedimsolpoconcrete.module#ApprovedImSolPoConcreteModule' },
             { path: 'approvedexwarematerials', loadChildren: './approvedexwarematerials/approvedexwarematerials.module#ApprovedExWareMaterialsModule' },
             { path: 'approvedsolpx', loadChildren: './approvedsolpx/approvedsolpx.module#ApprovedSolPXModule' },
             { path: 'approvedconcreteloss', loadChildren: './approvedconcreteloss/approvedconcreteloss.module#ApprovedConcreteLossModule' },
@@ -402,6 +417,7 @@ export const mainRoutes: Routes = [
             { path: 'reportertitrongmuahang',loadChildren : './reportertitrongmuahang/reportertitrongmuahang.module#ReporterTiTrongMuaHangModule' },      
             // localhost:8888/main/rep05_kehoachmuahang
             { path: 'rep05_kehoachmuahang',loadChildren : './rep05_kehoachmuahang/rep05_kehoachmuahang.module#Rep05_KeHoachMuaHangModule' },      
+            { path: 'reporterconcretebudget',loadChildren : './reporterconcretebudget/reporterconcretebudget.module#ReporterConcreteBudgetModule' },      
             { path: 'rep05_haohutvattu',loadChildren : './rep05_haohutvattu/rep05_haohutvattu.module#Rep05_HaoHutVatTuModule' },      
             // localhost:8888/main/reportercongnohoadon
             { path: 'reportercongnohoadon',loadChildren : './reportercongnohoadon/reportercongnohoadon.module#ReporterCongNoHoaDonModule' },

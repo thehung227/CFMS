@@ -62,7 +62,6 @@ export class LogoutComponent implements OnInit, OnDestroy {
       else {
          this.authenService.finishLogout()
          .then(_ => {
-            console.log
          this.router.navigate(['/'], { replaceUrl: true });
          })
       }

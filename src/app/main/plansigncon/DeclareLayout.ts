@@ -323,7 +323,7 @@ export class LayoutPlanSignConEditor implements IEditorFormulaDeclaration {
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30CCMBudget_Edit',
+                Name: 'vB30CCMBudget_K12Edit',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'K1',
@@ -1045,7 +1045,7 @@ export class LayoutPlanSignConEditor implements IEditorFormulaDeclaration {
             dataType: 'Array',
             lookupKey: 'KHC',
             lookupfilter: "IsGroup=0 AND IsActive=1 AND ClassCode1='01'",
-            width: 0,
+            width: 100,
             isReadOnly: 'true'
         },
         {

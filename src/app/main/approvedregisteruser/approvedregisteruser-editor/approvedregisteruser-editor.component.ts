@@ -31,11 +31,13 @@ export class ApprovedRegisterUserEditorComponent extends BaseEditorComponent imp
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
+  @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'consdocument', 'index'];
-  folderName = 'Dang_Ky_Email';
-  folderNameSendMail = 'Dang_Ky_Email';
+  folderName = 'Dang_Ky_User';
+  folderNameSendMail = 'Dang_Ky_User';
 
   output: Array<Object>;
   _err: boolean = false;
@@ -57,21 +59,124 @@ export class ApprovedRegisterUserEditorComponent extends BaseEditorComponent imp
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
     this.init();
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
-    this.grid2.isReadOnly = true;
     this.grid3.isReadOnly = true;
 
     this.dbClickCellContent(this.grid1);
   }
 
   ngAfterViewInit() {
-    this.dfpanel = this._dfpanel; this.afterViewInit();
-
-    //this.wordWrapGrid();
-  }
+       this.dfpanel = this._dfpanel; this.afterViewInit();
+   
+       this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+   
+         if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+           let data = s.rows[e.row].dataItem;
+   
+           if (e.panel.cellType == wjcGrid.CellType.Cell) {
+             if (data['IsTitleRow'] == true) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: 'bold',
+                  backgroundColor: '',
+                     textDecorationLine:'line-through'
+               });
+             }
+             else
+             if (data['EmployeeCode1'] != data['EmployeeCode']) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: '',
+                 // fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+             else {
+               wjcCore.setCss(e.cell, {
+                 color: '',
+                 fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+           }
+         }
+       });
+       this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+   
+          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+           let data = s.rows[e.row].dataItem;
+   
+           if (e.panel.cellType == wjcGrid.CellType.Cell) {
+             if (data['IsTitleRow'] == true) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: 'bold',
+                  backgroundColor: '',
+                     textDecorationLine:'line-through'
+               });
+             }
+             else
+             if (data['EmployeeCode1'] != data['EmployeeCode']) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: '',
+                 // fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+             else {
+               wjcCore.setCss(e.cell, {
+                 color: '',
+                 fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+           }
+         }
+       });
+      this.grid5.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+   
+          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+           let data = s.rows[e.row].dataItem;
+   
+           if (e.panel.cellType == wjcGrid.CellType.Cell) {
+             if (data['IsTitleRow'] == true) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: 'bold',
+                  backgroundColor: '',
+                     textDecorationLine:'line-through'
+               });
+             }
+             else
+             if (data['EmployeeCode1'] != data['EmployeeCode']) {
+               wjcCore.setCss(e.cell, {
+                 color: 'red',
+                 fontWeight: '',
+                 // fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+             else {
+               wjcCore.setCss(e.cell, {
+                 color: '',
+                 fontWeight: '',
+                 backgroundColor: '',
+                    textDecorationLine:''
+               });
+             }
+           }
+         }
+       });
+     }
 
   ngOnDestroy() {
     this.destroy();
@@ -108,19 +213,19 @@ export class ApprovedRegisterUserEditorComponent extends BaseEditorComponent imp
         this.showLoading = true;
         this.parentData["ApproveStatus"] = state;
         this.parentData["ApproveStatusWeb"] = state;
-        if (state == 1 || state == 3)
-          this.updateB30BizDocVBDetail(formData).then(() => {
-            if (this._err == false) {
-              this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
-                this.sendMail(this.editorFrm, 'E2', this.parentData['IdBizDocVB'], false, state).then(() => {
-                  this.router.navigate(['/main', 'notifications', 'index']);
-                });
-              });
-            }
-            else
-              alert(this._errMess);
-          });
-        else
+        // if (state == 1 || state == 3)
+        //   this.updateB30BizDocVBDetail(formData).then(() => {
+        //     // if (this._err == false) {
+        //     //   this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
+        //     //     this.sendMail(this.editorFrm, 'E2', this.parentData['IdBizDocVB'], false, state).then(() => {
+        //     //       this.router.navigate(['/main', 'notifications', 'index']);
+        //     //     });
+        //     //   });
+        //     // }
+        //     // else
+        //     //   alert(this._errMess);
+        //   });
+        // else
           this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
             this.sendMail(this.editorFrm, 'E2', this.parentData['IdBizDocVB'], false, state).then(() => {
               this.router.navigate(['/main', 'notifications', 'index']);
@@ -167,17 +272,28 @@ export class ApprovedRegisterUserEditorComponent extends BaseEditorComponent imp
     param3.ParameterValue = formData.value['PositionCode'];
     params.push(param3);
 
+    param4.ParameterName = this.convertParameterName('B30BizDocVBDetail1_Edit');
+    param4.ParameterValue = 'B30BizDocVBDetail1_Edit';
+    params.push(param4);
+
     let ds;
     let XMLObject1;
+    let XMLObject2;
+
 
     XMLObject1 = {
       name: 'B30BizDocVBDetail_Edit',
       collection: this.gridArray[0].itemsSource.items
     }
 
-    ds = Global.getDataSetContract(XMLObject1);
+    XMLObject2 = {
+        name: 'B30BizDocVBDetail1_Edit',
+        collection: this.gridArray[1].itemsSource.items
+    }
 
-    let data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_NEW_CapNhatDangKyEmail', params, ds).toPromise().then();
+    ds = Global.getDataSetContract(XMLObject1, XMLObject2);
+
+    let data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_NEW_CapNhatPhanQuyen', params, ds).toPromise().then();
     // console.log(params);
 
     this.output = <Array<Object>>(data['output']);

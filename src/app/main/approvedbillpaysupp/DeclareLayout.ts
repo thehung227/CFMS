@@ -224,6 +224,12 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
             directory: 'billpaysupp_view',
             type: 'detail',
             key: 'Id_BillKyTruoc'
+        },
+        'btnAccountAtch': {
+            directory: 'billpaysuppattach',
+            type: 'detail',
+            parameter: { 'Commandkey': 'billpaysuppattach-editor' },
+            key: 'IdBizDocCCM'
         }
     }
 
@@ -235,6 +241,15 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
                 new DateBoxInput({
                     key: 'DocDate',
                     label: 'Ngày lập',
+                    dataType: 'date',
+                    format: 'dd/MM/yyyy',
+                    col: 6,
+                    isReadOnly: 'true',
+                    style: 'background-color:#F1EDED;border-radius:8px;'
+                }),
+                new DateBoxInput({
+                    key: 'SignDate',
+                    label: 'Ngày ký HĐ',
                     dataType: 'date',
                     format: 'dd/MM/yyyy',
                     col: 6,
@@ -582,6 +597,13 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
                     label: 'Xem hợp đồng',
                     style: 'background-color:#9cc09c;',
                     col: 6
+                }),
+                new ButtonInput({
+                    key: 'btnAccountAtch',
+                    label: 'Kế toán đính kèm',
+                    style: 'background-color:#9cc09c;',
+                    col: 6,
+                    isDisabled: "'{EXPR=Id}' < 0"
                 }),
                 new RichTextBoxInput({
                     key: 'Comment',

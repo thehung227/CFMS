@@ -41,6 +41,12 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
   output: Array<Object>;
   _errBCTC: boolean = false;
   _errMess: string;
+  // ===== Right-click row menu state (ONLY for grid Chi tiết) =====
+  rowMenuVisible: boolean = false;
+  rowMenuStyle: any = {}; // { left: '100px', top: '200px' }
+
+  private _rowMenuGrid: wjcGrid.FlexGrid | null = null;
+  private _rowMenuRowIndex: number = -1;
 
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
@@ -51,10 +57,29 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
     this._layoutDeclare = new LayoutPurchaseOtherBudgetEditor(service, this.parentData);
   }
 
+
+
   @HostListener('window:resize', [])
   onWindowResize() {
     // this.resizeWidthControls();
   }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(_evt: MouseEvent) {
+    this.hideRowMenu();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onDocumentKeydown(evt: KeyboardEvent) {
+    if (evt.key === 'Escape') this.hideRowMenu();
+  }
+
+  private hideRowMenu() {
+    this.rowMenuVisible = false;
+    this._rowMenuGrid = null;
+    this._rowMenuRowIndex = -1;
+  }
+
 
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
@@ -76,32 +101,31 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
         let data = s.rows[e.row].dataItem;
 
         if (e.panel.cellType == wjcGrid.CellType.Cell) {
-          
+
           if (data['IsTitleRow'] == true) {
-         
+
             wjcCore.setCss(e.cell, {
               color: 'blue',
-                fontWeight: 'bold',
-            });
-          }
-          else
-          {
-          if (data['IsLink'] == false) {
-            wjcCore.setCss(e.cell, {
-              color: 'red',
-              fontWeight: '',
+              fontWeight: 'bold',
             });
           }
           else {
-            wjcCore.setCss(e.cell, {
-              color: '',
-              fontWeight: '',
-              // fontWeight: '',
-              // backgroundColor: ''
-            });
+            if (data['IsLink'] == false) {
+              wjcCore.setCss(e.cell, {
+                color: 'red',
+                fontWeight: '',
+              });
+            }
+            else {
+              wjcCore.setCss(e.cell, {
+                color: '',
+                fontWeight: '',
+                // fontWeight: '',
+                // backgroundColor: ''
+              });
+            }
           }
         }
-      }
       }
     });
   }
@@ -109,6 +133,8 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
   ngOnDestroy() {
     this.destroy();
   }
+
+
 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
@@ -118,6 +144,8 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
         break;
       }
     }
+    var cv: any = this.grid && (this.grid as any).collectionView;
+
 
     let _errorSave = false;
     for (let item of this.grid.itemsSource.items) {
@@ -154,23 +182,23 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
         if (isApproveSend == true) {
           if (_errorSave1 == false) {
             if (_errorSave2 == false) {
-            this.checkKhoiLuong_KeHoach_PO(formData).then(() => {
-              if (this._errBCTC == false) {
-                this.submit(formData, this.indexPage, isApproveSend).then(() => {
-                  if (this.allowSendMail) {
-                    this.sendMail(formData, 'H7', this.id, false, '1');
-                  }
-                });
-              }
-              else {
-                alert(this._errMess);
-                this.showLoading = false;
-              }
-            });
+              this.checkKhoiLuong_KeHoach_PO(formData).then(() => {
+                if (this._errBCTC == false) {
+                  this.submit(formData, this.indexPage, isApproveSend).then(() => {
+                    if (this.allowSendMail) {
+                      this.sendMail(formData, 'H7', this.id, false, '1');
+                    }
+                  });
+                }
+                else {
+                  alert(this._errMess);
+                  this.showLoading = false;
+                }
+              });
+            }
+            else
+              alert('Yêu cầu đính kèm đầy đủ hồ sơ');
           }
-          else
-          alert('Yêu cầu đính kèm đầy đủ hồ sơ');
-      }
           else
             alert('Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị');
         }
@@ -189,6 +217,131 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
     }
 
   }
+
+  openRowContextMenu(evt: MouseEvent, grid: wjcGrid.FlexGrid) {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    if (!grid) return;
+
+    const ht = grid.hitTest(evt);
+
+    // chỉ mở menu khi click phải lên vùng cell (không phải header)
+    if (!ht || ht.cellType !== wjcGrid.CellType.Cell || ht.row < 0) {
+      this.hideRowMenu();
+      return;
+    }
+
+    this._rowMenuGrid = grid;
+    this._rowMenuRowIndex = ht.row;
+
+    // select đúng dòng đang click phải
+    try {
+      grid.select(new wjcGrid.CellRange(ht.row, 0, ht.row, grid.columns.length - 1), true);
+    } catch (e) { }
+
+    this.rowMenuStyle = { left: `${evt.clientX}px`, top: `${evt.clientY}px` };
+    this.rowMenuVisible = true;
+  }
+
+  onInsertRowAtCursor() {
+    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
+    this.insertRowAt(this._rowMenuGrid, this._rowMenuRowIndex);
+    this.hideRowMenu();
+  }
+
+  onInsertRowBelowCursor() {
+    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
+    this.insertRowAt(this._rowMenuGrid, this._rowMenuRowIndex + 1);
+    this.hideRowMenu();
+  }
+
+  onDeleteRowAtCursor() {
+    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
+
+    // chọn đúng row rồi dùng lại hàm deleteSelectedRows(grid) đang có
+    try {
+      this._rowMenuGrid.select(new wjcGrid.CellRange(this._rowMenuRowIndex, 0, this._rowMenuRowIndex, 0), true);
+    } catch (e) { }
+
+    this.deleteSelectedRows(this._rowMenuGrid);
+    this.hideRowMenu();
+  }
+
+  protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
+    if (flex) {
+      // get list of selected items
+      var selected = [];
+
+      for (let k in flex.selectedRows) {
+        let _idrowdel = flex.selectedRows[k]._idx;
+        for (var i = 0; i < flex.rows.length; i++) {
+          if (i == _idrowdel) {
+            let data = flex.rows[i].dataItem;
+            // Không xóa những dòng là tiêu đề
+            if (data && (data['IsTitleRow'] == true || data['IsTitleRow'] == 1 || data['isTitleRows'] == 1)) {
+              continue;
+            }
+            selected.push(data);
+            break;
+          }
+        }
+      }
+
+      for (var i = 0; i < selected.length; i++) {
+        flex.itemsSource.remove(selected[i]);
+      }
+    }
+  }
+  private insertRowAt(grid: wjcGrid.FlexGrid, insertIndex: number) {
+    if (!grid || !grid.collectionView) return;
+
+    const view: any = grid.collectionView;
+
+    // clamp index
+    if (insertIndex < 0) insertIndex = 0;
+
+    // 1. Tạo dòng mới dựa trên cấu trúc mặc định (defaultRow) đã được BaseEditorComponent khởi tạo
+    let newItem: any = view['defaultRow'] ? JSON.parse(JSON.stringify(view['defaultRow'])) : {};
+
+    // 2. Thiết lập các thông tin cơ bản để có thể lưu vào database
+    newItem['Id'] = -1; // Đánh dấu là dòng mới
+    if (this.parentData && this.parentData['Stt']) {
+      newItem['Stt'] = this.parentData['Stt']; // Gán Stt của Parent để liên kết dữ liệu
+    }
+
+    // Wijmo thường dùng sourceCollection
+    if (Array.isArray(view.sourceCollection)) {
+      if (insertIndex > view.sourceCollection.length) insertIndex = view.sourceCollection.length;
+      view.sourceCollection.splice(insertIndex, 0, newItem);
+
+      // 3. Quan trọng: Đẩy vào itemsAdded để BaseEditorComponent.submit có thể nhận diện và lưu
+      if (view.trackChanges) {
+        view.itemsAdded.push(newItem);
+      }
+
+      view.refresh();
+    } else if (Array.isArray(view.items)) {
+      if (insertIndex > view.items.length) insertIndex = view.items.length;
+      view.items.splice(insertIndex, 0, newItem);
+
+      if (view.trackChanges) {
+        view.itemsAdded.push(newItem);
+      }
+
+      view.refresh();
+    }
+
+    // focus vào dòng mới
+    try {
+      setTimeout(() => {
+        grid.select(new wjcGrid.CellRange(insertIndex, 0, insertIndex, 0), true);
+        grid.scrollIntoView(insertIndex, 0);
+        grid.startEditing(false);
+      }, 100);
+    } catch (e) { }
+  }
+
 
   async checkKhoiLuong_KeHoach_PO(formData: any) {
     this.showLoading = true;

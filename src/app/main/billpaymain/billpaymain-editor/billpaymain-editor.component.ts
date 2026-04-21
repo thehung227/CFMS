@@ -14,6 +14,9 @@ import { LayoutBillPayMainEditor } from "../DeclareLayout";
 import { Title } from "@angular/platform-browser";
 import { LayoutPrinter } from "../billpaymain-explorer/billpaymain-printer.data";
 import { LayoutPrinterWordFlow } from "../../_printerlayout/workflow/workflowTT-printer.data";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { Global } from "../../../shared/global";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
   selector: 'app-billpaymain-editor-form',
@@ -69,6 +72,63 @@ export class BillPayMainEditorComponent extends BaseEditorComponent implements O
   ngOnDestroy() {
     this.destroy();
   }
+  output: any;
+  _err: boolean = false;
+  _errMess: any;
+async checkData(formData: any) {
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('Id');
+    param1.ParameterValue = this.id;
+    params.push(param1);
+
+    try {
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_B30BizDocCCM_CheckBilPaySupp', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['output']);
+      this._err = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+  }
+
+  async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
@@ -91,10 +151,15 @@ export class BillPayMainEditorComponent extends BaseEditorComponent implements O
         }
     }
 
+
+    
     this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
     if (this._errorUnique == false) {
       if (_numEror == 0) {
         if (isApproveSend == true) {
+          this.checkData(formData).then(() => {
+            
+            if (this._err == false) {
           let _errorSave = false;
           for (let item of this.grid1.itemsSource.items) {
             if (item['Attached'] == true && item['Description'] != 'Theo mẫu công ty ban hành' && (item['FilePath'] == '' || item['FilePath'] == undefined)) {
@@ -118,7 +183,14 @@ export class BillPayMainEditorComponent extends BaseEditorComponent implements O
             } else
               alert('Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị');
           }
+           }
+        else {
+          alert(this._errMess);
+          this.showLoading = false;
         }
+      })
+        }
+       
         else
           this.submit(formData, this.indexPage_Editor);
         // this.submit(formData, this.indexPage_Editor).then(()=>{

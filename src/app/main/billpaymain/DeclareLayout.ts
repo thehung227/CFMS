@@ -323,14 +323,14 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
                 }
             },
             Child: [
-                {
-                    Name: 'vB30BizDocCCMDetail_Edit',
+               {
+                    Name: 'vB30BizDocContactInfo_Edit',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
                         BizDocId: 'Parent.BizDocId',
                         BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate'
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
                 },
                 {
@@ -363,7 +363,8 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
-                }
+                },
+                
             ]
         },
         PrintDocument: {
@@ -414,6 +415,13 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
             ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,Id',
             Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo',
             DataMember: 'DocNo'
+            //zExpr: "'PayTeamType'.toString() != '00'.toString()"
+        },
+         'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo',
+            DataMember: 'DocNoUnique'
             //zExpr: "'PayTeamType'.toString() != '00'.toString()"
         },
         // 'Evaluator_ServerConstraint_CTC_DefaultDocNo_TamUng': {
@@ -582,12 +590,20 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
             IgnoreError: 0,
             zExpr: 'ApproveSend == true'
         },
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,CustomerCode,BizDocId',
+            Command: 'usp_CFMS_InvoiceBizzi_LoadData',
+            DataMember: '',
+            OutputTable: 0
+        },
     }
 
     serverConstraint = [
         'Evaluator_ServerConstraint_Amount_TTKyTruoc',
         'Evaluator_ServerConstraint_DateDue',
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_DefaultPayRequireNum',
         'Evaluator_ServerConstraint_GetValue_ContractValue',
         'Evaluator_ServerConstraint_GetValue_SubContractValue',
@@ -623,6 +639,11 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
         //
         'Evaluator_ServerConstraint_Approve_GetData',
         'Evaluator_ServerConstraint_DocumentDetail_GetData'
+    ];
+
+    buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi',
+       
     ];
 
     buttonCommand: string[] = [
@@ -958,48 +979,82 @@ export class LayoutBillPayMainEditor implements IEditorFormulaDeclaration {
 
     childColumns = [
         {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
+          {
+            header: 'Số hóa đơn',
+            binding: 'AtchDocNo',
+            width: 150,
+            dataType: 'Array',
+            isReadOnly: 'true',
+            lookupKey: 'InvoiceBizzi',
+             bindingList: {
+                IssuedDate: 'AtchDocDate',
+                InvoiceId: 'InvoiceId',
+                InvoiceSeries: 'AtchFormNo',
+                TotalAmountWithoutVat: 'AmountBeforeTax',
+                TotalAmountWithVat: 'Amount'
+            },
+            lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
+        },
+        {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',
             width: 150,
             dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+        // {
+        //     header: 'Số hóa đơn',
+        //     binding: 'AtchDocNo',
+        //     allowEditing: true,
+        //     width: 150,
+        //     validators: "{EXPR=AtchDocNo} == ''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        // },
+        {
+            header: 'Ký hiệu',
+            binding: 'AtchFormNo',
+            allowEditing: true,
+            width: 150,
+            isReadOnly: 'true',
+            validators: "{EXPR=AtchDocNo} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+        },
+        {
+            header: 'Giá trị trước thuế',
+            binding: 'AmountBeforeTax',
+            width: 150,
+            isReadOnly: 'true',
+            dataType: 'Number'
+        },
+        {
+            header: 'Giá trị sau thuế',
+            binding: 'Amount',
+            width: 150,
+            isReadOnly: 'true',
+            dataType: 'Number'
+        },
+        {
+            header: 'Ngày nhận đủ hồ sơ',
+            binding: 'DateReceive',
+            width: 150,
+            dataType: 'Date',
+
             format: 'dd/MM/yyyy'
         },
         {
-            header: 'Số hóa đơn',
-            binding: 'AtchDocNo',
+            header: 'Hóa đơn Bizzi',
+            binding: 'InvoiceId',
             allowEditing: true,
-            width: 150
+            width: 0,
+            isReadOnly: 'true',
+            validatorMessage: 'Không được bỏ trắng giá trị',
         },
-        {
-            header: 'Mẫu số',
-            binding: 'AtchFormNo',
-            allowEditing: true,
-            width: 150
-        },
-        {
-            header: 'Số seri',
-            binding: 'AtchSerialNo',
-            allowEditing: true,
-            width: 150
-        },
-        {
-            header: 'Đối tượng VAT',
-            binding: 'TaxRegName',
-            allowEditing: true,
-            width: 250
-        },
-        {
-            header: 'Mã số VAT',
-            binding: 'TaxRegNo',
-            allowEditing: true,
-            width: 150
-        },
-        {
-            header: 'Số tài khoản ngân hàng',
-            binding: 'BankAccountNo',
-            allowEditing: true,
-            width: 150
-        }
     ];
 
     childColumns1 = [

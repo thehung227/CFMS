@@ -1,0 +1,284 @@
+<!-- Main content -->
+<section class="content">
+  <!-- Default box -->
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <div class="tab-content" style="height:900px;">
+      <div class="wrap-content">
+        <div class="col-right" id="pageRight">
+          <div class="box" id="box-content">
+            <div class="box-header with-border">
+              <h3 class="box-title" id="titleName">Duyệt đơn hàng mua vật tư phụ</h3>
+              <div class="box-tools pull-right">
+                <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
+                                  <i class="fa fa-minus"></i>
+                              </button>
+                              <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
+                                  <i class="fa fa-times"></i>
+                              </button> -->
+                <!-- <button class="btn btn-danger" type="button" (click)=onClick(2) *ngIf="parentData?.CloseProcess == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid">Hủy hồ sơ</button> -->
+
+                <!-- <button class="btn btn-danger" type="button" (click)=showDialogCancel(parentData?.DocNo)
+                  *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Trả, tính giá lại</button>
+                <button class="btn btn-primary" type="button" (click)=checkVoucher()
+                  *ngIf="parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Duyệt</button>
+                <a class="btn btn-default" (click)="backClick()">Thoát</a> -->
+
+                <button class="btn btn-success" type="button" (click)=onClick(3)
+                  *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
+                <button class="btn btn-danger" type="button" (click)=onClick(0)
+                  *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Trả lại</button>
+                <button class="btn btn-primary" type="button" (click)=onClick(1)
+                  *ngIf="parentData?.CompletedApprove != true"
+                  [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Duyệt</button>
+                <a class="btn btn-default" (click)="backClick()">Thoát</a>
+
+                <!-- [routerLink]="['/main','purchaseorder','index']" -->
+              </div>
+            </div>
+            <div class="box-body">
+              <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                <strong>{{editorFrm.errors['error']}}</strong>
+              </div>
+              <div *ngFor="let panel of _layoutDeclare.panels" class="form-row">
+                <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                </df-panel>
+                <div style="clear:both"></div>
+              </div>
+
+              <div style="clear:both"></div>
+
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+              <!-- <button class="btn btn-info" type="button" style="margin-bottom:10px;"
+                (click)="showVoucherPP('BM-F006b-Rev00 De Nghi Mua Hang_WorkFlow.docx','Đề nghị mua hàng - {EXPR=DocNo}', '/3.Mau_In/A01/')">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Đề nghị</span>
+              </button> -->
+
+              <!-- <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown" style="margin-top: -10px;">Báo giá
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" style="margin-left: 26%;margin-top: -72%;background-color: antiquewhite;">
+                <li *ngFor="let btn of listButtonQR">
+                  <a class="dropdown-item" style="height: 39px;cursor: pointer;" (click)="showAttachQR('{EXPR=ProductCostId}\\'+folderNameQR,btn.Id)">
+                  Báo giá {{btn.Id}}
+                  </a>
+                </li>
+              </ul> -->
+
+              <!-- 29032022 <div class="bravo-dropdown">
+                <button type="button" (click)="openbravoDropdown()" class="bravo-dropbtn btn btn-warning"
+                  style="margin-top: -10px;">Báo giá
+                  <span class="caret"></span>
+                </button>
+                <div id="bravoDropdown" class="bravo-dropdown-content">
+                  <a *ngFor="let btn of listButtonQR" style="height: 39px;cursor: pointer;"
+                    (click)="showAttachQR('{EXPR=ProductCostId}\\'+folderNameQR,btn.Id)">
+                    Báo giá: {{btn.Id}}
+                  </a>
+                </div>
+              </div> -->
+
+              <!-- <button class="btn btn-success" type="button" style="margin-bottom:10px;"
+                (click)="showVoucher_CalPrice('FORM_Ket_Qua_Tinh_Gia.docx','Phương án chọn và hiệu quả - {EXPR=DocNo}', '/3.Mau_In/A01/')">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Phương án chọn</span>
+              </button> -->
+
+              <button class="btn btn-success" type="button" style="margin-bottom:10px;"
+                (click)="showPrintVoucher(parentData?.Id)">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Đơn hàng</span>
+              </button>
+
+              <!--<button class="btn btn-basic" type="button" style="margin-bottom:10px;" (click)="getCalPriceForm()">
+                <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">So sánh giá</span>
+              </button> -->
+
+              <div class="form-row" style="border:1px solid #ddd;">
+                <!-- <h4
+                  [ngStyle]="{'background-color': _errMess, 'color': 'white', 'font-weight': 'bold', 'padding': '12px'}">
+                  TÌNH TRẠNG DỰ TRÙ</h4> -->
+                <div id="cssmenu">
+                  <ul>
+                    <li class="active">
+                      <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">
+                        Đính kèm
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
+                        Bước duyệt
+                      </a>
+                    </li>
+                    <li>
+                      <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
+                        WorkFlow
+                      </a>
+                    </li>
+                    <!-- <li>
+                      <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
+                        Giá trị
+                      </a>
+                    </li> -->
+                  </ul>
+                </div>
+                <div class="tab-content">
+                  <div class="tab-pane active" id="tab1">
+                    <h4 style="color: red; font-weight: bold;"> Click vào dòng cần mở file</h4>
+                    <section id="new">
+                      <wj-flex-grid class="grid" #grid style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                  <div class="tab-pane" id="tab2">
+                    <section id="new">
+                      <wj-flex-grid class="grid1" #grid1 style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                  <div class="tab-pane" id="tab3">
+                    <section id="new">
+                      <wj-flex-grid class="grid2" #grid2 style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div>
+                  <!-- <div class="tab-pane" id="tab4">
+                    <section id="new">
+                      <wj-flex-grid class="grid3" #grid3 style="height:280px;">
+                        <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                          {{cell.row.index + 1}}
+                        </template>
+                      </wj-flex-grid>
+                    </section>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-left" id="pageLeft">
+          <div style="width: 100%;height: 100%;background-color: white;overflow-y: auto;" id="htmlShow">
+          </div>
+          <div id="viewfileattach" style="width: 100%;height: 100%;overflow-y: auto;">
+            <!-- <h4 id="fileViewInfo" style="color: #9b9b96;text-align: center;">Click Danh sách đính kèm để mở file</h4> -->
+            <object id="fileView" style="width: 100%;height: 100%;"></object>
+          </div>
+
+          <!-- lưới hỗ trợ in detail -->
+          <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;font-size:9pt;">
+          </wj-flex-grid>
+        </div>
+      </div>
+    </div>
+
+  </form>
+  <!-- /.box -->
+</section>
+<!-- /.content -->
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+
+<app-dialog [(visible)]="showDialogCheck" #dialogFrm>
+  <div class="headerConfirm">
+    <b>Kiểm tra chứng từ phê duyệt!</b>
+  </div>
+  <div class="titleConfirm">
+    <p>Thông báo:
+      <i> Còn <b style="color: red;">{{voucherNotApprove}} ({{lstDocNoPO}})</b> đơn hàng cùng đề nghị gốc số <b
+          style="color: red;">{{docNoPP}}</b>
+        chưa duyệt</i>
+    </p>
+  </div>
+  <div class="btnConfirm">
+    <button (click)="onClick(1)" class="btn btn-success">Duyệt</button>
+    <button (click)="skipApprove()" class="btn">Bỏ qua</button>
+  </div>
+</app-dialog>
+
+<app-dialog [(visible)]="showDialog" #dialogFrm2>
+  <div class="headerConfirm">
+    <b>Hủy chứng từ số: {{titleConfirmDialog}}! và <i style="color: red;">{{voucherNotApprove}} ({{lstDocNoPO}})
+      </i></b>
+  </div>
+  <div class="titleConfirm">
+    <textarea rows="3" placeholder="Gõ nguyên nhân hủy" #inputCancelNote style="width: 100%;"></textarea>
+  </div>
+  <div class="btnConfirm">
+    <button (click)="cancellistVoucherAndMail()" class="btn btn-success">Đồng ý</button>
+    <button (click)="hideDialogCancel()" class="btn">Hủy bỏ</button>
+  </div>
+</app-dialog>
+
+<wj-popup #frmEmailPopup hideTrigger="None" style="width: 60%;height: 80%;">
+  <div class="panel panel-primary" style="margin-top: 0px;margin-bottom: 0px;">
+    <div class="panel-heading">
+      <h3 class="panel-title">Soạn thư</h3>
+    </div>
+    <div class="panel-body" style="padding: 15px;">
+      <form>
+        <div class="form-group">
+          <label class="control-label">Gửi đến</label>
+          <input type="text" class="form-control" #inputTo placeholder="Email nhận">
+        </div>
+        <div class="form-group">
+          <label class="control-label">CC</label>
+          <input type="text" class="form-control" #inputCC placeholder="CC to: ngăn cách bằng dấu ;">
+        </div>
+        <!-- <div class="form-group">
+          <label class="control-label">BCC</label>
+          <input type="text" class="form-control" #inputBCC placeholder="BCC to: ngăn cách bằng dấu ;">
+        </div> -->
+        <div class="form-group">
+          <label class="control-label">Tiêu đề</label>
+          <input type="text" class="form-control" #inputSubject placeholder="Tiêu đề">
+        </div>
+        <div class="form-group">
+          <label class="control-label">Nội dung</label>
+          <textarea [id]="'richtextmail'"></textarea>
+        </div>
+        <div class="form-group">
+
+          <button type="button" class="btn btn-raised btn-primary" (click)="sendMailSupplierAndUpdate()">Gửi</button>
+          <button type="button" class="btn btn-raised btn-danger" (click)="closeFormEmail()">Hủy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</wj-popup>
+
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+  <div class="box" style="height: 400px;overflow-y: auto;">
+    <div class="box-header with-border"
+      style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+      <h3 class="box-title" style="color: white;">Ý kiến</h3>
+      <div class="box-tools pull-right">
+        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+          (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body" style="margin-top: 35px;">
+      <p #contentPopupTooltip></p>
+    </div>
+  </div>
+</wj-popup>

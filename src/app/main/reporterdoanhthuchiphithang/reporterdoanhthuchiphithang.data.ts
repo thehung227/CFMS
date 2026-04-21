@@ -74,6 +74,12 @@ export class LayoutData{
                         binding: 'ProductName',
                         width: 225,
                         isColumnOriginal: true
+                    },
+                     {
+                        header: 'Nhóm CĐT',
+                        binding: 'GeneralProject',
+                        width: 225,
+                        isColumnOriginal: true
                     }
                    
                 ]

@@ -461,8 +461,13 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
                         width: 100
                     },
                     {
-                        header: "Tên hàng",
+                        header: "Tên hàng (Theo TVG)",
                         binding: "Description0",
+                        width: 200
+                    },
+                      {
+                        header: "Tên hàng (Theo HĐ NCC)",
+                        binding: "Note",
                         width: 200
                     },
                     {
@@ -965,11 +970,17 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
              isReadOnly: 'true'
         },
         {
-            header: 'Tên mặt hàng',
+            header: 'Tên mặt hàng (Theo TVG)',
             binding: 'Description0',
             dataType: 'String',
             width: 200,
             isReadOnly: 'true'
+        },
+        {
+            header: 'Tên mặt hàng (Theo HĐ NCC)',
+            binding: 'Note',
+            dataType: 'String',
+            width: 200,
         },
         {
             header: 'Hạng mục sử dụng',

@@ -410,7 +410,7 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
         },
         'Evaluator_ServerConstraint_Detail_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'ProductCostId,TypeXDME,{VAR=Branch.Ma_Dvcs}',
+            ConstraintKey: 'ProductCostId,DocCode,TypeXDME,{VAR=Branch.Ma_Dvcs}',
             Command: 'usp_Vct_BaoCaoTinhTrangSuDungHaoHutVTXD',
             OutputTable: 0
         },
@@ -694,6 +694,13 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
         {
             header: 'Tên mặt hàng',
             binding: 'ItemName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tên mặt hàng (Theo Hợp Đồng NCC)',
+            binding: 'OriginName',
             dataType: 'String',
             width: 200,
             isReadOnly: 'true'

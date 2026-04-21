@@ -165,7 +165,7 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
                     Sort: 'ApproveGroup'
                 },
                 {
-                    Name: 'B30BizDocPayment',
+                    Name: 'vB30BizDocPayment_EditWeb',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder'
@@ -459,6 +459,17 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     isDisabled: 'true'
                 }),
+                new LookupBoxInput({
+                    key: 'BizDocId_GT',
+                    label: 'Phiếu giao thầu, giao việc',
+                    lookupKey: 'BizDoc_CTC',
+                    binding: {
+                    },
+                    // validators: [Validators.required],
+                    lookupfilter: "DocCode = 'C3'",
+                    hideValueMember: true,
+                    col: 6,
+                }, this.srv, this.parentData),
                 new TextBoxInput({
                     key: 'Discount',
                     label: 'Hợp đồng có chiết khấu',
@@ -759,7 +770,20 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 100,
             format: 'P2'
-        }
+        },
+          {
+            header: 'Tỉ lệ (%) (CĐT)',
+            binding: 'PayPercent_C2',
+            dataType: 'Number',
+            width: 70,
+            format: 'P2'
+        },
+         {
+            header: 'Thời hạn (CĐT) (Ngày)',
+            binding: 'NumberOfDay_C2',
+            dataType: 'Number',
+            width: 150
+        },
     ];
 
     childColumns2 = [
@@ -1065,7 +1089,7 @@ export class LayoutApprovedAppendixEditor implements IEditorFormulaDeclaration {
                     Sort: 'ApproveGroup'
                 },
                 {
-                    Name: 'B30BizDocPayment',
+                    Name: 'vB30BizDocPayment_EditWeb',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder'
@@ -1642,7 +1666,20 @@ export class LayoutApprovedAppendixEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 100,
             format: 'P2'
-        }
+        },
+         {
+            header: 'Tỉ lệ (%) (CĐT)',
+            binding: 'PayPercent_C2',
+            dataType: 'Number',
+            width: 70,
+            format: 'P2'
+        },
+         {
+            header: 'Thời hạn (CĐT) (Ngày)',
+            binding: 'NumberOfDay_C2',
+            dataType: 'Number',
+            width: 150
+        },
     ]
 
     childColumns2 = [

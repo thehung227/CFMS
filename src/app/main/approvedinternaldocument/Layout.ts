@@ -320,6 +320,15 @@ export class LayoutApprovedInternalDocumentEditor implements IEditorFormulaDecla
                     style: 'background-color:#F1EDED;border-radius:8px;',
                     
                 }, this.srv, this.parentData),
+                  new LookupBoxInput({
+                    key: 'EmployeeCodeReal',
+                    label: 'Chuyển Người duyệt',
+                    lookupKey: 'Employee',
+                    hideValueMember: false,
+                    col: 6,
+                    isDisabled: "{EXPR=PositionCode} != 'CB-098'",
+                    
+                }, this.srv, this.parentData),
                 new TextBoxInput({
                     key: 'Remark',
                     label: 'Ghi chú',

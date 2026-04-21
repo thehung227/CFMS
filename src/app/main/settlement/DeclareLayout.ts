@@ -419,6 +419,13 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo',
             zExpr: "ParentBizDocId != '' && ProductCostId != '' && ContractType != ''"
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,ProductCostId,ContractType,DocCode,{VAR=Branch.Ma_Dvcs},Id',
+            Command: 'ufn_Coteccons_B30BizDoc_DefaultDocNo',
+            DataMember: 'DocNoUnique',
+            zExpr: "ParentBizDocId != '' && ProductCostId != '' && ContractType != ''"
+        },
         'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},BizDocId,DocCode,DocNo',
@@ -590,6 +597,7 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_SubContractValue',
         'Evaluator_ServerConstraint_GetValue_TransType',
         // //'Evaluator_ServerConstraint_ActitityCode_GetData',

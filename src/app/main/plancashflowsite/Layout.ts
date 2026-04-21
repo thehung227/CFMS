@@ -300,7 +300,7 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30CCMBudget_Edit',
+                Name: 'vB30CCMBudget_EditK6',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'K6',
@@ -925,9 +925,28 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 150
         },
+         {
+            header: 'Khối lượng thi công - NSC XD',
+            binding: 'ThiCong_NSC_XD',
+            dataType: 'Number',
+            width: 150
+        },
+        
         {
             header: 'Khối lượng thi công - ME',
             binding: 'Amount_ThiCongME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Khối lượng thi công - NSC ME',
+            binding: 'ThiCong_NSC_ME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Khối lượng thi công - HST',
+            binding: 'ThiCong_HST',
             dataType: 'Number',
             width: 150
         },
@@ -943,11 +962,29 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 200
         },
+          {
+            header: 'Kế hoạch DOANH THU - NSC XD',
+            binding: 'DoanhThu_NSC_XD',
+            dataType: 'Number',
+            width: 150
+        },
         {
             header: 'Kế hoạch DOANH THU - ME',
             binding: 'OpenPlanAmountME',
             dataType: 'Number',
             width: 200
+        },
+          {
+            header: 'Kế hoạch DOANH THU - NSC ME',
+            binding: 'DoanhThu_NSC_ME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Kế hoạch DOANH THU - HST',
+            binding: 'DoanhThu_HST',
+            dataType: 'Number',
+            width: 150
         },
         {
             header: 'Kế hoạch THU',
@@ -966,8 +1003,7 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
             header: 'Kế hoạch CHI',
             binding: 'PaymentAmount',
             dataType: 'Number',
-            width: 200,
-            
+            width: 200, 
         },   
         {
             header: 'Thực tế chi',
@@ -975,7 +1011,7 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 200,
             exprReadOnly: "{EXPR=IsOld} != '0' || {EXPR=IsOld} != ''"
-        },  
+        },
         {
             header: 'THU - CHI',
             binding: 'Amount',
@@ -1291,8 +1327,28 @@ export class LayoutPlanCashFlowSiteEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 200,
             isReadOnly: 'true'
+        },
+        {
+            header: 'Chênh lệch được duyệt',
+            binding: 'OpenPlanAmount',
+            dataType: 'Number',
+            width: 200
+        },
+     {
+            header: 'Hạn mức chi tiền lũy kế',
+            binding: 'OriginalAmount8',
+            dataType: 'Number',
+            width: 0,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Hạn mức chi tiền theo tuần',
+            binding: 'OriginalAmount9',
+            dataType: 'Number',
+            width: 0,
+            isReadOnly: 'true'
         }
-     
     ];
 
 }

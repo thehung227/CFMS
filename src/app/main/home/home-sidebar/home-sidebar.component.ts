@@ -164,6 +164,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_reportertitrongmuahang: boolean;
     isPermissionAll_reporterbctctonghop: boolean;
     isPermissionAll_rep05_kehoachmuahang: boolean;
+    isPermissionAll_rep05_kehoachbetong: boolean;
     isPermissionAll_rep05_haohutvattu: boolean;
     isPermissionAll_reportercongnohoadon: boolean;
     isPermissionAll_reporterdocumentary: boolean;
@@ -206,10 +207,14 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_creditcontract: boolean;
     isPermissionAll_supplierinvoice: boolean;
     isPermissionAll_purchasebudget: boolean;
+    isPermissionAll_concretebudget: boolean;
     isPermissionAll_purchaseotherbudget: boolean;
+    isPermissionAll_auxiliarymaterialsbuget: boolean;
+    isPermissionAll_auxiliarymaterialsorder: boolean;
     isPermissionAll_spendingplan: boolean;
     isPermissionAll_categorylist: boolean;
     isPermissionAll_paymentproposal: boolean;
+    isPermissionAll_paymentextraproposal: boolean;
     isPermissionAll_paymentmeproposal: boolean;
     isPermissionAll_paymentccmproposal: boolean;
     isPermissionAll_billinvesment: boolean;
@@ -219,6 +224,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_solpn: boolean;
     isPermissionAll_imwarematerials: boolean;
     isPermissionAll_exwarematerials: boolean;
+    isPermissionAll_imsolpoconcrete: boolean;
     isPermissionAll_solpx: boolean;
     isPermissionAll_solpoconcrete: boolean;
     isPermissionAll_concreteloss: boolean;
@@ -230,6 +236,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_pricelibrary: boolean;
     isPermissionAll_debtcollection: boolean;
     isPermissionAll_setlementstatus: boolean;
+    isPermissionAll_settlementrecords: boolean;
     isPermissionAll_plansignstatus: boolean;
     isPermissionAll_deadlineproject: boolean;
     
@@ -328,6 +335,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_billinternalequip = Global.getPermissionAll(permission,permission2,'billinternalequip-explorer', 'IsDisplay');   
         this.isPermissionAll_debtcollection = Global.getPermissionAll(permission,permission2,'debtcollection-explorer', 'IsDisplay');  
         this.isPermissionAll_setlementstatus = Global.getPermissionAll(permission,permission2,'setlementstatus-explorer', 'IsDisplay');  
+        this.isPermissionAll_settlementrecords = Global.getPermissionAll(permission,permission2,'settlementrecords-explorer', 'IsDisplay');  
         this.isPermissionAll_plansignstatus = Global.getPermissionAll(permission,permission2,'plansignstatus-explorer', 'IsDisplay');        
         this.isPermissionAll_deadlineproject = Global.getPermissionAll(permission,permission2,'deadlineproject-explorer', 'IsDisplay');        
         this.isPermissionAll_billpayequipment = Global.getPermissionAll(permission,permission2,'billpayequipment-explorer', 'IsDisplay'); 
@@ -336,6 +344,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_docaftersales = Global.getPermissionAll(permission,permission2,'docaftersales-explorer', 'IsDisplay');
         this.isPermissionAll_planaftersales = Global.getPermissionAll(permission,permission2,'planaftersales-explorer', 'IsDisplay');
         this.isPermissionAll_paymentproposal = Global.getPermissionAll(permission,permission2,'paymentproposal-explorer', 'IsDisplay');
+        this.isPermissionAll_paymentextraproposal = Global.getPermissionAll(permission,permission2,'paymentextraproposal-explorer', 'IsDisplay');
         this.isPermissionAll_paymentmeproposal = Global.getPermissionAll(permission,permission2,'paymentmeproposal-explorer', 'IsDisplay');
         this.isPermissionAll_paymentccmproposal = Global.getPermissionAll(permission,permission2,'paymentccmproposal-explorer', 'IsDisplay');
         this.isPermissionAll_paymentproposaltotal = Global.getPermissionAll(permission,permission2,'paymentproposaltotal-explorer', 'IsDisplay');
@@ -399,7 +408,8 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_rep03_supplierlist = Global.getPermissionAll(permission,permission2,'rep03_supplierlist', 'IsDisplay');
         this.isPermissionAll_rep03_menulist = Global.getPermissionAll(permission,permission2,'rep03_menulist', 'IsDisplay');
         this.isPermissionAll_rep04_lichsubiendonggia = Global.getPermissionAll(permission,permission2,'rep04_lichsubiendonggia', 'IsDisplay');
-        this.isPermissionAll_rep05_kehoachmuahang = Global.getPermissionAll(permission,permission2,'rep05_kehoachmuahang', 'IsDisplay');        
+        this.isPermissionAll_rep05_kehoachmuahang = Global.getPermissionAll(permission,permission2,'rep05_kehoachmuahang', 'IsDisplay'); 
+        this.isPermissionAll_rep05_kehoachbetong = Global.getPermissionAll(permission,permission2,'reporterconcretebudget', 'IsDisplay');          
         this.isPermissionAll_rep05_haohutvattu = Global.getPermissionAll(permission,permission2,'rep05_haohutvattu', 'IsDisplay');        
         this.isPermissionAll_reportercongnohoadon = Global.getPermissionAll(permission,permission2,'reportercongnohoadon', 'IsDisplay');
         this.isPermissionAll_reporterincurred = Global.getPermissionAll(permission,permission2,'reporterincurred', 'IsDisplay');
@@ -434,6 +444,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_solpp = Global.getPermissionAll(permission,permission2,'solpp-explorer', 'IsDisplay'); 
         this.isPermissionAll_solpn = Global.getPermissionAll(permission,permission2,'solpn-explorer', 'IsDisplay'); 
         this.isPermissionAll_imwarematerials = Global.getPermissionAll(permission,permission2,'imwarematerials-explorer', 'IsDisplay'); 
+        this.isPermissionAll_imsolpoconcrete = Global.getPermissionAll(permission,permission2,'imsolpoconcrete-explorer', 'IsDisplay'); 
         this.isPermissionAll_exwarematerials = Global.getPermissionAll(permission,permission2,'exwarematerials-explorer', 'IsDisplay'); 
         this.isPermissionAll_solpx = Global.getPermissionAll(permission,permission2,'solpx-explorer', 'IsDisplay'); 
                                           
@@ -450,7 +461,10 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_supplierinfo = Global.getPermissionAll(permission,permission2,'supplierinfo-explorer', 'IsDisplay');   
         this.isPermissionAll_supplierinvoice = Global.getPermissionAll(permission,permission2,'supplierinvoice-explorer', 'IsDisplay');
         this.isPermissionAll_purchaseotherbudget = Global.getPermissionAll(permission,permission2,'purchaseotherbudget-explorer', 'IsDisplay');    
-        this.isPermissionAll_purchasebudget = Global.getPermissionAll(permission,permission2,'purchasebudget-explorer', 'IsDisplay');    
+        this.isPermissionAll_auxiliarymaterialsbuget = Global.getPermissionAll(permission,permission2,'auxiliarymaterialsbuget-explorer', 'IsDisplay');    
+        this.isPermissionAll_auxiliarymaterialsorder = Global.getPermissionAll(permission,permission2,'auxiliarymaterialsorder-explorer', 'IsDisplay');    
+        this.isPermissionAll_purchasebudget = Global.getPermissionAll(permission,permission2,'purchasebudget-explorer', 'IsDisplay');  
+        this.isPermissionAll_concretebudget = Global.getPermissionAll(permission,permission2,'concretebudget-explorer', 'IsDisplay');    
         this.isPermissionAll_categorylist = Global.getPermissionAll(permission,permission2,'categorylist-explorer', 'IsDisplay');
         this.isPermissionAll_customer = Global.getPermissionAll(permission,permission2,'customer-explorer', 'IsDisplay');
         this.isPermissionAll_pricelibrary = Global.getPermissionAll(permission,permission2,'pricelibrary-explorer', 'IsDisplay');

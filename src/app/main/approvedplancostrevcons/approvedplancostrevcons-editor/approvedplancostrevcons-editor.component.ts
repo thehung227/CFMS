@@ -14,6 +14,9 @@ import { LayoutApprovedPlanCostRevConsEditor } from "../DeclareLayout";
 import { Title } from "@angular/platform-browser";
 import { Location } from "@angular/common";
 import { Global } from "../../../shared/global";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { SystemConstants } from "../../../core/common/system.constants";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
   selector: 'app-approvedplancostrevcons-editor-form',
@@ -72,7 +75,10 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
   backClick() {
     this._location.back();
   }
-
+ output: Array<Object>;
+  _errBCTC: boolean = false;
+  _errMess: string;
+  
   async onClick(state: any) {
     if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])
       alert("User đăng nhập không đúng với người duyệt!!!");
@@ -85,12 +91,50 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
       //     window.close();
       //   }, 1000);
       // });
+       this.showLoading = true;
+      let params = new Array<ParameterContract>();
+      const param1 = new ParameterContract();
+      const param2 = new ParameterContract();
+      const param3 = new ParameterContract();
+      const param4 = new ParameterContract();
+  
+      param1.ParameterName = Global.convertParameterName('ProductCostId');
+      param1.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+      params.push(param1);
+  
+      param2.ParameterName = Global.convertParameterName('BranchCode');
+      param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+      params.push(param2);
+  
+      param3.ParameterName = Global.convertParameterName('Id');
+      param3.ParameterValue = this.id;
+      params.push(param3);
+  
+      param4.ParameterName = Global.convertParameterName('UserId');
+      param4.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID).replace(/"/gi, '');
+      params.push(param4);
+  
+      let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CTC_CheckHopDongKhongDuTruBCTC_Approved', params)
+        .toPromise().then();
+  
+      this.output = <Array<Object>>(_data['output']);
+      this._errBCTC = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage']; 
+
+       if (this._errMess) {
+        alert(this._errMess)
+        this.showLoading = true;
+      }
+      else
+      {
       this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
         this.sendMail(this.editorFrm, 'K2', this.parentData['IdCCMBudget'], false, state).then(() => {
           this.router.navigate(['/main', 'notifications', 'index']);
         });
       });
+    }
+    }
       // this.backClick();
     }
   }
-}
+ 

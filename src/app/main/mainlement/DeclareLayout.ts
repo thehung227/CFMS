@@ -403,6 +403,13 @@ export class LayoutMainlementEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo',
             zExpr: "ParentBizDocId != '' && ProductCostId != '' && ContractType != ''"
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,ProductCostId,ContractType,DocCode,{VAR=Branch.Ma_Dvcs},Id',
+            Command: 'ufn_Coteccons_B30BizDoc_DefaultDocNo',
+            DataMember: 'DocNoUnique',
+            zExpr: "ParentBizDocId != '' && ProductCostId != '' && ContractType != ''"
+        },
         'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},BizDocId,DocCode,DocNo',
@@ -502,6 +509,7 @@ export class LayoutMainlementEditor implements IEditorFormulaDeclaration {
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_SubContractValue',
         // //'Evaluator_ServerConstraint_ActitityCode_GetData',
         // //'Evaluator_ServerConstraint_JobCode_GetData'
@@ -577,7 +585,7 @@ export class LayoutMainlementEditor implements IEditorFormulaDeclaration {
             directory: 'billmainlement',
             type: 'detail',
             key: 'Id_TT',
-            parameter: { 'Commandkey': 'billmainlement-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=ParentBizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'DocNo': '{EXPR=DocNo}', 'ParentId': '{EXPR=Id}' }
+            parameter: { 'Commandkey': 'billmainlement-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=ParentBizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'DocNo': '{EXPR=DocNo}', 'DocNoUnique': '{EXPR=DocNo}', 'ParentId': '{EXPR=Id}' }
         },
         'btnHdPl': {
             directory: 'regcontract_viewCT',

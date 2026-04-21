@@ -729,6 +729,28 @@ export class LayoutApprovedIncurredEditor implements IEditorFormulaDeclaration {
             width: 200
         },
         {
+            header: 'Duyệt chủ trương'	,
+            binding: 'PolicyStatus',
+            width:100,
+           
+            dataType: 'Array',
+            lookupKey: 'Class',
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='POLICYSTATUS'",								
+        },
+         {
+            header: 'Tên tình trạng chủ trương',
+            binding: 'PolicyStatusName',
+        
+            width: 200
+            					
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'PolicyRemark',
+           
+            width: 200
+        },
+        {
         header: 'Giá trị đánh giá PS đã trình (Chưa VAT)',
         binding: 'RowInheris',
         dataType: 'Number',

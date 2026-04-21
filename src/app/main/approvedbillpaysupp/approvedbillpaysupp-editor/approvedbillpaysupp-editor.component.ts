@@ -149,7 +149,7 @@ async saveData(formData: any,state: any) {
         .toPromise().then();
 
       this.output = <Array<Object>>(_data['data']);
-   console.log(this.output)
+ 
       this._errItemSets = this.output['@_Error'];
       this._errMess = this.output['@_ErrorMessage'];
     }
@@ -174,6 +174,7 @@ async saveData(formData: any,state: any) {
       console.log('Data để show popup:', this.dataPopupContent);
       if (this.dataPopup) {
         this.dataPopup.show(true);
+        
       }
       // location.reload()
       // console.log(this.parentData['Id'])

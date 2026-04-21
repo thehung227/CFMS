@@ -23,7 +23,7 @@ export class LayoutExWareMaterialsExplorer implements IExplorerFormulaDeclaratio
         Structure: {
             Parent: {
                 Name: 'vB30AccDocEquip_ExploreInventory',
-                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'X3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP')",
+                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'X3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP','BETONG')",
                 OrderBy: 'DocDate DESC,DocNo DESC',
                 RowPage: 50
             },

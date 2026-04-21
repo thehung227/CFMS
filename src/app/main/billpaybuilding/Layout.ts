@@ -371,6 +371,13 @@ export class LayoutBillPayBuildingEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo'
             //zExpr: "'PayTeamType'.toString() != '00'.toString()"
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo',
+            DataMember: 'DocNoUnique'
+            //zExpr: "'PayTeamType'.toString() != '00'.toString()"
+        },
         // // 'Evaluator_ServerConstraint_CTC_DefaultDocNo_TamUng': {
         // //     EvaluatorName: 'EvaluatorQuery',
         // //     ConstraintKey: 'DocCode,ProductCostId,PayTeamType,CustomerCode,{VAR=Branch.Ma_Dvcs},Id',
@@ -696,6 +703,7 @@ export class LayoutBillPayBuildingEditor implements IEditorFormulaDeclaration {
     serverConstraint = [
         'Evaluator_ServerConstraint_Check_ImportedExcel',
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_GetValue_ContractValue',
         'Evaluator_ServerConstraint_GetValue_SubContractValue',
         'Evaluator_ServerConstraint_GetValue_Amount_HDPL',

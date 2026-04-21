@@ -136,7 +136,7 @@ export class NotificationsExplorerComponent {
 
     const rawData = this.grid.itemsSource._pgView;
 
-    const selectedColumns = ['Id','IdDoc', 'DocCode', 'BizDocId', 'ProductCostId','RowId','ApproveGroup']; // <-- Chỉ định các cột bạn muốn lấy
+    const selectedColumns = ['Id','ApproveGroup']; // <-- Chỉ định các cột bạn muốn lấy
 
     const filteredData = this.grid.itemsSource._pgView.map(row => {
       let newRow = {};
@@ -145,7 +145,7 @@ export class NotificationsExplorerComponent {
     });
 
   const jsonData = JSON.stringify(filteredData);
-
+console.log(jsonData)
     let paramJson = new ParameterContract();
     paramJson.ParameterName = '@_JsonData';
     paramJson.ParameterValue = jsonData;

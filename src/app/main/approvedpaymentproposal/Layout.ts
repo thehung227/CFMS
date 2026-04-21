@@ -873,11 +873,20 @@ export class LayoutApprovedPaymentProposalEditor implements IEditorFormulaDeclar
         },                                                                               
        
     ];
-    childColumns4 = [
+     childColumns4 = [
         {
             header: 'Mã đối tượng',
             binding: 'CustomerCode',
             width: 0
+        },
+         {
+            header: 'STT',
+            binding: 'BuiltinOrder',
+            dataType: 'Number',
+            width: 50,
+            align: 'center',
+            isReadOnly: 'true'
+
         },
         {
             header: 'Gói thầu',
@@ -907,11 +916,41 @@ export class LayoutApprovedPaymentProposalEditor implements IEditorFormulaDeclar
             }
         },
         {
-            header: 'Số tiền nợ',
+            header: 'Giá trị thanh toán claim đã duyệt',
+            binding: 'AmountClaimApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Giá trị đã thanh toán',
+            binding: 'AmountClaimPayment',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Giá trị còn lại chưa thanh toán',
             binding: 'DebtAmount',
             dataType: 'Number',
             width: 150,
             isReadOnly: 'true'
+        },
+          {
+            header: 'Giá trị thanh toán claim chưa duyệt',
+            binding: 'AmountClaimNotApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+
+        },
+         {
+            header: 'Hạn thanh toán',
+            binding: 'DateDue',
+            isRequired: false,
+            format: 'dd/MM/yyyy',
+            width: 120,
+            dataType: 'Date',
         },
         {
             header: 'Số ngày quá hạn',
@@ -921,19 +960,7 @@ export class LayoutApprovedPaymentProposalEditor implements IEditorFormulaDeclar
             isReadOnly: 'true'
         },
         {
-            header: 'Chưa có KH TT',
-            binding: 'IsNotPlan',
-            dataType: 'Boolean',
-            width: 90
-        }, 
-        {
-            header: 'Kế hoạch CĐT Thanh toán',
-            binding: 'PlanPaymentAmount',
-            dataType: 'Number',
-            width: 150
-        },
-        {
-            header: 'Ngày CĐT dự kiến TT',
+            header: 'Ngày dự kiến tiền về',
             binding: 'EstimatedTimeDelivery',
             isRequired: false,
             format: 'dd/MM/yyyy',

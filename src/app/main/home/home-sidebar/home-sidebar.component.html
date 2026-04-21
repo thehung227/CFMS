@@ -168,6 +168,12 @@
                         </a>
                     </li>
                     <li>
+                        <a [routerLink]="['settlementrecords','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlementrecords)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quy trình HS quyết toán CĐT
+                        </a>
+                    </li>
+                    <li>
                         <a [routerLink]="['setlementstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_setlementstatus)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Tình hình QT dự án
@@ -299,6 +305,12 @@
                         <a [routerLink]="['paymentmeproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentmeproposal)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Đề xuất thanh toán kỳ - ME
+                        </a>
+                    </li>
+                     <li>
+                        <a [routerLink]="['paymentextraproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentextraproposal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thanh toán bổ sung
                         </a>
                     </li>
                     <li>
@@ -890,6 +902,12 @@
                         </a>
                     </li>   
                     <li>
+                        <a [routerLink]="['concretebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concretebudget)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch bê tông
+                        </a>
+                    </li>   
+                    <li>
                         <a [routerLink]="['solpp','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpp)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Đề nghị thép
@@ -929,13 +947,26 @@
                     <li>
                         <a [routerLink]="['purchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherbudget)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Kế hoạch mua hàng vật tư
+                            Kế hoạch mua hàng vật tư chính
+                        </a>
+                    </li> 
+                      <li>
+                        <a [routerLink]="['purchaseotherorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn hàng mua vật tư chính
                         </a>
                     </li> 
                     <li>
-                        <a [routerLink]="['purchaseotherorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherorder)" (click)="clickItem($event)">
+                        <a [routerLink]="['auxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsbuget)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Đơn hàng mua vật tư
+                            Kế hoạch vật tư phụ
+                        </a>
+                    </li> 
+                  
+                    <li>
+                        <a [routerLink]="['auxiliarymaterialsorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn hàng mua vật tư phụ
                         </a>
                     </li> 
                     <li>
@@ -949,7 +980,14 @@
                             <i class="fa fa-circle-o"></i>
                             Tình trạng hao hụt VT - ME
                         </a>
-                    </li>     
+                    </li>   
+                    <li>
+                        <a [routerLink]="['reporterconcretebudget','view','REP01_KHBT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachbetong)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo kế hoạch bê tông
+                        </a>
+                    </li>   
                     <li>
                         <a [routerLink]="['rep05_kehoachmuahang','view','REP01_KHMH']"
                             *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachmuahang)" (click)="clickItem($event)">
@@ -998,6 +1036,12 @@
                         <a [routerLink]="['imwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imwarematerials)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Phiếu nhập vật tư
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['imsolpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imsolpoconcrete)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu nhập bê tông
                         </a>
                     </li>
                     <li>

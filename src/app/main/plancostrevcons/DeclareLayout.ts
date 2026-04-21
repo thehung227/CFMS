@@ -203,7 +203,7 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30CCMBudget_Edit',
+                Name: 'vB30CCMBudget_K12Edit',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'K2',
@@ -863,6 +863,38 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
             binding: 'OriginalAmount5',
             isReadOnly: 'true',
             dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmountPlan3',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'OriginalAmountPlus',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'CostAmount',
+            isReadOnly: 'true',
+            dataType: 'Number',
+            width: 0
+         
+        },
+         {
+            header: 'Giá trị bổ sung 2 (PKT) (3)',
+            binding: 'NoSign',
+            isReadOnly: 'true',
+     
             width: 0
          
         },

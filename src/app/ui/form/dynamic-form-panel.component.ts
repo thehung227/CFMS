@@ -213,8 +213,17 @@ export class DynamicFormPanelComponent implements OnDestroy {
           for (let control in paramsReport) {
             if (paramsReport[control].toString().indexOf('{EXPR=') > -1) {
               paramsReport[control] = this.translate_Parameter_linkCommand(paramsReport[control], ds, this.parentData);
-              if (paramsReport[control].toString().indexOf('?') > -1)
-                paramsReport[control] = eval(paramsReport[control]);
+                if (paramsReport[control].toString().indexOf('?') > -1) {
+                  try {
+                      let expr = paramsReport[control].toString();
+                      // Bỏ phần {EXPR=} nếu vẫn còn
+                      expr = expr.replace(/^\{EXPR=/, '').replace(/\}$/, '');
+                      paramsReport[control] = eval(expr);
+                  } catch (e) {
+                      console.error('Lỗi eval EXPR:', e);
+                      paramsReport[control] = null; // hoặc giá trị mặc định
+                  }
+              }
             }
             if (paramsReport[control].toString().indexOf('{VAR=') > -1)
               paramsReport[control] = Global.convertConfig(paramsReport[control]);
@@ -288,6 +297,7 @@ export class DynamicFormPanelComponent implements OnDestroy {
         }
       }
       let paramsReport: any[];
+console.log(this.linkReporter[key]['parameter'])
 
       paramsReport = this.linkReporter[key]['parameter'];
 

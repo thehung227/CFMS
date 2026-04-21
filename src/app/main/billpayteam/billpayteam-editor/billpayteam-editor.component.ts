@@ -99,8 +99,8 @@ export class BillPayTeamEditorComponent extends BaseEditorComponent implements O
         }
     }
 
-    this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
-    if (this._errorUnique == false) {
+    // this.checkUniqueColGrid(this.grid2, 'ApproveGroup');
+    // if (this._errorUnique == false) {
       if (_numEror == 0) {
         if (isApproveSend == true) {
           let _errorSave = false;
@@ -137,9 +137,9 @@ export class BillPayTeamEditorComponent extends BaseEditorComponent implements O
         alert('Các Tab dữ liệu (Tài liệu đính kèm, Bước duyệt) cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có) hoặc điền đầy đủ thông tin.');
       }
     }
-    else
-      alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
-  }
+  //   else
+  //     alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+  // }
 
   showPrintVoucher(input: any) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');

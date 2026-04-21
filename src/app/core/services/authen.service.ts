@@ -12,6 +12,7 @@ import { Jsonp } from '@angular/http/src/http';
 import { CryptoExtension } from '../extensions/crypto.extension';
 
 import { UserManager, UserManagerSettings, User } from 'oidc-client';
+
 import { Subject } from 'rxjs';
 
 @Injectable()
@@ -250,16 +251,22 @@ export class AuthenService {
     //     }
     // }
 
-    private get idpSettings(): UserManagerSettings {
-        return {
-            authority: "https://auth.newtecons.vn",
-            client_id: "5ebb890b-a43d-4643-ad7f-6dd42d287ed1",
-            redirect_uri: "http://localhost:4200/#/auth",
-            scope: "openid profile email api",
-            response_type: "code",
-            post_logout_redirect_uri: "http://localhost:4200/#/logout",
-            automaticSilentRenew: true,
-            silent_redirect_uri: "http://localhost:4200/assets/refresh.html",
+   private get idpSettings(): UserManagerSettings {
+        const raw = localStorage.getItem(SystemConstants.SSO_DATA);
+        const sso = raw ? JSON.parse(raw) : {};
+        const origin = window.location.origin;
+        if (!sso.ClientId || !sso.Authority) {
+            console.error('OIDC settings incomplete:', sso);
         }
-    }
+        return {
+            authority: sso.Authority || 'https://sso.newtecons.vn/realms/Newtecons',
+            client_id: sso.ClientId,
+            redirect_uri: sso.UrlApp || `${origin}/assets/callback.html`, 
+            scope: sso.Scope || 'openid profile email',
+            response_type: 'code',
+            post_logout_redirect_uri: `${origin}/#/login`,
+            automaticSilentRenew: true,
+            silent_redirect_uri: `${origin}/assets/refresh.html`,
+        };
+        }
 }

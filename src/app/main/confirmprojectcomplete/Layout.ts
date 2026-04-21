@@ -374,7 +374,6 @@ export class LayoutConfirmProjectCompleteEditor implements IEditorFormulaDeclara
             key: 'Id_PLA',
             parameter: { 'Commandkey': 'unitprice-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=BizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'TaxCode': '{EXPR=TaxCode}', 'TaxRate': '{EXPR=TaxRate}', 'ParentId': '{EXPR=Id}' }
         },
-       
     };
 
     panels: PanelBase[] = [
@@ -496,14 +495,12 @@ export class LayoutConfirmProjectCompleteEditor implements IEditorFormulaDeclara
             header: 'Kế hoạch thực hiện',
             binding: 'ImplementationPlan',
             allowEditing: false,
-            isReadOnly: 'true',
             width: 200
         },
         {
             header: 'Người chịu trách nhiệm',
             binding: 'EmployeeName',
             allowEditing: false,
-            isReadOnly: 'true',
             width: 200
         },
         {

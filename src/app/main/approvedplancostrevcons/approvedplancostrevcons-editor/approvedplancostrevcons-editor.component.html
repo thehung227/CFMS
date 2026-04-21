@@ -13,6 +13,7 @@
                         <i class="fa fa-times"></i>
                     </button> -->
           <!-- <button class="btn btn-danger" type="button" (click)=onClick(2) *ngIf="parentData?.CloseProcess == 1 && parentData?.CompletedApprove != true" [disabled]="!editorFrm.valid">Hủy hồ sơ</button>                     -->
+            <button class="btn btn-success" type="submit" *ngIf="parentData?.PositionCode == 'CB-008'" [disabled]="!editorFrm.valid">Lưu</button>
           <button class="btn btn-success" type="button" (click)=onClick(3) *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
           <button class="btn btn-danger" type="button" (click)=onClick(0) *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"

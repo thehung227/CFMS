@@ -130,6 +130,33 @@ export class BaseService {
             .map((response: Response) => <any>response.json())
             .catch(this.handleError);
     }
+    public getDataOutput1<T1>(
+    url: string,
+    type: BravoCtorEnum,
+    ctor1: string,
+    params: T1
+    ): Observable<any> {
+        // Mã hóa ctor1 và params
+        const body = {
+            ctor1: CryptoExtension.encrypt(ctor1),
+            type: type,
+            ctor2: CryptoExtension.encrypt(JSON.stringify(params))
+        };
+
+        this.headers.delete('Authorization');
+        this.headers.append(
+        'Authorization',
+        'bearer ' + this._authenService.getLoggedInUser().access_token
+        );
+
+        const options = new RequestOptions({ headers: this.headers });
+
+        // Chuyển GET -> POST
+        return this._http.post(url + 'getdataoutput', body, options)
+        .map((response: Response) => <any>JSON.parse(response.text(), this.reviver))
+        .catch(this.handleError);
+    }
+
 
     public getDataOutput<T1>(url: string, type: BravoCtorEnum, ctor1: string, params: T1): Observable<any> {
         // console.log(params);
@@ -186,7 +213,7 @@ export class BaseService {
     }
 
     dowload(key: string, parentId: string, name: string): Observable<any> {
-
+        
         let type = "";
         if (name.toUpperCase().endsWith("PDF"))
             type = "application/pdf";
@@ -201,6 +228,8 @@ export class BaseService {
         else type = "application/octet-stream";
 
         const downloadURL = Global.UploadEndpoint + 'Download?key=' + encodeURIComponent(key) + '&parentId=' + encodeURIComponent(parentId) + '&name=' + encodeURIComponent(name);
+
+       
 
         return this.downloadFileRequest(downloadURL, type);
     }
@@ -367,14 +396,16 @@ export class BaseService {
 
     }
     public exportHtml(sourcePath: string, output: any): Observable<any> {
+       
         sourcePath = Global.convertConfig(sourcePath);
         sourcePath = encodeURIComponent(CryptoExtension.encrypt(sourcePath));
 
         this.headers.delete('Authorization');
         this.headers.append('Authorization', 'bearer ' + this._authenService.getLoggedInUser().access_token);
-
+ 
         const options = new RequestOptions({ headers: this.headers });
         const _url = Global.UploadEndpoint + 'ExportHtml' + '?sourcePath=' + sourcePath;
+
         return this._http.post(_url, output, options)
             .map((response: Response) => <any>JSON.parse(response.text(), this.reviver))
             .catch(this.handleError);
@@ -441,7 +472,7 @@ export class BaseService {
             _url = _url + 'callApiSSO';
         else
             _url = _url + 'callApi';
-console.log(body)
+
         return this._http.post(_url, body, options)
             .map(res => res.json())
             .catch(error => Observable.throw(error));

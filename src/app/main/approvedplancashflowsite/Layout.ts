@@ -230,7 +230,7 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
                     label: 'Đính kèm',
                     col: 6,
                     isOnlyDownload: true,
-                    folderId: '{EXPR=IdCCMBudget}'
+                    // folderId: '{EXPR=IdCCMBudget}'
                 }, this.srv),
                 new DateBoxInput({
                     key: 'ToDate',
@@ -328,6 +328,16 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
                     label: 'Báo cáo Doanh thu - Dòng tiền',
                     col: 6
                 }),
+                new NumberBoxInput({
+                    key: 'IdCCMBudget',
+                    label: 'Số ngày thực hiện',
+                    type: 'number',
+                    dataType: 'n0',
+                    // visible: 'false',
+                    // isDisabled: 'true',
+                    // isNewRow: true,
+                    col: 6
+                }),
              
             ]
         })
@@ -342,39 +352,6 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             dataType: 'Date',
             format: 'dd/MM/yyyy'
         },
-        // {
-        //     header: 'STT',
-        //     binding: 'ItemNo',
-        //     isRequired: true,
-        //     width: 100
-        // },
-        // {
-        //     header: 'Công việc',
-        //     binding: 'JobCode',
-        //     dataType: 'Array',
-        //     lookupKey: 'Job_CCM',
-        //     bindingList: {
-        //         Name: 'JobName'
-        //     },
-        //     lookupfilter: 'IsGroup=0 AND IsActive=1',
-        //     multiSelection: true,
-        //     width: 100
-        // },
-        // {
-        //     header: 'Loại thu/chi',
-        //     binding: 'JobCode',
-        //     dataType: 'Array',
-        //     lookupKey: 'Job_CCM',
-        //     bindingList: {
-        //         Name: 'JobName'
-        //     },
-        //     width: 120
-        // },        
-        // {
-        //     header: 'Nội dung',
-        //     binding: 'JobName',
-        //     width: 400
-        // },
         {
             header: 'Khối lượng thi công',
             binding: 'Amount_ThiCong',
@@ -387,9 +364,28 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             dataType: 'Number',
             width: 150
         },
+         {
+            header: 'Khối lượng thi công - NSC XD',
+            binding: 'ThiCong_NSC_XD',
+            dataType: 'Number',
+            width: 150
+        },
+        
         {
             header: 'Khối lượng thi công - ME',
             binding: 'Amount_ThiCongME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Khối lượng thi công - NSC ME',
+            binding: 'ThiCong_NSC_ME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Khối lượng thi công - HST',
+            binding: 'ThiCong_HST',
             dataType: 'Number',
             width: 150
         },
@@ -405,11 +401,29 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             dataType: 'Number',
             width: 200
         },
+          {
+            header: 'Kế hoạch DOANH THU - NSC XD',
+            binding: 'DoanhThu_NSC_XD',
+            dataType: 'Number',
+            width: 150
+        },
         {
             header: 'Kế hoạch DOANH THU - ME',
             binding: 'OpenPlanAmountME',
             dataType: 'Number',
             width: 200
+        },
+          {
+            header: 'Kế hoạch DOANH THU - NSC ME',
+            binding: 'DoanhThu_NSC_ME',
+            dataType: 'Number',
+            width: 150
+        },
+         {
+            header: 'Kế hoạch DOANH THU - HST',
+            binding: 'DoanhThu_HST',
+            dataType: 'Number',
+            width: 150
         },
         {
             header: 'Kế hoạch THU',
@@ -417,21 +431,34 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             dataType: 'Number',
             width: 200
         },
-      
+        {
+            header: 'Thực tế THU',
+            binding: 'OriginalAmountBak',
+            dataType: 'Number',
+            width: 200,
+            exprReadOnly: "{EXPR=IsOld} != '0' || {EXPR=IsOld} != ''"
+        },
         {
             header: 'Kế hoạch CHI',
             binding: 'PaymentAmount',
             dataType: 'Number',
-            width: 200
+            width: 200,
+            
         },   
-      
+        {
+            header: 'Thực tế chi',
+            binding: 'PaymentAmountBak',
+            dataType: 'Number',
+            width: 200,
+            exprReadOnly: "{EXPR=IsOld} != '0' || {EXPR=IsOld} != ''"
+        },  
         {
             header: 'THU - CHI',
             binding: 'Amount',
             dataType: 'Number',
             width: 200,
             isReadOnly: 'true'
-        }, 
+        },
         {
             header: 'Lũy kế THU',
             binding: 'AmountLNKT_KT',
@@ -450,7 +477,8 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             header: 'Lũy kế THU - CHI',
             binding: 'AcumDiscountAmount',
             dataType: 'Number',
-            width: 200
+            width: 200,
+            isReadOnly: 'true'
         },
         {
             header: 'Lũy kế THU kỳ trước',
@@ -473,11 +501,56 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             width: 200,
             isReadOnly: 'true'
         },
-        {
+          {
             header: 'Ghi chú',
             binding: 'Remark',
             width: 300
-        }        
+        }   ,
+        {
+            header: 'Kế hoạch THU',
+            binding: 'OriginalAmountBak',
+            dataType: 'Number',
+            width: 0
+        },    
+        {
+            header: 'Kế hoạch CHI',
+            binding: 'PaymentAmountBak',
+            dataType: 'Number',
+            width: 0
+        } ,
+        {
+            header: 'Kế hoạch THU',
+            binding: 'OriginalAmount4',
+            dataType: 'Number',
+            width: 0
+        },    
+        {
+            header: 'Kế hoạch CHI',
+            binding: 'OriginalAmount5',
+            dataType: 'Number',
+            width: 0
+        }                                                                               
+        // {
+        //     header: 'Dòng tiêu đề',
+        //     binding: 'IsTitleRow',
+        //     dataType: 'Boolean',
+        //     width: 0,
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Bậc',
+        //     binding: 'Level',
+        //     dataType: 'Number',
+        //     width: 0,
+        //     format: 'n0',
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Công thức',
+        //     binding: 'Formula',
+        //     width: 0,
+        //     isReadOnly: 'true'
+        // }
     ];
 
     childColumns1 = [
@@ -708,6 +781,12 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
             dataType: 'Number',
             width: 200,
             isReadOnly: 'true'
+        },
+        {
+            header: 'Chênh lệch được duyệt',
+            binding: 'OpenPlanAmount',
+            dataType: 'Number',
+            width: 200
         }
      
     ];

@@ -1861,6 +1861,7 @@ export class LayoutRegAppendixMaintenanceEditor implements IEditorFormulaDeclara
                         AuthorizeNo: 'AuthorizeNo',
                         AuthorizeDate: 'AuthorizeDate',
                         ContractValue: 'ContractValue',
+                        ContractValueAddVAT: 'AriseValue',
                         ContractType: 'ContractType',
                         ActivityCode: 'ActivityCode',
                         JobCode: 'JobCode',

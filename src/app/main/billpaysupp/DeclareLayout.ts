@@ -452,6 +452,13 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo'
             //zExpr: "'PayTeamType'.toString() != '00'.toString()"
         },
+         'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,DocDate,PayTeamType,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_P4_New',
+            DataMember: 'DocNoUnique'
+            //zExpr: "'PayTeamType'.toString() != '00'.toString()"
+        },
         // 'Evaluator_ServerConstraint_CTC_DefaultDocNo_TamUng': {
         //     EvaluatorName: 'EvaluatorQuery',
         //     ConstraintKey: 'DocCode,ProductCostId,PayTeamType,CustomerCode,{VAR=Branch.Ma_Dvcs},Id',
@@ -562,22 +569,22 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             MessageText: 'Không thể lập mới khi chưa hoàn thiện duyệt thanh toán trước',
             IgnoreError: 0
         },
-        'Evaluator_ServerConstraint_Check_ListInvoice': {
-            EvaluatorName: 'EvaluatorValidate',
-            ConstraintKey: 'ListInvoice,ProcessCode',
-            Command: 'ufn_CheckProcessCode_ListInvoice',
+        // 'Evaluator_ServerConstraint_Check_ListInvoice': {
+        //     EvaluatorName: 'EvaluatorValidate',
+        //     ConstraintKey: 'ListInvoice,ProcessCode',
+        //     Command: 'ufn_CheckProcessCode_ListInvoice',
             
-            MessageText: 'Yêu cầu xác định hóa đơn !!!',
-            IgnoreError: 0
-        },
-        'Evaluator_ServerConstraint_Check_AmountListInvoice': {
-            EvaluatorName: 'EvaluatorValidate',
-            ConstraintKey: 'ListInvoice,Amount_DeNghiTT,BizDocId_TT',
-            Command: 'ufn_Get_CheckInvoiceCems_Bill',
-            zExpr: "ListInvoice != '' && BizDocId_TT != ''",
-            MessageText: 'Giá trị đề nghị thanh toán chưa khớp với Tổng giá trị hóa đơn !!!',
-            IgnoreError: 0
-        },
+        //     MessageText: 'Yêu cầu xác định hóa đơn !!!',
+        //     IgnoreError: 0
+        // },
+        // 'Evaluator_ServerConstraint_Check_AmountListInvoice': {
+        //     EvaluatorName: 'EvaluatorValidate',
+        //     ConstraintKey: 'ListInvoice,Amount_DeNghiTT,BizDocId_TT',
+        //     Command: 'ufn_Get_CheckInvoiceCems_Bill',
+        //     zExpr: "ListInvoice != '' && BizDocId_TT != ''",
+        //     MessageText: 'Giá trị đề nghị thanh toán chưa khớp với Tổng giá trị hóa đơn !!!',
+        //     IgnoreError: 0
+        // },
         'Evaluator_ServerConstraint_Check_FilePathContract': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: 'ParentBizDocId',
@@ -790,6 +797,7 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Amount_TTKyTruoc',
         'Evaluator_ServerConstraint_Amount_KyTruoc',
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_DefaultPayRequireNum',
         'Evaluator_ServerConstraint_GetValue_ContractValue',
         'Evaluator_ServerConstraint_GetValue_SubContractValue',
@@ -805,9 +813,9 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
     ]
 
     serverUpdating = [
-        'Evaluator_ServerConstraint_Check_ListInvoice',
+        // 'Evaluator_ServerConstraint_Check_ListInvoice',
         'Evaluator_ServerUpdating_Check_Invoice',
-        'Evaluator_ServerConstraint_Check_AmountListInvoice',
+        // 'Evaluator_ServerConstraint_Check_AmountListInvoice',
         'Evaluator_ServerConstraint_ParentBizDocId_PayTeamType_Unique',
         'Evaluator_ServerConstraint_Exists_Settlement',
         'Evaluator_ServerConstraint_Check_ProcessCode',
@@ -898,11 +906,18 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
     columnsReadOnly = [];
 
     linkReporter = {
-        'btnPhuLucA': {
+        // 'btnPhuLucA': {
+        //     directory: new Date().getFullYear() === 2025 ? 'billsupp2025' : 'billsupp',
+        //     type: 'detail',
+        //     key: 'Id_TT',
+        //     parameter: { 'Commandkey': 'billsupp-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=ParentBizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'PayTeamType': '{EXPR=PayTeamType}', 'DocNo': '{EXPR=DocNo}', 'CurrencyCode': '{EXPR=CurrencyCode}', 'ParentId': '{EXPR=Id}' },
+        //     evaluator: 'Evaluator_ServerConstraint_Check_ThanhToan_KhongLapMoiKhiChuaDuyetCu'
+        // },
+         'btnPhuLucA': {
             directory: 'billsupp',
             type: 'detail',
             key: 'Id_TT',
-            parameter: { 'Commandkey': 'billsupp-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=ParentBizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'PayTeamType': '{EXPR=PayTeamType}', 'DocNo': '{EXPR=DocNo}', 'CurrencyCode': '{EXPR=CurrencyCode}', 'ParentId': '{EXPR=Id}' },
+            parameter: { 'Commandkey': 'billsupp-editor', 'ProductCostId': '{EXPR=ProductCostId}', 'ParentBizDocId': '{EXPR=ParentBizDocId}', 'DocDate': '{EXPR=DocDate}', 'CustomerCode': '{EXPR=CustomerCode}', 'PayTeamType': '{EXPR=PayTeamType}', 'DocNo': '{EXPR=DocNo}', 'DocNoUnique': '{EXPR=DocNo}', 'CurrencyCode': '{EXPR=CurrencyCode}', 'ParentId': '{EXPR=Id}' },
             evaluator: 'Evaluator_ServerConstraint_Check_ThanhToan_KhongLapMoiKhiChuaDuyetCu'
         },
         'btnHdPl': {
@@ -1120,7 +1135,7 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                     key: 'Amount_KhauTruBaoHanh',
                     label: 'Khấu trừ khác (tiền phạt, tiện ích,...)',
                     col: 6,
-                    isDisabled: "'{EXPR=PayTeamType}' != '00'"
+                    isDisabled: "'{EXPR=PayTeamType}' != '00' && '{EXPR=PayTeamType}' != '03'"
                     //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
                 }),
                 new LookupBoxInput({
@@ -1165,15 +1180,15 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                     col: 12,
                     
                 }),
-                new MultiSelectInput({
-                    key: 'ListInvoice',
-                    label: 'Hóa đơn thiết bị',
-                    lookupKey: 'InvoiceCems',
-                    lookupfilter: "(ProductCostIdKT='{EXPR=ProductCostId}' AND CustomerCode='{EXPR=CustomerCode}' AND IdInvoice IN (SELECT IdInvoice FROM dbo.ufn_Get_FilterInvoiceCems('{EXPR=DocDate}','{EXPR=CustomerCode}','{EXPR=ProductCostId}','{EXPR=BizDocId}')))",//('{EXPR=PayTeamType}' = '00') OR 
-                    // isDisabled: 'true',
-                    // hideValueMember: false,
-                    col: 6
-                }, this.srv),
+                // new MultiSelectInput({
+                //     key: 'ListInvoice',
+                //     label: 'Hóa đơn thiết bị',
+                //     lookupKey: 'InvoiceCems',
+                //     lookupfilter: "(ProductCostIdKT='{EXPR=ProductCostId}' AND CustomerCode='{EXPR=CustomerCode}' AND IdInvoice IN (SELECT IdInvoice FROM dbo.ufn_Get_FilterInvoiceCems('{EXPR=DocDate}','{EXPR=CustomerCode}','{EXPR=ProductCostId}','{EXPR=BizDocId}')))",//('{EXPR=PayTeamType}' = '00') OR 
+                //     // isDisabled: 'true',
+                //     // hideValueMember: false,
+                //     col: 6
+                // }, this.srv),
                
                 new LookupBoxInput({
                     key: 'ClassCode1',
@@ -1250,6 +1265,7 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     isDisabled: "'{EXPR=Id}' < 0"
                 }),
+                
                 // new UploadInput({
                 //     key: 'FilePath',
                 //     label: 'Đính kèm TBTT đã ký',

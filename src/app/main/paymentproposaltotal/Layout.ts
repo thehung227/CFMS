@@ -1015,6 +1015,12 @@ export class LayoutPaymentProposalTotalEditor implements IEditorFormulaDeclarati
             isReadOnly: 'true',
             width: 250,
         },
+         {
+            header: 'Nhóm CĐT',
+            binding: 'GeneralProject',
+            isReadOnly: 'true',
+            width: 250,
+        },
         {
             header: 'Chênh lệch thu chi (Trước DXTT)',
             binding: 'Amount1',

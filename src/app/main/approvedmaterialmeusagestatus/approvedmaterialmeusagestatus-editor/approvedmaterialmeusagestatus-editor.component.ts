@@ -31,9 +31,9 @@ export class ApprovedMaterialMeUsageStatusEditorComponent extends BaseEditorComp
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
-  indexPage = ['/main', 'purchaseotherbudget', 'index'];
-  folderName = 'Ke_Hoach_Mua_Hang';
-  folderNameSendMail = 'Ke_Hoach_Mua_Hang';
+  indexPage = ['/main', 'materialmeusagestatus', 'index'];
+  folderName = 'Tinh_Trang_Su_Dung_Va_Hao_Hut';
+  folderNameSendMail = 'Tinh_Trang_Su_Dung_Va_Hao_Hut';
   
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
@@ -118,7 +118,7 @@ export class ApprovedMaterialMeUsageStatusEditorComponent extends BaseEditorComp
     this.parentData["ApproveStatusWeb"] = state;
 
     this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
-      this.sendMail(this.editorFrm, 'H7', this.parentData['IdBudget'], false, state).then(() => {
+      this.sendMail(this.editorFrm, 'H8', this.parentData['IdBudget'], false, state).then(() => {
         this.router.navigate(['/main', 'notifications', 'index']);
       });
     });

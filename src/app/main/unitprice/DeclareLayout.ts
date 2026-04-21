@@ -283,6 +283,13 @@ export class LayoutUnitPriceEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo',
             zExpr: "ParentBizDocId != '' && ProductCostId != ''"
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo',
+            DataMember: 'DocNoUnique',
+            zExpr: "ParentBizDocId != '' && ProductCostId != ''"
+        },
         'Evaluator_ServerConstraint_B30BizDocCCM_Check_Unique_DocNo': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},BizDocId,DocCode,DocNo',
@@ -347,6 +354,7 @@ export class LayoutUnitPriceEditor implements IEditorFormulaDeclaration {
 
     serverConstraint: string[] = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         'Evaluator_ServerConstraint_Check_ImportedExcel'
     ]
 

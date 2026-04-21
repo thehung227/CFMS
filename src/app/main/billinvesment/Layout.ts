@@ -385,6 +385,13 @@ export class LayoutBillInvesmentEditor implements IEditorFormulaDeclaration {
             DataMember: 'DocNo',
             zExpr: "Id < 0"
         },
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,DocDate,Id',
+            Command: 'ufn_Coteccons_B30BizDocCCM_DefaultDocNo_P4',
+            DataMember: 'DocNoUnique',
+            zExpr: "Id < 0"
+        },
         'Evaluator_ServerConstraint_DefaultPayRequireNum': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'ProductCostId,CustomerCode,ParentBizDocId,{VAR=Branch.Ma_Dvcs},Id',//'BizDocId,BranchCode,ParentBizDocId,CustomerCode,ProductCostId'
@@ -647,6 +654,7 @@ export class LayoutBillInvesmentEditor implements IEditorFormulaDeclaration {
 
     serverConstraint = [
         'Evaluator_ServerConstraint_CTC_DefaultDocNo',
+        'Evaluator_ServerConstraint_CTC_DefaultDocNoUnique',
         // // 'Evaluator_ServerConstraint_DefaultPayRequireNum',
         'Evaluator_ServerConstraint_GetValue_ContractValue',
         'Evaluator_ServerConstraint_GetValue_SubContractValue',

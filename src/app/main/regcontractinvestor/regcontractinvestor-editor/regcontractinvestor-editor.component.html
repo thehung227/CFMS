@@ -36,7 +36,7 @@
                         [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true || parentData?.Id < 0"
                         *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
                     <button class="btn btn-success" type="submit"
-                        [disabled]="!editorFrm.valid || (parentData?.ApproveSend==true && (nUserId!=5426 && nUserId!=4676 && nUserId!=4)) || showLoading==true"
+                        
                         *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
                     <a class="btn btn-default" [routerLink]="['/main','regcontractinvestor','index']">Thoát</a>
                 </div>

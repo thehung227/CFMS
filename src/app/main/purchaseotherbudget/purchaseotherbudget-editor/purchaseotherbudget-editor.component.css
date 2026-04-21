@@ -16,6 +16,40 @@
     border-radius: 2px;
     margin-top: 10px;
 }
+
+/* Right-click context menu for grid */
+.wj-row-context-menu{
+  position: fixed;
+  z-index: 99999;
+  min-width: 220px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  padding: 6px 0;
+  user-select: none;
+}
+
+.wj-row-context-menu__item{
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.wj-row-context-menu__item:hover{
+  background: #f3f6f9;
+}
+
+.wj-row-context-menu__divider{
+  height: 1px;
+  margin: 6px 0;
+  background: rgba(0,0,0,.08);
+}
+
+.wj-row-context-menu__item.danger{
+  color: #c0392b;
+}
+
 .wj-header-alt{
     width: 15px;
 }

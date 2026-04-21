@@ -140,9 +140,9 @@ export class ApprovedPartnerEvaluationEditorComponent extends BaseEditorComponen
 
   isLoading = false;
   async onClick(state: any) {
-    if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])
-      alert("User đăng nhập không đúng với người duyệt!!!");
-    else {
+    // if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])
+    //   alert("User đăng nhập không đúng với người duyệt!!!");
+    // else {
     let txt;
     if (state == 0) txt = 'Trả lại';
     else
@@ -208,7 +208,7 @@ export class ApprovedPartnerEvaluationEditorComponent extends BaseEditorComponen
           this.router.navigate(['/main', 'notifications', 'index']);
         });
       });
-    }
+    // }
   }
   }
 

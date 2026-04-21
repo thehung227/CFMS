@@ -800,7 +800,7 @@ export class LayoutBillEditPayDeptEditor implements IEditorFormulaDeclaration {
         }),
     ];
 
-   childColumns = [
+    childColumns = [
         {
             header: 'STT',
             binding: 'ItemNo',
@@ -827,26 +827,46 @@ export class LayoutBillEditPayDeptEditor implements IEditorFormulaDeclaration {
             dataType: 'Date',
             format: 'dd/MM/yyyy'
         },
-         {
-            header: 'Số seri',
-            binding: 'AtchSerialNo',
-            width: 100
-        },
+      
         // {
         //     header: 'Đối tượng VAT',
         //     binding: 'TaxRegName',
         //     width: 200
         // },
         {
-            header: 'Mã số NCC',
+            header: 'MST NCC',
             binding: 'TaxRegNo',
             allowEditing: true,
             width: 100
         },
+         {
+            header: 'Người nhận tiền',
+            binding: 'DesignerEmployeeCode',
+            width: 100,
+            dataType: 'Array',
+             bindingList: {
+                Name: 'EmployeeName'
+            },
+            lookupKey: 'Customer',
+            lookupfilter: "IsActive=1 AND IsGroup=0 AND Code LIKE 'E-%'"
+            // lookupfilter: "IsGroup=0 AND IsParentAccount=0 AND LEFT(Code,3) IN (SELECT Val FROM dbo.ufn_sys_SplitString((SELECT ListAccount FROM dbo.B20ExpenseCatg WHERE Code = '{EXPR=ExpenseCatgCode}'), ','))"
+        },
+         
           {
             header: 'Giá trị thanh toán',
             binding: 'OriginalAmount',
             dataType: 'Number',
+            width: 100
+        },
+         {
+            header: 'Người nhận tiền',
+            binding: 'EmployeeName',
+            isReadOnly: 'true',
+            width: 200
+        },
+          {
+            header: 'Số seri',
+            binding: 'AtchSerialNo',
             width: 100
         },
         {
@@ -874,24 +894,7 @@ export class LayoutBillEditPayDeptEditor implements IEditorFormulaDeclaration {
       
        
        
-        {
-            header: 'Người nhận tiền',
-            binding: 'DesignerEmployeeCode',
-            width: 150,
-            dataType: 'Array',
-             bindingList: {
-                Name: 'EmployeeName'
-            },
-            lookupKey: 'Customer',
-            lookupfilter: "IsActive=1 AND IsGroup=0 AND Code LIKE 'E-%'"
-            // lookupfilter: "IsGroup=0 AND IsParentAccount=0 AND LEFT(Code,3) IN (SELECT Val FROM dbo.ufn_sys_SplitString((SELECT ListAccount FROM dbo.B20ExpenseCatg WHERE Code = '{EXPR=ExpenseCatgCode}'), ','))"
-        },
-          {
-            header: 'Người nhận tiền',
-            binding: 'EmployeeName',
-            isReadOnly: 'true',
-            width: 200
-        },
+        
         {
             header: 'Dòng tiêu đề',
             binding: 'IsTitleRow',
@@ -913,6 +916,7 @@ export class LayoutBillEditPayDeptEditor implements IEditorFormulaDeclaration {
             width: 200,
             isReadOnly: 'true'
         },
+
          {
             header: 'Invoice',
             binding: 'InvoiceId',
