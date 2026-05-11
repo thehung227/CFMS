@@ -130,8 +130,7 @@ export class ApprovedPlanCashFlowSiteEditorComponent
       //   params.push(param1);
       // }
       param1.ParameterName = Global.convertParameterName("IdCCMBudget");
-      param1.ParameterValue =
-        this.editorFrm.controls["IdCCMBudget"].value.toString();
+      param1.ParameterValue = this.parentData["IdCCMBudget"];
       params.push(param1);
 
       param5.ParameterName = Global.convertParameterName("PositionCode");
@@ -183,7 +182,7 @@ export class ApprovedPlanCashFlowSiteEditorComponent
           this.showLoading = true;
           this.parentData["ApproveStatus"] = state;
           this.parentData["ApproveStatusWeb"] = state;
-          location.reload()
+      
           this.dfpanel
             .runConstraintVer2(
               "Evaluator_ServerUpdating_UpdateStatusByApproveStatus",
@@ -202,11 +201,7 @@ export class ApprovedPlanCashFlowSiteEditorComponent
           this.backClick();
         }
         else
-          this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
-            this.sendMail(this.editorFrm, 'K9', this.parentData['IdCCMBudget'], false, state).then(() => {
-              this.router.navigate(['/main', 'notifications', 'index']);
-            });
-          });
+          location.reload();
       }
     }
   }
@@ -230,8 +225,7 @@ export class ApprovedPlanCashFlowSiteEditorComponent
     // }
 
     param1.ParameterName = Global.convertParameterName("IdCCMBudget");
-    param1.ParameterValue =
-      this.editorFrm.controls["IdCCMBudget"].value.toString();
+    param1.ParameterValue = this.parentData["IdCCMBudget"];
     params.push(param1);
 
     param5.ParameterName = Global.convertParameterName("PositionCode");

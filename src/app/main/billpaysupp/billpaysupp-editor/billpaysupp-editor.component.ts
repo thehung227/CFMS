@@ -34,6 +34,7 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
+  @ViewChild('grid6') grid6: wjcGrid.FlexGrid;
   @ViewChild('dataPopup') dataPopup: Popup;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
@@ -64,7 +65,7 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
   isSubAdmin: string;
   employeeCode: string = '';
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6];
     this.init();
     this.isSubAdmin = localStorage.getItem(SystemConstants.CURRENT_ISSUBADMIN);
     this.grid1.allowAddNew = false;
@@ -72,6 +73,8 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
     this.grid3.isReadOnly = true;
     this.grid4.allowAddNew = false;
     this.grid5.allowAddNew = false;
+    this.grid6.allowAddNew = false;
+
 
     this.dbClickCellContent(this.grid3);
     this.employeeCode = localStorage.getItem(SystemConstants.CURRENT_EMPLOYEE);

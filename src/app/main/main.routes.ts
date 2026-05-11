@@ -331,6 +331,8 @@ export const mainRoutes: Routes = [
             { path: 'solpp', loadChildren: './solpp/solpp.module#SolPPModule' },    
             { path: 'solpn', loadChildren: './solpn/solpn.module#SolPNModule' }, 
             { path: 'imwarematerials', loadChildren: './imwarematerials/imwarematerials.module#ImWareMaterialsModule' }, 
+            { path: 'imauxiliarysupplies', loadChildren: './imauxiliarysupplies/imauxiliarysupplies.module#ImAuxiliarySuppliesModule' }, 
+            { path: 'exauxiliarysupplies', loadChildren: './exauxiliarysupplies/exauxiliarysupplies.module#ExAuxiliarySuppliesModule' }, 
             { path: 'exwarematerials', loadChildren: './exwarematerials/exwarematerials.module#ExWareMaterialsModule' },   
             { path: 'imsolpoconcrete', loadChildren: './imsolpoconcrete/imsolpoconcrete.module#ImSolPoConcreteModule' }, 
             { path: 'solpx', loadChildren: './solpx/solpx.module#SolPXModule' },    
@@ -388,6 +390,8 @@ export const mainRoutes: Routes = [
             { path: 'approvedregisterincurred', loadChildren: './approvedregisterincurred/approvedregisterincurred.module#ApprovedRegisterIncurredModule' },
             { path: 'approvedsolpn', loadChildren: './approvedsolpn/approvedsolpn.module#ApprovedSolPNModule' },
             { path: 'approvedimwarematerials', loadChildren: './approvedimwarematerials/approvedimwarematerials.module#ApprovedImWareMaterialsModule' },
+            { path: 'approvedimauxiliarysupplies', loadChildren: './approvedimauxiliarysupplies/approvedimauxiliarysupplies.module#ApprovedImAuxiliarySuppliesModule' },
+            { path: 'approvedexauxiliarysupplies', loadChildren: './approvedexauxiliarysupplies/approvedexauxiliarysupplies.module#ApprovedExAuxiliarySuppliesModule' },
             { path: 'approvedimsolpoconcrete', loadChildren: './approvedimsolpoconcrete/approvedimsolpoconcrete.module#ApprovedImSolPoConcreteModule' },
             { path: 'approvedexwarematerials', loadChildren: './approvedexwarematerials/approvedexwarematerials.module#ApprovedExWareMaterialsModule' },
             { path: 'approvedsolpx', loadChildren: './approvedsolpx/approvedsolpx.module#ApprovedSolPXModule' },
@@ -417,6 +421,7 @@ export const mainRoutes: Routes = [
             { path: 'reportertitrongmuahang',loadChildren : './reportertitrongmuahang/reportertitrongmuahang.module#ReporterTiTrongMuaHangModule' },      
             // localhost:8888/main/rep05_kehoachmuahang
             { path: 'rep05_kehoachmuahang',loadChildren : './rep05_kehoachmuahang/rep05_kehoachmuahang.module#Rep05_KeHoachMuaHangModule' },      
+            { path: 'rep05_khmuahangvtphu',loadChildren : './rep05_khmuahangvtphu/rep05_khmuahangvtphu.module#Rep05_KhMuaHangVtphuModule' },      
             { path: 'reporterconcretebudget',loadChildren : './reporterconcretebudget/reporterconcretebudget.module#ReporterConcreteBudgetModule' },      
             { path: 'rep05_haohutvattu',loadChildren : './rep05_haohutvattu/rep05_haohutvattu.module#Rep05_HaoHutVatTuModule' },      
             // localhost:8888/main/reportercongnohoadon

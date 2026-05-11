@@ -399,6 +399,17 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                         BuiltinOrder: '1',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                {
+                    Name: 'vB30BizDocCCM_FromAccDoc',
+                    IsView: 'view',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
                 }
             ]
         },
@@ -1593,5 +1604,38 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             isReadOnly: 'true',
             validatorMessage: 'Không được bỏ trắng giá trị',
         },
+    ];
+
+    childColumns6 = [
+         {
+            header: 'Ngày thanh toán',
+            binding: 'DocDate',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+          {
+            header: 'Số chứng từ',
+            binding: 'DocNo',
+            width: 150,
+            isReadOnly: 'true',
+        },
+       
+        {
+            header: 'Nội dung',
+            binding: 'Description',
+            allowEditing: true,
+            width: 300,
+            isReadOnly: 'true'
+        },
+       
+        {
+            header: 'Giá trị thanh toán',
+            binding: 'OriginalAmount',
+            width: 150,
+            isReadOnly: 'true',
+            dataType: 'Number'
+        }
     ];
 }

@@ -785,6 +785,7 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
             binding: 'Amount3',
             dataType: 'Number',
             width: 150,
+             format: 'n2',
             isReadOnly: 'true'
         },
         {
@@ -792,6 +793,7 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
             binding: 'QuantityAccum',
             dataType: 'Number',
             width: 150,
+             format: 'n2',
             isReadOnly: 'true'
         },
         {
@@ -799,6 +801,7 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
             binding: 'ImQuantity',
             dataType: 'Number',
             width: 150,
+             format: 'n2',
             isReadOnly: 'true'
         },
         
@@ -807,19 +810,22 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
             binding: 'ExQuantity',
             dataType: 'Number',
             width: 150,
+             format: 'n2',
             isReadOnly: 'true'
         },
         {
             header: 'Tồn kho',
             binding: 'CloseQuantity',
             dataType: 'Number',
-            width: 150
+            width: 150,
+             format: 'n2',
         },
         {
             header: 'KL hao hụt',
             binding: 'ConcerlossQuantity',
             dataType: 'Number',
             width: 150,
+             format: 'n2',
             isReadOnly: 'true'
         },
         {

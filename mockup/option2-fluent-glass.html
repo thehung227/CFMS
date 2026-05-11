@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Mockup - Phương án 2: Fluent / Glassmorphism</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #3b82f6;
+    --primary-dark: #2563eb;
+    --primary-light: rgba(59, 130, 246, 0.12);
+    --primary-glow: rgba(59, 130, 246, 0.35);
+    --charcoal: #1f2937;
+    --text-muted: #64748b;
+    --text-light: #94a3b8;
+    --border-soft: rgba(15, 23, 42, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.06);
+    --shadow-active: 0 4px 12px rgba(59, 130, 246, 0.35);
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--charcoal);
+    /* gradient nền tĩnh, có vài "blob" mờ tạo chiều sâu */
+    background:
+      radial-gradient(circle at 20% 10%, rgba(59, 130, 246, 0.18), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.15), transparent 40%),
+      linear-gradient(135deg, #eef2f7 0%, #d9e4f0 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  /* ============ SIDEBAR (GLASS) ============ */
+  .sidebar {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-right: 1px solid var(--glass-border);
+    padding: 16px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .brand {
+    padding: 4px 20px 16px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 12px;
+  }
+  .brand .logo {
+    color: var(--danger);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .brand .logo-mark {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+    color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+  }
+  .brand small { display: block; color: var(--text-muted); font-size: 10px; letter-spacing: 1.5px; margin-top: 4px; }
+
+  .user-panel {
+    padding: 12px 20px;
+    margin: 0 12px 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 1px solid var(--border-soft);
+  }
+  .user-panel .name { font-weight: 600; color: var(--charcoal); font-size: 13px; }
+  .user-panel .status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .user-panel .status::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  }
+
+  .menu { list-style: none; padding: 0 8px; }
+  .menu > li { margin-bottom: 2px; }
+  .menu > li > a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px;
+    color: var(--charcoal);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s cubic-bezier(.4,0,.2,1);
+    position: relative;
+  }
+  .menu > li > a > i { width: 18px; color: var(--text-muted); font-size: 14px; }
+  .menu > li > a > .chevron { margin-left: auto; font-size: 11px; color: var(--text-light); transition: transform 0.2s; }
+  .menu > li > a:hover { background: rgba(59, 130, 246, 0.08); color: var(--primary-dark); }
+  .menu > li > a:hover > i { color: var(--primary); }
+
+  .menu > li.active > a {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-active);
+  }
+  .menu > li.active > a > i { color: #fff; }
+
+  .menu > li.open > a > .chevron { transform: rotate(-90deg); }
+
+  .submenu { list-style: none; padding: 4px 0 4px 38px; display: none; }
+  .menu > li.open .submenu { display: block; }
+  .submenu > li > a {
+    display: block; padding: 7px 12px; color: var(--text-muted);
+    text-decoration: none; font-size: 12.5px; border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .submenu > li > a:hover { background: rgba(59, 130, 246, 0.06); color: var(--primary-dark); }
+
+  /* sub-group inside submenu */
+  .submenu .group { margin-top: 4px; }
+  .submenu .group > a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px; font-size: 12px; font-weight: 600;
+    color: var(--charcoal); text-decoration: none;
+    border-left: 2px solid var(--primary);
+    border-radius: 0 6px 6px 0;
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  /* ============ MAIN ============ */
+  .main { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .header {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header .breadcrumb { color: var(--text-muted); font-size: 13px; flex: 1; }
+  .header .breadcrumb b { color: var(--charcoal); font-weight: 600; }
+  .header .search {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.7); padding: 6px 12px;
+    border: 1px solid var(--border-soft); border-radius: 8px;
+    width: 280px;
+  }
+  .header .search input { border: 0; background: transparent; outline: 0; width: 100%; font-size: 13px; font-family: inherit; }
+  .header .search kbd {
+    font-size: 10px; padding: 2px 6px; border: 1px solid var(--border-soft);
+    border-radius: 4px; background: #f1f5f9; color: var(--text-muted);
+  }
+  .header .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff; display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 13px;
+    border: 2px solid rgba(255,255,255,.7);
+  }
+
+  .content { padding: 24px; flex: 1; }
+
+  .page-title { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .page-title h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .page-title .badge {
+    background: var(--primary-light); color: var(--primary-dark);
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  }
+
+  /* ============ CARD ============ */
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-soft);
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-header h3 { font-size: 14px; font-weight: 600; color: var(--charcoal); flex: 1; }
+
+  /* toolbar / action buttons */
+  .toolbar { display: flex; gap: 6px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 12px;
+    background: #fff;
+    border: 1px solid var(--border-soft);
+    border-radius: 7px;
+    font-size: 12.5px; font-weight: 500; font-family: inherit;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary-dark); }
+  .btn-icon { padding: 7px 9px; }
+  .btn-icon:hover { transform: translateY(-1px); }
+  .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .btn-primary:hover { background: var(--primary-dark); color: #fff; box-shadow: var(--shadow-active); }
+  .btn-danger { background: #fff; color: var(--danger); border-color: rgba(239, 68, 68, .3); }
+  .btn-danger:hover { background: #fef2f2; }
+
+  /* ============ GRID/TABLE ============ */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 10px 14px;
+    font-weight: 600; font-size: 11px; letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: #f8fafc; border-bottom: 1px solid var(--border-soft);
+  }
+  tbody td { padding: 11px 14px; border-bottom: 1px solid var(--border-soft); color: var(--charcoal); }
+  tbody tr:hover { background: rgba(59, 130, 246, 0.04); }
+  tbody tr.group-row td {
+    background: linear-gradient(90deg, rgba(239, 68, 68, .08), transparent);
+    color: var(--danger); font-weight: 600;
+  }
+  .money { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .money.red { color: var(--danger); font-weight: 600; }
+  .pill {
+    display: inline-block; padding: 2px 8px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .pill.warning { background: rgba(245, 158, 11, .15); color: #b45309; }
+  .pill.success { background: rgba(16, 185, 129, .15); color: #047857; }
+  .pill.info { background: var(--primary-light); color: var(--primary-dark); }
+
+  /* stats cards */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 18px; }
+  .stat {
+    background: #fff; border-radius: 12px; padding: 16px;
+    box-shadow: var(--shadow-card); border: 1px solid var(--border-soft);
+    position: relative; overflow: hidden;
+  }
+  .stat .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600; }
+  .stat .value { font-size: 24px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -0.5px; }
+  .stat .delta { font-size: 12px; color: var(--success); }
+  .stat .delta.down { color: var(--danger); }
+  .stat .icon-bg {
+    position: absolute; top: -10px; right: -10px;
+    width: 70px; height: 70px; border-radius: 50%;
+    background: var(--primary-light); opacity: .5;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: var(--primary);
+  }
+
+  /* note */
+  .note {
+    margin: 18px 24px 0; padding: 12px 16px;
+    background: rgba(59, 130, 246, .08); border: 1px dashed var(--primary);
+    border-radius: 10px; font-size: 12.5px; color: var(--primary-dark);
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,.15); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,.25); }
+</style>
+</head>
+<body>
+
+<div class="note">
+  📌 <b>MOCK-UP — Phương án 2: Fluent / Glassmorphism.</b> Đây là file preview tĩnh (chưa áp vào hệ thống). Chú ý hiệu ứng kính mờ (sidebar + header), bóng đổ mềm, accent xanh dương, tone trung tính cao cấp.
+</div>
+
+<div class="layout">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="logo">
+        <span class="logo-mark">N</span> NEWTECONS
+      </span>
+      <small>PROFESSIONAL TOOL</small>
+    </div>
+
+    <div class="user-panel">
+      <div class="name">Developer</div>
+      <div class="status">Online</div>
+    </div>
+
+    <ul class="menu">
+      <li class="active">
+        <a href="#"><i class="fa fa-inbox"></i> Hồ sơ cần xử lý</a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-file-text-o"></i> Đề nghị, Trình duyệt <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-calendar-o"></i> Kế hoạch <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-line-chart"></i> Kế hoạch Thu - Chi <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-handshake-o"></i> Hợp đồng, phụ lục <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-folder-open-o"></i> Theo dõi hồ sơ <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-credit-card"></i> Thanh toán <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li class="open">
+        <a href="#"><i class="fa fa-shopping-cart"></i> Cung ứng vật tư <i class="fa fa-chevron-left chevron"></i></a>
+        <ul class="submenu">
+          <li class="group"><a href="#"><i class="fa fa-folder-o"></i> Danh mục hệ thống</a></li>
+          <li><a href="#">Danh mục nhóm vật tư</a></li>
+          <li><a href="#">Danh mục vật tư</a></li>
+          <li><a href="#">Danh mục tiêu chuẩn</a></li>
+          <li class="group"><a href="#"><i class="fa fa-file-text-o"></i> Đơn hàng</a></li>
+          <li><a href="#">Đề nghị thép</a></li>
+          <li><a href="#">Đơn đặt thép</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-bar-chart"></i> Báo cáo <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+      <li>
+        <a href="#"><i class="fa fa-cogs"></i> Hệ thống <i class="fa fa-chevron-left chevron"></i></a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+    <div class="header">
+      <div class="breadcrumb">
+        Trang chủ <i class="fa fa-angle-right" style="font-size:10px;margin:0 6px;color:var(--text-light)"></i>
+        Hồ sơ cần xử lý <i class="fa fa-angle-right" style="font-size:10px;margin:0 6px;color:var(--text-light)"></i>
+        <b>Nhắc việc</b>
+      </div>
+      <div class="search">
+        <i class="fa fa-search" style="color:var(--text-light)"></i>
+        <input placeholder="Tìm kiếm…">
+        <kbd>Ctrl+K</kbd>
+      </div>
+      <button class="btn btn-icon" title="Notifications"><i class="fa fa-bell-o"></i></button>
+      <div class="avatar">DV</div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-title">
+        <h1>Nhắc việc: Hồ sơ cần xử lý</h1>
+        <span class="badge">177 mục</span>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats">
+        <div class="stat">
+          <div class="icon-bg"><i class="fa fa-files-o"></i></div>
+          <div class="label">Tổng hồ sơ</div>
+          <div class="value">177</div>
+          <div class="delta">↑ 12% so với tuần trước</div>
+        </div>
+        <div class="stat">
+          <div class="icon-bg" style="background:rgba(245,158,11,.18); color:#b45309"><i class="fa fa-clock-o"></i></div>
+          <div class="label">Chờ xử lý</div>
+          <div class="value">42</div>
+          <div class="delta down">↓ 5%</div>
+        </div>
+        <div class="stat">
+          <div class="icon-bg" style="background:rgba(16,185,129,.18); color:#047857"><i class="fa fa-check"></i></div>
+          <div class="label">Đã duyệt</div>
+          <div class="value">128</div>
+          <div class="delta">↑ 8%</div>
+        </div>
+        <div class="stat">
+          <div class="icon-bg" style="background:rgba(239,68,68,.18); color:#b91c1c"><i class="fa fa-exclamation"></i></div>
+          <div class="label">Quá hạn</div>
+          <div class="value">7</div>
+          <div class="delta down">↑ 2 mục mới</div>
+        </div>
+      </div>
+
+      <!-- CARD GRID -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Thanh toán</h3>
+          <div class="toolbar">
+            <button class="btn btn-icon" title="Refresh"><i class="fa fa-refresh"></i></button>
+            <button class="btn btn-icon" title="Filter"><i class="fa fa-filter"></i></button>
+            <button class="btn btn-icon" title="Export"><i class="fa fa-download"></i></button>
+            <button class="btn btn-primary"><i class="fa fa-plus"></i> Thêm mới</button>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px"><input type="checkbox"></th>
+              <th>Loại</th>
+              <th>NCC / Đối tác</th>
+              <th>Dự án</th>
+              <th class="money">Số tiền</th>
+              <th>Trạng thái</th>
+              <th style="width:80px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="group-row"><td colspan="7">▸ Khu Nội Khu thuộc Khu thương mại, biệt thự và chung cư (8 mục)</td></tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán TP/NCC</td>
+              <td>Công Ty CP ABC</td>
+              <td>Landmark 81</td>
+              <td class="money red">2.450.000.000</td>
+              <td><span class="pill warning">Chờ duyệt</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán TP/NCC</td>
+              <td>Công Ty TNHH Việt Á</td>
+              <td>Landmark 81</td>
+              <td class="money">450.000.000</td>
+              <td><span class="pill success">Đã duyệt</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán chi phí BCH/PB</td>
+              <td>Bộ Hoàng Phát</td>
+              <td>Landmark 81</td>
+              <td class="money">128.500.000</td>
+              <td><span class="pill info">Đang xử lý</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+
+            <tr class="group-row"><td colspan="7">▸ Đào tạo công trường 18 (Paihong 2 - M. Sang) (2 mục)</td></tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán TP/NCC</td>
+              <td>Công Ty TNHH Đào tạo XYZ</td>
+              <td>Paihong 2</td>
+              <td class="money red">980.000.000</td>
+              <td><span class="pill warning">Chờ duyệt</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+
+            <tr class="group-row"><td colspan="7">▸ 111M Lay Tới View, Hà Nội (5 mục)</td></tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán TP/NCC</td>
+              <td>Công Ty TNHH HN</td>
+              <td>111M Hà Nội</td>
+              <td class="money">320.000.000</td>
+              <td><span class="pill success">Đã duyệt</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox"></td>
+              <td>Thanh toán TP/NCC</td>
+              <td>CN Chi Nhánh C</td>
+              <td>111M Hà Nội</td>
+              <td class="money">75.000.000</td>
+              <td><span class="pill info">Đang xử lý</span></td>
+              <td><button class="btn btn-icon"><i class="fa fa-ellipsis-h"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

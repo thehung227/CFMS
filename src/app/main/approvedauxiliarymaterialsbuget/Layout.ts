@@ -165,6 +165,16 @@ export class LayoutApprovedAuxiliaryMaterialsBugetEditor implements IEditorFormu
                         DocDate: 'Parent.DocDate'
                     }
                 },
+                {
+                    Name: 'vB30BizDocDocument',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                    }
+                }
             ]
         },
         PrintDocument: {
@@ -471,4 +481,34 @@ export class LayoutApprovedAuxiliaryMaterialsBugetEditor implements IEditorFormu
             width: 150
         }
     ];
+
+    childColumns2 = [
+        // {
+        //     header: 'Mã tài liệu',
+        //     binding: 'DocumentCode',
+        //     width: 80,
+        //     dataType: 'Array',
+        //     lookupKey: 'Document',
+        //     lookupfilter: 'IsGroup=0 AND IsActive=1'
+        // },
+         {
+            header: 'File đính kèm',
+            binding: 'FilePath',
+            width: 600,
+            dataType: 'Object',
+            allowRemove: false,
+            allowView: true,
+            allowDownLoad: true,
+            allowUpload: false,
+            folderId: '{EXPR=IdBudget}'
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'Description',
+            width: 500,
+            validators: "{EXPR=Description}==''",
+            validatorMessage: 'Yêu cầu có link SharePoint',
+            ignoreError: 1
+        }
+    ]
 }

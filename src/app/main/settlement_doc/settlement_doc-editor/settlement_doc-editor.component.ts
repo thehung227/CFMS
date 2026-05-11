@@ -91,8 +91,8 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
         }
     }
 
-    this.checkUniqueColGrid(this.grid1, 'ApproveGroup');
-    if (this._errorUnique == false) {
+    // this.checkUniqueColGrid(this.grid1, 'ApproveGroup');
+    // if (this._errorUnique == false) {
       if (_numEror == 0) {
         if (isApproveSend == true) {
           let _errorSave = false;
@@ -123,9 +123,9 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
         alert('Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).');
       }
     }
-    else
-      alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
-  }
+  //   else
+  //     alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
+  // }
 
   showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');

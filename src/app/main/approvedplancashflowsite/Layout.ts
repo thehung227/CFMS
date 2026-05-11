@@ -328,16 +328,16 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
                     label: 'Báo cáo Doanh thu - Dòng tiền',
                     col: 6
                 }),
-                new NumberBoxInput({
-                    key: 'IdCCMBudget',
-                    label: 'Số ngày thực hiện',
-                    type: 'number',
-                    dataType: 'n0',
-                    // visible: 'false',
-                    // isDisabled: 'true',
-                    // isNewRow: true,
-                    col: 6
-                }),
+                // new NumberBoxInput({
+                //     key: 'IdCCMBudget',
+                //     label: 'Số ngày thực hiện',
+                //     type: 'number',
+                //     dataType: 'n0',
+                //     // visible: 'false',
+                //     // isDisabled: 'true',
+                //     // isNewRow: true,
+                //     col: 6
+                // }),
              
             ]
         })

@@ -13,9 +13,9 @@
                         <i class="fa fa-times"></i>
                     </button> -->
           <!-- <button class="btn btn-danger" type="button" (click)=onClick(2) *ngIf="parentData?.CloseProcess == 1 && parentData?.CompletedApprove != true" [disabled]="!editorFrm.valid">Hủy hồ sơ</button> -->
-          <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.IdBudget)">
+          <!-- <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.IdBudget)">
             Tổng hợp kế hoạch đặt hàng
-          </button>
+          </button> -->
           <button class="btn btn-success" type="button" (click)=onClick(3)
             *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
@@ -57,6 +57,9 @@
                 </a>
               </li>
               <li>
+                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">Đính kèm</a>
+              </li>
+              <li>
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
                   WorkFlow
                 </a>
@@ -78,6 +81,20 @@
                 <wj-flex-grid class="grid1" #grid1 style="height:280px;">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
+            <div class="tab-pane" id="tab3">
+              <section id="new">
+                <wj-flex-grid class="grid2" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid2)>
+                      <a class="fa fa-trash-o" style="color:red;"></a>
+                    </button>
                   </template>
                 </wj-flex-grid>
               </section>

@@ -165,7 +165,7 @@ export class MaterialUsageStatusEditorComponent extends BaseEditorComponent impl
               if (this._errBCTC == false) {
                 this.submit(formData, this.indexPage, isApproveSend).then(() => {
                   if (this.allowSendMail) {
-                    this.sendMail(formData, 'H7', this.id, false, '1');
+                    this.sendMail(formData, 'H8', this.id, false, '1');
                   }
                 });
               }

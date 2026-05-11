@@ -860,20 +860,20 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
              format: 'n2',
             isReadOnly: 'true'
         },
-        {
-            header: 'Đơn giá NCC',
-            binding: 'OriginalPrice',
-            dataType: 'Number',
-            width: 120,
-            exprReadOnly: "{EXPR=IsPO} == true",
-        },
-        {
-            header: 'Thành tiền NCC',
-            binding: 'OriginalAmount',
-            dataType: 'Number',
-            width: 150,
-            exprReadOnly: "{EXPR=IsPO} == true",
-        },
+        // {
+        //     header: 'Đơn giá NCC',
+        //     binding: 'OriginalPrice',
+        //     dataType: 'Number',
+        //     width: 120,
+        //     exprReadOnly: "{EXPR=IsPO} == true",
+        // },
+        // {
+        //     header: 'Thành tiền NCC',
+        //     binding: 'OriginalAmount',
+        //     dataType: 'Number',
+        //     width: 150,
+        //     exprReadOnly: "{EXPR=IsPO} == true",
+        // },
         // {
         //     header: 'Loại thuế',
         //     binding: 'TaxCode',

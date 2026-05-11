@@ -118,6 +118,11 @@
                   Đính kèm kế toán
                 </a>
               </li>
+              <li>
+                <a href="#tab7" data-toggle="tab" (click)="onTabClick(grid6)">
+                  Thông tin thanh toán
+                </a>
+              </li>
             </ul>
           </div>
           <div class="tab-content">
@@ -201,6 +206,16 @@
                       <a class="fa fa-trash-o" style="color:red;"></a>
                     </button>
                   </template>
+                </wj-flex-grid>
+              </section>
+            </div>
+             <div class="tab-pane" id="tab7">
+              <section id="new">
+                <wj-flex-grid class="grid6" #grid6 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                 
                 </wj-flex-grid>
               </section>
             </div>

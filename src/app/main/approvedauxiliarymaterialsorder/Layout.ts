@@ -186,7 +186,7 @@ export class LayoutApprovedAuxiliaryMaterialsOrderEditor implements IEditorFormu
                     Layout: "MAU1",
                     Name: "Đơn đặt hàng mua",
                     FileName: "Đơn hàng mua - {EXPR=CustomerName} - {EXPR=DocNo}",
-                    WordName: "BM-F006a-Rev01 Don Dat Hang Mua VLXD.docx",
+                    WordName: "Don_Hang_Mua - VTP - Approved.docx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ],

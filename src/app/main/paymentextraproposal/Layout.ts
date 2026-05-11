@@ -665,7 +665,7 @@ export class LayoutPaymentExtraProposalEditor implements IEditorFormulaDeclarati
                     key: 'ClassCode1',
                     label: 'Nguyên nhân đề xuất',
                     lookupKey: 'Class',
-                    lookupfilter: "IsActive=1 AND ParentCode='LYDOMOHM'",
+                    lookupfilter: "IsActive=1 AND ParentCode='LYDOMOHM' AND Code IN ('03')",
                     validators: [Validators.required],
                     hideValueMember: false,
                     col: 12

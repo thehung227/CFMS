@@ -290,12 +290,14 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
                     DocCode: 'P8',
                     DocStatus: '1',
                     ItemGroupCode: 'VTPHU',
+                    ClassCode1: 'XD',
                     BizDocId: '',
                     CurrencyCode: 'VND',
                     Id: -1,
                     IsWebData: true,
                     DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate())),
-                    ProductCostId0: '{VAR=Filter.ProductCostId}'
+                    ProductCostId0: '{VAR=Filter.ProductCostId}',
+                    ProductCostId: '{VAR=Filter.ProductCostId}'
                 }
             },
             Child: [
@@ -374,7 +376,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
                     Layout: "MAU1",
                     Name: "Đơn đặt hàng mua",
                     FileName: "Đơn hàng mua - {EXPR=CustomerName} - {EXPR=DocNo}",
-                    WordName: "BM-F006a-Rev01 Don Dat Hang Mua VLXD.docx",
+                    WordName: "Don_Hang_Mua - VTP - Approved.docx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ]
@@ -482,7 +484,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
         'Evaluator_ServerConstraint_GetInfo': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: "ProductCostId,{VAR=User.Id}",
-            Command: 'usp_GetInfoSolPO',
+            Command: 'usp_GetInfoSolP8',
             DataMember: 'ContactPerson,ContactPhoneNo,PortOfLoading,NguoiNhanHang,CMNDNguoiNhan'
         },
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange': {
@@ -537,10 +539,15 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
             Command: 'usp_Newtecons_Budget_GetData_VTP',
             OutputTable: 0
         },
+         'Evaluator_ServerUpdated_BuiltinOrder': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'BizDocId,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_Newtecons_B30BizDoc_SetBuiltionOrder'
+        },
     };
 
     serverConstraint = [
-        'Evaluator_ServerConstraint_GetInfo',
+        
         'Evaluator_ServerConstraint_Detail_LoadPrevious'
     ];
 
@@ -555,6 +562,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
     serverUpdated = [
         'Evaluator_ServerUpdated_CreateDocNo',
         'Evaluator_UpdateInfo_AfterSave',
+        'Evaluator_ServerUpdated_BuiltinOrder',
         'Evaluator_UpdateInfo_WhenApproveSend'
     ];
 
@@ -570,11 +578,11 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
     ]
 
     columnChanged = {
-        ProcessCode: {
-            // Evaluators: [
-            //     'Evaluator_ServerConstraint_Approve_GetData',
-            //     'Evaluator_ServerConstraint_Attach_GetData'
-            // ]
+        ProductCostId: {
+            Evaluators: [
+                'Evaluator_ServerConstraint_GetInfo'
+               
+            ]
         },
         ItemGroupCode: {
             // Evaluators: [
@@ -737,15 +745,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
                     maxRow: 20,
                     col: 6
                 }, this.srv, this.parentData),
-                new MultiSelectInput({
-                    key: 'ListInvoice',
-                    label: 'Nhóm hàng',
-                    lookupKey: 'Item',
-          
-                    lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (414)",
-                    hideValueMember: false,
-                    col: 6
-                }, this.srv),
+               
                 new LookupBoxInput({
                     key: 'ClassCode1',
                     label: 'Loại hình',
@@ -812,7 +812,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
                     key: 'ProcessCode',
                     label: 'Quy trình duyệt',
                     lookupKey: 'Approve',
-                    lookupfilter: "IsActive=1 AND DocStatus=4 AND Ma_Ct='{EXPR=DocCode}' AND ProcessCode IN ('P-263','P-266')",
+                    lookupfilter: "IsActive=1 AND DocStatus=4 AND ProcessCode IN ('P-263')",
                     validators: [Validators.required],
                     hideValueMember: false,
                     col: 12
@@ -893,10 +893,24 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
         //     isReadOnly: 'true'
         // },
         {
+            header: 'STT',
+            binding: 'ItemNo',
+            width: 100
+        },  
+        {
+            header: 'Mã nhóm hàng',
+            binding: 'ItemGroupCodeBg',
+            width: 150,
+            dataType: 'Array',
+            lookupKey: 'Item',
+            lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (414)",
+        },
+        {
             header: 'Tên mặt hàng',
             binding: 'Note',
             dataType: 'String',
             width: 200,
+             isReadOnly: 'true'
         },
       
         {

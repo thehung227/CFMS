@@ -304,6 +304,16 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                 {
+                    Name: 'vB30BizDocDocument',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                    }
                 }
             ]
         },
@@ -416,6 +426,11 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
             ConstraintKey: 'Stt,{VAR=Branch.Ma_Dvcs}',
             Command: 'usp_Newtecons_B30Budget_SetBuiltionOrder'
         },
+        'Evaluator_ServerUpdated_CreateFormula_BudgetDetail': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'Stt',
+            Command: 'usp_Newtecons_CreateFormula_BudgetDetail_VTP'
+        },
         'Evaluator_UpdateInfo_WhenApproveSend': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: '{VAR=User.EmployeeCode},{VAR=EmptyField_BizDocId},{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode,Stt',
@@ -446,6 +461,7 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
 
     serverUpdated = [
         'Evaluator_ServerUpdated_BuiltinOrder',
+        'Evaluator_ServerUpdated_CreateFormula_BudgetDetail',
         'Evaluator_ServerUpdated_BudgetDetail_UpdateFromParent',
         'Evaluator_UpdateInfo_WhenApproveSend'
     ];
@@ -620,8 +636,7 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
             dataType: 'Array',
             lookupKey: 'BizDoc2',
             bindingList: {
-                DocInfo: 'DocInfo',
-                ContractType: 'ContractType'
+                DocInfo: 'Des_C1'
             },
             // displayMember: 'DocInfo',
             // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
@@ -629,8 +644,8 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
         },
         {
             header: 'Thông tin hợp đồng',
-            binding: 'DocInfo',
-            width: 100,
+            binding: 'Des_C1',
+            width: 150,
             isReadOnly: 'true'
         },
         {
@@ -674,7 +689,7 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
         },
        
         {
-            header: 'Đơn giá BĐ (VNĐ) (Chưa VAT)',
+            header: 'Đơn giá HĐ (VNĐ) (Chưa VAT)',
             binding: 'UnitCostBD',
             dataType: 'Number',
             width: 120
@@ -712,7 +727,7 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
             isReadOnly: 'true'
         },
          {
-            header: 'Link',
+            header:'Có PO',
             binding: 'IsPO',
             dataType: 'Boolean',
             width: 60,
@@ -855,6 +870,34 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
             dataType: 'Date',
             format: 'dd/MM/yyyy HH:mm',
             width: 150
+        }
+    ];
+
+    childColumns3 = [
+        // {
+        //     header: 'Mã tài liệu',
+        //     binding: 'DocumentCode',
+        //     width: 80,
+        //     dataType: 'Array',
+        //     lookupKey: 'Document',
+        //     lookupfilter: 'IsGroup=0 AND IsActive=1'
+        // },
+        {
+            header: 'File đính kèm',
+            binding: 'FilePath',
+            width: 500,
+            dataType: 'Object',
+            validators: "{EXPR=FilePath}==0",
+            validatorMessage: 'Yêu cầu đính kèm tài liệu',
+            ignoreError: 1
+        },
+        {
+            header: 'Ghi chú',
+            binding: 'Description',
+            width: 500,
+            validators: "{EXPR=Description}==''",
+            validatorMessage: 'Yêu cầu có link SharePoint',
+            ignoreError: 1
         }
     ]
 }

@@ -55,7 +55,7 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
     this.init();
-
+    this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
     this.grid3.isReadOnly = true;
   }

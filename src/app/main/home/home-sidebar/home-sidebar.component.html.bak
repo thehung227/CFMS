@@ -1,0 +1,1378 @@
+<style>
+    .main-sidebar {
+        /* background-color: rgb(19, 133, 36); */
+        font-family: Arial, Helvetica, sans-serif;
+        background-image: url(../assets/img/sidebar-landmark81.jpg);
+        z-index: 1;
+        display: block;
+        top: 0;
+        left: 0;
+        background-size: cover;
+        background-position: 50%;
+    }
+</style>
+
+<aside class="main-sidebar">
+
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel" style="height: 60px;">
+            <div class="pull-left image" *ngIf="1==0">
+                <img src="assets/img/newtecons.ico" class="img-circle" alt="User Image">
+            </div>
+            <div class="pull-left info" style="left: 15px;">
+                <p>{{showUserFullName}}</p>
+                <!-- Status style="margin-left: 50px;"-->
+                <a href="#">
+                    <i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+        </div>
+
+        <!-- search form (Optional) -->
+        <form action="#" method="get" class="sidebar-form" style="display:none">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>
+        <!-- /.search form -->
+
+        <!-- Sidebar Menu -->
+
+        <ul class="sidebar-menu">
+
+            <li class="treeview">
+                <a [routerLink]="['notifications','index']" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-circle-o"></i>
+                    <span> Hồ sơ cần xử lý</span>
+                </a>
+            </li>
+            
+            <!-- Đề nghị, Trình duyệt -->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplan)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-file-text-o"></i>
+                    <span>Đề nghị, Trình duyệt</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['investtask','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_investtask)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Trình đầu tư, Chi phí, Q.toán
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['buyingtask','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_buyingtask)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị mua sắm
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['internaldocument','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_internaldocument)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Văn bản quản lý nội bộ
+                        </a>
+                    </li>
+                    <!--li>
+                        <a [routerLink]="['profiledocument','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_profiledocument)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Trình duyệt BCTC
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['confirmprofile','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_confirmprofile)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Trình hồ sơ đóng dấu
+                        </a>
+                    </li> -->
+                    <li>
+                        <a [routerLink]="['registeremail','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_registeremail)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đăng ký Email
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['cancelregistrationemail','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_cancelregistrationemail)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hủy Email
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['guaranteetask','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_guaranteetask)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Mở bảo lãnh/LC
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['deposittask','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_deposittask)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Ký quỹ dự thầu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['falnloctask','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_falnloctask)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thư TXTC và Thư hứa
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['liquidationasset','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_liquidationasset)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Trình thanh lý tài sản
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['examinationrecords','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_examinationrecords)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bill chưa up hệ thống
+                        </a>
+                    </li> -->
+                  
+                    <li>
+                        <a [routerLink]="['documentary','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_documentary)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Công văn
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['supportlltc','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_supportlltc)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Theo dõi hỗ trợ NTP/NCC
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['tenderselection','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_tenderselection)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            So sánh chọn thầu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['confirmprojectcomplete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_confirmprojectcomplete)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Xác nhận hoàn thành dự án
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['debtcollection','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_debtcollection)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình trạng thu hồi công nợ
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['settlementrecords','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlementrecords)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quy trình HS quyết toán CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['setlementstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_setlementstatus)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình hình QT dự án
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plansignstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plansignstatus)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình hình KHKKHĐ
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['partnerevaluation','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_partnerevaluation)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đánh giá đối tác
+                        </a>
+                    </li>       
+                    <li>
+                        <a [routerLink]="['deadlineproject','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_deadlineproject)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Deadline công việc
+                        </a>
+                    </li>     
+                    <!-- <li>
+                        <a [routerLink]="['lettertopartner','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_lettertopartner)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thư gửi Chủ đầu tư
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['requestsadvances','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_requestsadvances)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị tạm ứng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['requestsreimbursement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_requestsreimbursement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị hoàn ứng
+                        </a>
+                    </li> -->
+                    <li>
+                        <a [routerLink]="['costdeduction','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_costdeduction)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị giảm trừ CP TB
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['registeruser','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_registeruser)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đăng ký truy cập CFMS
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['plantimekeeping','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plantimekeeping)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng công, cơm, thưởng NVAT
+                        </a>
+                    </li> -->
+                </ul>
+            </li>
+
+            <!-- Kế hoạch -->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplan)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-file-text-o"></i>
+                    <span>Kế hoạch</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['plansigncon','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plansigncon)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch ký kết hợp đồng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plancostrevcons','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancostrevcons)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planpayment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planpayment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch doanh thu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['financialreport','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_financialreport)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Cập nhật doanh thu BCTC
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plancostoffice','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancostoffice)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dự toán chi phí văn phòng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planquantity','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planquantity)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch quản lý khối lượng
+                        </a>
+                    </li>
+                  
+                    <li>
+                        <a [routerLink]="['planequipcost','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planequipcost)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dự trù chi phí thiết bị
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['safepunish','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_safepunish)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị phạt an toàn
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['paymentproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentproposal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thanh toán kỳ - XD
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['paymentmeproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentmeproposal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thanh toán kỳ - ME
+                        </a>
+                    </li>
+                     <li>
+                        <a [routerLink]="['paymentextraproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentextraproposal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thanh toán bổ sung
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['paymentccmproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentccmproposal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thanh toán kỳ (CCM)
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['paymentproposaltotal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentproposaltotal)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tổng hợp thanh toán kỳ
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reportertonghopthanhtoan','view','REP04_THDXTT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reportertonghopthanhtoan)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng tổng hợp đề xuất thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['equibudgetm4','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_equibudgetm4)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dự trù đầu công trường
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterdutrudaucongtruong','view','REP04_DTDCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdutrudaucongtruong)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo dự trù đầu công trường
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planlossdetail','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planlossdetail)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hao hụt cuối công trường
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['equibudgetm5','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_equibudgetm5)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng QT CPSD Thiết bị
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planstaffcost','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planstaffcost)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phân bổ chi phí nhân sự
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplanfinace)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-book"></i>
+                    <span>Kế hoạch Thu - Chi</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['planprojectinex','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planprojectinex)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phân bổ kế hoạch thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['proposalquarterly','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_proposalquarterly)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thu - chi quý
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plancashflowsite','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancashflowsite)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch Doanh thu - Dòng tiền
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['spendingplan','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_spendingplan)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch chi Tết
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['proposalrevenueexpen','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_proposalrevenueexpen)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề xuất thu - chi Tết
+                        </a>
+                    </li> -->
+
+                </ul>
+            </li>
+
+            <!-- Hợp đồng, phụ lục -->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandcontract)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-book"></i>
+                    <span>Hợp đồng, phụ lục</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['regcontract','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontract)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Trình ký hợp đồng, phụ lục
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['regcontract_viewCT','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontract_viewCT)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng, PLHĐ - CT/PB
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['regcontractinvestor','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontractinvestor)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng, PLHĐ - CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['depositcontract','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_depositcontract)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng tiền gửi
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['creditcontract','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_creditcontract)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng hạn mức tín dụng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['customer','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_customer)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục đối tượng
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Theo dõi hồ sơ -->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commanddocument)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-sticky-note-o"></i>
+                    <span>Theo dõi hồ sơ</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['pricelibrary','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_pricelibrary)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục thư viện giá
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['contract','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_contract)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng - Thư viện giá
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['appendix','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_appendix)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            PLHĐ - Thư viện giá
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a [routerLink]="['regcontract_view','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontract_view)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng, PLHĐ - CCM
+                        </a>
+                    </li>                    
+                    <li>
+                        <a [routerLink]="['settlement_doc','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlement_doc)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quyết toán hợp đồng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['regcontractinvestorview','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontractinvestorview)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng, PLHĐ - Tiện ích
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['regcontractccminvestor','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontractccminvestor)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng, PLHĐ - CĐT CCM
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billpaysuppedit','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaysuppedit)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán TPNCC
+                        </a>
+                    </li>    
+                      <li>
+                        <a [routerLink]="['billeditpaydept','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billeditpaydept)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán PB/BCH
+                        </a>
+                    </li>    
+                     <li>
+                        <a [routerLink]="['billeditpayteam','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billeditpayteam)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán Đội nhóm
+                        </a>
+                    </li>    
+                    <li>
+                        <a [routerLink]="['billeditpayequipment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billeditpayequipment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT chi phí phân bổ
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['billpaysupp_view','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaysupp_view)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán TPNCC
+                        </a>
+                    </li>                    -->
+                </ul>
+            </li>
+
+        
+
+            <!--Thanh toán-->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandbillpay)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-money"></i>
+                    <span>Thanh toán</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['billpayteam','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpayteam)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT đội nhóm
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billpaysupp','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaysupp)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT TP/ NCC
+                        </a>
+                    </li>
+                   
+                    <li>
+                        <a [routerLink]="['billpaydept','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaydept)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT chi phí BCH/ PB
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billewi','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billewi)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT BCH/PB không hóa đơn
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billpayequipment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpayequipment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            TT chi phí phân bổ
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billinternalequip','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billinternalequip)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tổng hợp chi phí TB
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- Quyết toán -->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-check"></i>
+                    <span>Quyết toán</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['settlement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quyết toán hợp đồng
+                        </a>
+                    </li>
+                   
+                </ul>
+            </li>
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandtckt)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-check"></i>
+                    <span>Tài chính kế toán</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['unc','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_unc)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Ủy nhiệm chi
+                        </a>
+                    </li>
+                   
+                </ul>
+            </li>
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandbdsdt)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-check"></i>
+                    <span>BĐS đầu tư</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['reginvestmentcontract','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reginvestmentcontract)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng BĐS đầu tư
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billinvesment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billinvesment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán BĐS đầu tư
+                        </a>
+                    </li>
+                </ul>
+            </li>
+           
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-usd"></i>
+                    <span>Tài chính Chủ đầu tư</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <!-- <li>
+                        <a [routerLink]="['billinvestor','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billinvestor)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BOQ chủ đầu tư
+                        </a>
+                    </li> -->
+                    <li>
+                        <a [routerLink]="['planclaim','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planclaim)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Claim thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planequipclaim','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planequipclaim)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Claim thanh toán - PTB
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planccmclaim','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planccmclaim)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Claim thanh toán - CCM
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['settlementclaim','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlementclaim)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quyết toán HĐ CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['registerincurred','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_registerincurred)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thi công phát sinh CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['incurred','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_incurred)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Theo dõi phát sinh
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['incurredccm','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_incurredccm)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Cập nhật phát sinh - CCM
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['invoicecost','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_invoicecost)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục theo dõi hóa đơn
+                        </a>
+                    </li> -->
+                    <li>
+                        <a [routerLink]="['reporterchiphithoidiem','view','REP07_KQT_CPCTTD']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterchiphithoidiem)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo chi phí tại thời điểm
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterclaimchuaduyet','view','REP07_KQT_CPCTTD']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterclaimchuaduyet)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c Claim đã trình CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterclaimmoinhat','view','REP07_KQT_THCL']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterclaimmoinhat)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c Claim thời điểm
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a [routerLink]="['reporterpropose','view','REP07_DXTCT']"
+                            *ngIf="isSysAdmin=='true'" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c đề xuất thu chi Tết
+                        </a>
+                    </li> -->
+                    <!-- <li>
+                        <a [routerLink]="['reporterclaim','view','REP07_CLAIM']"
+                            *ngIf="isSysAdmin=='true'" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c Claim
+                        </a>
+                    </li> -->
+                </ul>
+            </li>
+
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-wrench"></i>
+                    <span>Bảo hành, bảo trì</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['groupequiplist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_groupequiplist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục nhóm thiết bị bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['equiplist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_equiplist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục thiết bị bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['productlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_productlist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thiết lập bảo hành, bảo trì
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['performwarranty','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_performwarranty)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Xử lý bảo hành, bảo trì
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['docaftersales','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_docaftersales)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Yêu cầu bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['approveddocaftersalessurvay','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_approveddocaftersalessurvay)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Khảo sát hiện trạng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['planaftersales','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planaftersales)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dự trù chi phí bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['regcontractmaintenance','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontractmaintenance)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hợp đồng/PLHĐ bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['billpaymain','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaymain)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thanh toán chi phí bảo hành
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['mainlement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_mainlement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quyết toán chi phí bảo hành
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
+            <!-- thương mại -->
+            <li class="treeview" *ngIf="(isSysAdmin=='true' || (isPermissionAll_commandecommerce)) && isPermissionAll_TMDvcs">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-shopping-cart"></i>
+                    <span>Cung ứng vật tư</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <!-- <li>
+                        <a [routerLink]="['notifications_tm','index']" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hồ sơ mua hàng cần xử lý
+                        </a>
+                    </li> -->
+                    <li>
+                        <a [routerLink]="['itemgrouplist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemgrouplist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục nhóm vật tư
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['itemslist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemslist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục vật tư
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['baremlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_baremlist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục tiêu chuẩn
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['projectlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_projectlist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dự án/ gói thầu mua hàng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['categorylist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_categorylist)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục hạng mục
+                        </a>
+                    </li>                    
+                    <li>
+                        <a [routerLink]="['receiptteam','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_receiptteam)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục đơn vị nhận hàng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['trademark','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_trademark)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục thương hiệu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['supplierinfo','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_supplierinfo)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Danh mục người liên hệ
+                        </a>
+                    </li>
+                   
+                    <li>
+                        <a [routerLink]="['purchasebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebudget)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch thép
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['concretebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concretebudget)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch bê tông
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['solpp','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpp)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đề nghị thép
+                        </a>
+                    </li>                 
+                  
+                 <li>
+                        <a [routerLink]="['purchasebchorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebchorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn đặt thép - BCH
+                        </a>
+                    </li>    
+                    <li>
+                        <a [routerLink]="['purchaseorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn đặt thép
+                        </a>
+                    </li>                   
+                    <li>
+                        <a [routerLink]="['solpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpoconcrete)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn đặt hàng mua bê tông
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['concreteloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concreteloss)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hao hụt bê tông
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['steelloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_steelloss)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Hao hụt thép
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['purchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherbudget)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch mua hàng vật tư chính
+                        </a>
+                    </li> 
+                      <li>
+                        <a [routerLink]="['purchaseotherorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn hàng mua vật tư chính
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['auxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsbuget)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch vật tư phụ
+                        </a>
+                    </li> 
+                  
+                    <li>
+                        <a [routerLink]="['auxiliarymaterialsorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsorder)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Đơn hàng mua vật tư phụ
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['materialusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialusagestatus)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình trạng hao hụt VT - XD
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['materialmeusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialmeusagestatus)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình trạng hao hụt VT - ME
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['reporterconcretebudget','view','REP01_KHBT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachbetong)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo kế hoạch bê tông
+                        </a>
+                    </li>   
+                    <li>
+                        <a [routerLink]="['rep05_kehoachmuahang','view','REP01_KHMH']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachmuahang)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo kế hoạch mua hàng
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['rep05_haohutvattu','view','REP01_KHMH']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_haohutvattu)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo Hao hụt vật tư
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['rep01_bkddh_mua','view','REP01_BKDDH_MUA']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep01_bkddh_mua)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng chi tiết đơn đặt hàng
+                        </a>
+                    </li> 
+                </ul>
+            </li>
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandquanlykho)">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-check"></i>
+                    <span>Quản lý Kho</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['solpn','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpn)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu nhập thép
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['solpx','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpx)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu xuất thép
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['imwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imwarematerials)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu nhập vật tư chính
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['imauxiliarysupplies','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imauxiliarysupplies)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu nhập vật tư phụ
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['imsolpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imsolpoconcrete)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu nhập bê tông
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['exwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_exwarematerials)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu xuất vật tư chính
+                        </a>
+                    </li>
+                     
+                     <li>
+                        <a [routerLink]="['exauxiliarysupplies','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_exauxiliarysupplies)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phiếu xuất vật tư phụ
+                        </a>
+                    <li>
+                        
+                        <a [routerLink]="['reporterpn','view','REP03_ReporterPn']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpn)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo nhập kho
+                        </a>
+                    </li>
+                    <li>
+                        
+                        <a [routerLink]="['reporterpx','view','REP03_ReporterPx']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpx)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo xuất kho
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <!--Báo cáo-->
+            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandreportccm) || isSubAdmin=='true'">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-bar-chart"></i>
+                    <span>Báo cáo</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['reporterbillthanhtoan','view','REP01_BKBill_ThanhToan']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterbillthanhtoan)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng tổng hợp thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterbillequip','view','REP01_PTB_ThanhToan']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterbillequip)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo tình trạng thanh toán
+                        </a>
+                    </li>
+                    <li>
+                        
+                        <a [routerLink]="['reporterplancostoffice','view','REP01_CCM_TCVP']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostoffice)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            DTCP văn phòng
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterplancostoffice_ss','view','REP01_CCM_TCCT2']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostoffice_ss)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            DTCP văn phòng - so sánh
+                        </a>
+                    </li>
+                    <li>
+                        
+                        <a [routerLink]="['reporterplancostme','view','REP01_CCM_BCTCME']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostme)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường - ME
+                        </a>
+                    </li>
+                    <li>
+                        
+                        <a [routerLink]="['reporterplancostrevcons','view','REP01_CCM_TCCT']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostrevcons)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường - gói thầu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterplancostrevcons_ss','view','REP01_CCM_TCCT2']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostrevcons_ss)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường - so sánh
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterplancostrevcons_da','view','REP01_CCM_TCCT3']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancostrevcons_da)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường - dự án
+                        </a>
+                    </li>  
+                    <li>
+                        
+                        <a [routerLink]="['reporterbctctonghop','view','REP01_CCM_TCCT']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterbctctonghop)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BCTC công trường - tổng hợp
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterplanquantity','view','SOL_PlanQuantity']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplanquantity)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo tổng hợp khối lượng
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterthuchi','view','REP07_KQT_BCTC']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterthuchi)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo thu chi công trường
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reportercpbch','view','REP03_CPBCH']"
+                        *ngIf="isSysAdmin=='true' || (isPermissionAll_reportercpbch)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo chi phí BCH
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reportercpvp','view','REP03_CPVP']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo chi phí PB
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reportercongno','view','REP07_KQT_HTT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reportercongno)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo công nợ thời điểm - Tổng hợp
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterhanthanhtoan','view','REP07_KQT_HTT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterhanthanhtoan)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo công nợ thời điểm
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterplancashflowsite','view','REP07_KQT_DTDA']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplancashflowsite)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo doanh thu - dòng tiền
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterdoanhthuchiphi','view','REP04_CPCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdoanhthuchiphi)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo doanh thu - chi phí
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterdoanhthuchiphithang','view','REP04_CPCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdoanhthuchiphithang)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo doanh thu - chi phí tháng
+                        </a>
+                    </li>    
+                    <li>
+                        <a [routerLink]="['reporterdoanhthuchiphithanggddh','view','REP04_CPCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdoanhthuchiphithanggddh) || isSubAdmin=='true'" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            BĐH-Doanh thu năm
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterdongthutheocongno','view','REP04_DTTCN']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdongthutheocongno) || isSubAdmin=='true'" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Dòng thu theo công nợ
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterkhoiluongthuchienthang','view','REP04_CPCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterkhoiluongthuchienthang)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo TP/NCC tháng
+                        </a>
+                    </li>     
+                    <li>
+                        <a [routerLink]="['reporterkehoachquy','view','REP04_CPCT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterkehoachquy)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c so sánh kế hoạch quý
+                        </a>
+                    </li>    
+                    <li>
+                        <a [routerLink]="['rep03_menulist','view','REP03_MENULIST']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo danh mục
+                        </a>
+                    </li>   
+                    <li>
+                        
+                        <a [routerLink]="['reporterbillpaydept','view','REP01_CCM_BILLBCH']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterbillpaydept)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo thanh toán chi phí BCH/PB
+                        </a>
+                    </li>       
+                    <li>
+                        
+                        <a [routerLink]="['reporterincurred','view','REP07_KQT_TDPS']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterincurred)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo theo dõi phát sinh
+                        </a>
+                    </li>
+                    <li>
+                        
+                        <a [routerLink]="['reporterkhautru','view','REP07_BCKTVER1']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo theo dõi khấu trừ (*)
+                        </a>
+                    </li>  
+                    <li>
+                        
+                        <a [routerLink]="['reporterkhautruver1','view','REP07_BCKTVER1_VER1']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo theo dõi khấu trừ
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['reporterplanpayment','view','REP07_KQT_BCTD']"
+                        *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplanpayment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo kế hoạch thanh toán
+                        </a>
+                    </li>    
+                    <li>
+                        <a [routerLink]="['reporterdocumentary','view','New_WeeklyReport']"
+                        *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterdocumentary)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo tuần CHT
+                        </a>
+                    </li>  
+                    <li>
+                        <a [routerLink]="['reportersettelement','view','New_Settelement']"
+                        *ngIf="isSysAdmin=='true' || (isPermissionAll_reportersettelement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Theo dõi quyết toán dự án
+                        </a>
+                    </li>  
+                    <li>
+                        <a [routerLink]="['reporterpartnerevaluation','view','New_PartnerEvaluation']"
+                        *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpartnerevaluation)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo đánh giá đối tác
+                        </a>
+                    </li>  
+                    <li>
+                        <a [routerLink]="['reportersafepunish','view','REP03_SafePunish']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Thống kê biên bản phạt an toàn
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['reporterdebtcollection','view','REP03_SafePunish']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình trạng thu hồi công nợ
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['reporterphanbocpns','view','REP03_PBCPNS']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterphanbocpns)" (click)="clickItem($event)"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phân bổ chi phí nhân sự
+                        </a>
+                    </li> 
+                    <!-- <li>
+                        <a [routerLink]="['reportertenderselection','view','REP01_CCM_TENDERSELECTION']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Báo cáo so sánh thầu
+                        </a>
+                    </li>                                                                                                                                 -->
+                </ul>
+            </li>
+
+            <!-- quản trị hệ thống -->
+            <li class="treeview" *ngIf="isSysAdmin=='true'">
+                <a href="#" style="color: #055096;font-weight: bold;">
+                    <i class="fa fa-cog"></i>
+                    <span>Hệ thống</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a [routerLink]="['permission','index']" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phân quyền user
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['permissionCTC','index']" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Phân quyền vai trò
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+</aside>

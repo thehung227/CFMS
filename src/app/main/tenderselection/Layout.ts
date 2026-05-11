@@ -410,7 +410,7 @@ export class LayoutTenderSelectionEditor implements IEditorFormulaDeclaration {
     ]
 
     serverUpdated: string[] = [
-        // 'Evaluator_UpdateInfo_WhenApproveSend',
+        'Evaluator_UpdateInfo_WhenApproveSend',
         'Evaluator_UpdateInfo_WhenSave'
     ]
 

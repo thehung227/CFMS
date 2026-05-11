@@ -784,58 +784,29 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
             width: 80
         },
        
-        // {
-        //     header: 'Mã hàng',
-        //     binding: 'ItemCode',
-        //     isReadOnly: 'true',
-        //     dataType: 'Array',
-        //     lookupKey: 'Item',
-        //     bindingList: {
-        //         Name: 'Description0',
-        //         ConvertRate: 'ConvertRate9',
-        //         Unit: 'Unit'
-        //     },
-        //     lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentId IN (SELECT Id FROM B20Item WHERE Code = '{EXPR=ItemGroupCode}')",
-        //     width: 150
-        // },
+        {
+            header: 'Mã hàng',
+            binding: 'RowId_EP',
+            dataType: 'Array',
+            lookupKey: 'BudgetDetailR',
+            bindingList: {
+                ItemName: 'Description',
+                ProductSize: 'ProductSize',
+                ProductSizeName: 'ProductSizeName',
+                ItemSpeciesCode: 'ItemSpeciesCode',
+                ItemSpeciesName: 'ItemSpeciesName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductCostId='{EXPR=ProductCostId}' AND ItemGroupCode = 'BETONG'",
+            width: 150
+        },
         {
             header: 'Tên hàng hóa',
             binding: 'Description',
+            isReadOnly: 'true',
             width: 250
         },
         
-        {
-            header: 'Cường độ',
-            dataType: 'Array',
-            lookupKey: 'SizeDes',
-            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            bindingList: {
-                Code: 'ProductSize'
-            },
-            binding: 'ProductSizeName',
-            width: 100
-        },
-        
-        {
-            header: 'Độ sụt',
-            dataType: 'Array',
-            lookupKey: 'SpeciesName',
-            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            bindingList: {
-                Code: 'ItemSpeciesCode'
-            },
-            binding: 'ItemSpeciesName',
-            width: 100
-        },
-        
-        {
-            header: 'Phụ gia',
-            dataType: 'Array',
-            lookupKey: 'Surface',
-            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
-            binding: 'ItemSurfaceCode',
-            width: 100
-        },
+       
         {
             header: 'Cấu kiện',
             dataType: 'Array',
@@ -1064,6 +1035,42 @@ export class LayoutSolPOConcreteEditor implements IEditorFormulaDeclaration {
          {
             header: 'Tên hàng hóa',
             binding: 'TradeMarkCode',
+            width: 0
+        },
+         {
+            header: 'Cường độ',
+            dataType: 'Array',
+            lookupKey: 'SizeDes',
+            isReadOnly: 'true',
+            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
+            bindingList: {
+                Code: 'ProductSize'
+            },
+            binding: 'ProductSizeName',
+            width: 0
+        },
+        
+        {
+            header: 'Độ sụt',
+            dataType: 'Array',
+            isReadOnly: 'true',
+            lookupKey: 'SpeciesName',
+            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
+            bindingList: {
+                Code: 'ItemSpeciesCode'
+            },
+            binding: 'ItemSpeciesName',
+            width: 0
+        },
+        
+        {
+            header: 'Phụ gia',
+            dataType: 'Array',
+            lookupKey: 'Surface',
+            isReadOnly: 'true',
+
+            lookupfilter: "ItemGroupCode = '{EXPR=ItemGroupCode}'",
+            binding: 'ItemSurfaceCode',
             width: 0
         },
     ];

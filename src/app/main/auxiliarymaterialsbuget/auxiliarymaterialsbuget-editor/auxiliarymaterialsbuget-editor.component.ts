@@ -1,17 +1,24 @@
-import { Component, ViewChild, OnInit, OnDestroy, ElementRef, HostListener } from "@angular/core";
+import {
+  Component,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+  ElementRef,
+  HostListener,
+} from "@angular/core";
 import { BaseEditorComponent } from "../../_baseform/base-editor.component";
-import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
-import { WjInputModule } from 'wijmo/wijmo.angular2.input';
+import { WjGridModule } from "wijmo/wijmo.angular2.grid";
+import { WjInputModule } from "wijmo/wijmo.angular2.input";
 
-import * as wjcCore from 'wijmo/wijmo';
-import * as wjcGrid from 'wijmo/wijmo.grid';
-import * as wjcInput from 'wijmo/wijmo.angular2.input';
+import * as wjcCore from "wijmo/wijmo";
+import * as wjcGrid from "wijmo/wijmo.grid";
+import * as wjcInput from "wijmo/wijmo.angular2.input";
 import { DynamicFormPanelComponent } from "../../../ui/form/dynamic-form-panel.component";
 import { BaseEditorService } from "../../../base/base.service-editor";
 import { ActivatedRoute, Router } from "@angular/router";
 import { PanelControlService } from "../../../ui/panel/PanelControlService";
 import { Title } from "@angular/platform-browser";
-import * as wjcGridFilter from 'wijmo/wijmo.grid.filter';
+import * as wjcGridFilter from "wijmo/wijmo.grid.filter";
 import { LayoutAuxiliaryMaterialsBugetEditor } from "../Layout";
 import { ParameterContract } from "../../../contracts/parameter.contract";
 import { Global } from "../../../shared/global";
@@ -19,44 +26,52 @@ import { SystemConstants } from "../../../core/common/system.constants";
 import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
-  selector: 'app-auxiliarymaterialsbuget-editor-form',
-  templateUrl: './auxiliarymaterialsbuget-editor.component.html',
-  styleUrls: ['./auxiliarymaterialsbuget-editor.component.css']
+  selector: "app-auxiliarymaterialsbuget-editor-form",
+  templateUrl: "./auxiliarymaterialsbuget-editor.component.html",
+  styleUrls: ["./auxiliarymaterialsbuget-editor.component.css"],
 })
+export class AuxiliaryMaterialsBugetEditorComponent
+  extends BaseEditorComponent
+  implements OnInit, OnDestroy
+{
+  @ViewChild("grid") grid: wjcGrid.FlexGrid;
+  @ViewChild("grid1") grid1: wjcGrid.FlexGrid;
+  @ViewChild("grid2") grid2: wjcGrid.FlexGrid;
+  @ViewChild("grid3") grid3: wjcGrid.FlexGrid;
+  @ViewChild("dfpanel") _dfpanel: DynamicFormPanelComponent;
+  @ViewChild("filter") filter: wjcGridFilter.FlexGridFilter;
 
-export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent implements OnInit, OnDestroy {
+  @ViewChild("gridPrint") gridPrint: wjcGrid.FlexGrid;
 
-  @ViewChild('grid') grid: wjcGrid.FlexGrid;
-  @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
-  @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
-  @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
-  @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
-
-  @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
-
-  indexPage = ['/main', 'auxiliarymaterialsbuget', 'index'];
-  folderName = 'Ke_Hoach_Mua_Hang';
-  indexPage_Editor = ['/main', 'auxiliarymaterialsbuget', 'detail'];
+  indexPage = ["/main", "auxiliarymaterialsbuget", "index"];
+  folderName = "Ke_Hoach_Mua_Hang";
+  indexPage_Editor = ["/main", "auxiliarymaterialsbuget", "detail"];
   output: Array<Object>;
   _errBCTC: boolean = false;
   _errMess: string;
 
-  constructor(service: BaseEditorService,
+  constructor(
+    service: BaseEditorService,
     route: ActivatedRoute,
     pcs: PanelControlService,
     elRef: ElementRef,
-    router: Router, titleService: Title) {
-    super(service, route, pcs, elRef, router, titleService)
-    this._layoutDeclare = new LayoutAuxiliaryMaterialsBugetEditor(service, this.parentData);
+    router: Router,
+    titleService: Title,
+  ) {
+    super(service, route, pcs, elRef, router, titleService);
+    this._layoutDeclare = new LayoutAuxiliaryMaterialsBugetEditor(
+      service,
+      this.parentData,
+    );
   }
 
-  @HostListener('window:resize', [])
+  @HostListener("window:resize", [])
   onWindowResize() {
     // this.resizeWidthControls();
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
     this.init();
     //this.grid1.isReadOnly = true;
     this.grid1.allowAddNew = false;
@@ -66,42 +81,37 @@ export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent 
   }
 
   ngAfterViewInit() {
-    this.dfpanel = this._dfpanel; this.afterViewInit();
+    this.dfpanel = this._dfpanel;
+    this.afterViewInit();
 
-    
-        this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
-    
-          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
-            let data = s.rows[e.row].dataItem;
-    
-            if (e.panel.cellType == wjcGrid.CellType.Cell) {
-    
-              if (data['IsTitleRow'] == true) {
-    
-                wjcCore.setCss(e.cell, {
-                  color: 'blue',
-                  fontWeight: 'bold',
-                });
-              }
-              else {
-                if (data['IsLink'] == false) {
-                  wjcCore.setCss(e.cell, {
-                    color: 'red',
-                    fontWeight: '',
-                  });
-                }
-                else {
-                  wjcCore.setCss(e.cell, {
-                    color: '',
-                    fontWeight: '',
-                    // fontWeight: '',
-                    // backgroundColor: ''
-                  });
-                }
-              }
+    this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+        let data = s.rows[e.row].dataItem;
+
+        if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          if (data["IsTitleRow"] == true) {
+            wjcCore.setCss(e.cell, {
+              color: "blue",
+              fontWeight: "bold",
+            });
+          } else {
+            if (data["IsLink"] == false) {
+              wjcCore.setCss(e.cell, {
+                color: "red",
+                fontWeight: "",
+              });
+            } else {
+              wjcCore.setCss(e.cell, {
+                color: "",
+                fontWeight: "",
+                // fontWeight: '',
+                // backgroundColor: ''
+              });
             }
           }
-        });
+        }
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -111,7 +121,7 @@ export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
     for (let i in this.gridArray) {
-      if (this.gridArray[i].itemsSource.items.length == 0 && i != '2') {
+      if (this.gridArray[i].itemsSource.items.length == 0 && i != "2") {
         _numEror += 1;
         break;
       }
@@ -119,7 +129,8 @@ export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent 
 
     let _errorSave = false;
     for (let item of this.grid.itemsSource.items) {
-      if (item['ItemGroupCode'] == '') { //|| item['TradeMarkCode'] == ''
+      if ((item["ItemGroupCode"] == "" || item["CustomerCode"] == "" || item["BizDocId_C1"] == "" || item["ItemName"] == "") && item["IsTitleRow"] == false) {
+        //|| item['TradeMarkCode'] == ''
         _errorSave = true;
         break;
       }
@@ -127,53 +138,53 @@ export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent 
 
     let _errorSave1 = false;
     for (let item of this.grid1.itemsSource.items) {
-      if (item['EmployeeCode'] == '') {
+      if (item["EmployeeCode"] == "") {
+        _errorSave1 = true;
+        break;
+      } else if (
+        item["EmployeeCode"].toString().indexOf(",") > 0 &&
+        item["EmployeeCodeReal"] == ""
+      ) {
         _errorSave1 = true;
         break;
       }
-      else
-        if (item['EmployeeCode'].toString().indexOf(',') > 0 && item['EmployeeCodeReal'] == '') {
-          _errorSave1 = true;
-          break;
-        }
     }
 
     if (_numEror == 0) {
       //if (this.taidulieu == true || this.id > 0) {
-      if (_errorSave == false) {
-        if (isApproveSend == true) {
+
+      if (isApproveSend == true) {
+        if (_errorSave == false) {
           if (_errorSave1 == false) {
             this.checkKhoiLuong_KeHoach_PO(formData).then(() => {
               if (this._errBCTC == false) {
-                this.submit(formData, this.indexPage, isApproveSend).then(() => {
-                  if (this.allowSendMail) {
-                    this.sendMail(formData, 'L2', this.id, false, '1');
-                  }
-                });
-              }
-              else {
+                this.submit(formData, this.indexPage, isApproveSend).then(
+                  () => {
+                    if (this.allowSendMail) {
+                      this.sendMail(formData, "L2", this.id, false, "1");
+                    }
+                  },
+                );
+              } else {
                 alert(this._errMess);
                 this.showLoading = false;
               }
             });
-          }
-          else
-            alert('Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị');
-        }
-        else {
-          this.submit(formData, this.indexPage_Editor);
-        }
+          } else
+            alert("Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị");
+        } else alert("Mã nhóm hàng, Mã đối tượng, Id hợp đồng, Tên mặt hàng không được bỏ trắng giá trị");
+      } else {
+        this.submit(formData, this.indexPage_Editor);
       }
-      else
-        alert('Mã nhóm hàng, mã hàng không được bỏ trắng giá trị');
+
       //}
       //else
       //  alert('Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu chi tiết.');
+    } else {
+      alert(
+        'Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).',
+      );
     }
-    else {
-      alert('Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).');
-    }
-
   }
 
   async checkKhoiLuong_KeHoach_PO(formData: any) {
@@ -184,61 +195,77 @@ export class AuxiliaryMaterialsBugetEditorComponent extends BaseEditorComponent 
     const param3 = new ParameterContract();
     const param4 = new ParameterContract();
 
-    param1.ParameterName = Global.convertParameterName('Id');
+    param1.ParameterName = Global.convertParameterName("Id");
     param1.ParameterValue = this.id;
     params.push(param1);
 
-    param2.ParameterName = Global.convertParameterName('ProductCostId');
-    param2.ParameterValue = formData.value['ProductCostId'];
+    param2.ParameterName = Global.convertParameterName("ProductCostId");
+    param2.ParameterValue = formData.value["ProductCostId"];
     params.push(param2);
 
-    param3.ParameterName = Global.convertParameterName('ProcessCode');
-    param3.ParameterValue = formData.value['ProcessCode'];
+    param3.ParameterName = Global.convertParameterName("ProcessCode");
+    param3.ParameterValue = formData.value["ProcessCode"];
     params.push(param3);
 
-    param4.ParameterName = Global.convertParameterName('BranchCode');
-    param4.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+    param4.ParameterName = Global.convertParameterName("BranchCode");
+    param4.ParameterValue = localStorage
+      .getItem(SystemConstants.CURRENT_BRANCH)
+      .replace(/"/gi, "");
     params.push(param4);
 
-    let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_NEW_CheckAuxiliaryMaterialsBuget', params)
-      .toPromise().then();
+    let _data = await this._service
+      .getDataOutput(
+        Global.DATA_ENDPOINT,
+        BravoCtorEnum.StoreProcedure,
+        "usp_NEW_CheckAuxiliaryMaterialsBuget",
+        params,
+      )
+      .toPromise()
+      .then();
 
-    this.output = <Array<Object>>(_data['output']);
-    this._errBCTC = this.output['@_Error'];
-    this._errMess = this.output['@_ErrorMessage'];
+    this.output = <Array<Object>>_data["output"];
+    this._errBCTC = this.output["@_Error"];
+    this._errMess = this.output["@_ErrorMessage"];
   }
 
   protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
-      if (flex) {
-        // get list of selected items
-        var selected = [];
-  
-        for (let k in flex.selectedRows) {
-          let _idrowdel = flex.selectedRows[k]._idx;
-          for (var i = 0; i < flex.rows.length; i++) {
-            if (i == _idrowdel) {
-              let data = flex.rows[i].dataItem;
-              // Không xóa những dòng là tiêu đề
-              if (data && (data['IsPO'] == true || data['IsPO'] == 1 || data['IsPO'] == 1)) {
-                continue;
-              }
-              selected.push(data);
-              break;
+    if (flex) {
+      // get list of selected items
+      var selected = [];
+
+      for (let k in flex.selectedRows) {
+        let _idrowdel = flex.selectedRows[k]._idx;
+        for (var i = 0; i < flex.rows.length; i++) {
+          if (i == _idrowdel) {
+            let data = flex.rows[i].dataItem;
+            // Không xóa những dòng là tiêu đề
+            if (
+              data &&
+              (data["IsPO"] == true || data["IsPO"] == 1 || data["IsPO"] == 1)
+            ) {
+              continue;
             }
+            selected.push(data);
+            break;
           }
         }
-  
-        for (var i = 0; i < selected.length; i++) {
-          flex.itemsSource.remove(selected[i]);
-        }
+      }
+
+      for (var i = 0; i < selected.length; i++) {
+        flex.itemsSource.remove(selected[i]);
       }
     }
+  }
 
   showPrintVoucher(input: any) {
-    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    let popupWin = window.open(
+      "",
+      "_blank",
+      "top=0,left=0,height=100%,width=auto",
+    );
     let html = this.printVoucher(input);
 
-    html.then(data => {
+    html.then((data) => {
       popupWin.document.write(data);
       popupWin.document.close();
     });

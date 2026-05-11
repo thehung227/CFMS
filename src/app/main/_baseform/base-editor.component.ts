@@ -1554,7 +1554,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
         
          }
-
+console.log(_col['folderId'])
           if (_folderName && this.id > 0 && _file) {
             let child_FolderId: string;
             if (!wjcCore.isNullOrWhiteSpace(_idLinkFile)) {

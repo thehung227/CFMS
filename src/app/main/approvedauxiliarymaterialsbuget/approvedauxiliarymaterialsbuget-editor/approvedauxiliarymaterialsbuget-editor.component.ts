@@ -27,6 +27,7 @@ export class ApprovedAuxiliaryMaterialsBugetEditorComponent extends BaseEditorCo
 
   @ViewChild('grid') grid: wjcGrid.FlexGrid;
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
+  @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'purchasebudget', 'index'];
@@ -49,7 +50,7 @@ export class ApprovedAuxiliaryMaterialsBugetEditorComponent extends BaseEditorCo
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1];
+    this.gridArray = [this.grid, this.grid1, this.grid2];
     this.init();
     this.grid.isReadOnly = true;
     this.grid1.isReadOnly = true;
@@ -59,7 +60,37 @@ export class ApprovedAuxiliaryMaterialsBugetEditorComponent extends BaseEditorCo
   }
 
   ngAfterViewInit() {
-    this.dfpanel = this._dfpanel; this.afterViewInit();
+    this.dfpanel = this._dfpanel;
+       this.afterViewInit();
+   
+       this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+         if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+           let data = s.rows[e.row].dataItem;
+   
+           if (e.panel.cellType == wjcGrid.CellType.Cell) {
+             if (data["IsTitleRow"] == true) {
+               wjcCore.setCss(e.cell, {
+                 color: "blue",
+                 fontWeight: "bold",
+               });
+             } else {
+               if (data["IsLink"] == false) {
+                 wjcCore.setCss(e.cell, {
+                   color: "red",
+                   fontWeight: "",
+                 });
+               } else {
+                 wjcCore.setCss(e.cell, {
+                   color: "",
+                   fontWeight: "",
+                   // fontWeight: '',
+                   // backgroundColor: ''
+                 });
+               }
+             }
+           }
+         }
+       });
 
     //this.wordWrapGrid();
   }

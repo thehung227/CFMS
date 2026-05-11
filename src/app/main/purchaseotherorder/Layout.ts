@@ -1052,8 +1052,7 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
             binding: 'OriginalUnitCost',
             dataType: 'Number',
             width: 100,
-            format: 'n2',
-            isReadOnly: 'true'
+            format: 'n2'
         },
         {
             header: 'Đơn giá VND',
@@ -1068,8 +1067,7 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
             binding: 'OriginalAmount',
             dataType: 'Number',
             width: 120,
-            format: 'n0',
-             isReadOnly: 'true'
+            format: 'n0'
         },
         {
             header: 'Thành tiền VND',

@@ -164,6 +164,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_reportertitrongmuahang: boolean;
     isPermissionAll_reporterbctctonghop: boolean;
     isPermissionAll_rep05_kehoachmuahang: boolean;
+    isPermissionAll_rep05_khmuahangvtphu: boolean;
     isPermissionAll_rep05_kehoachbetong: boolean;
     isPermissionAll_rep05_haohutvattu: boolean;
     isPermissionAll_reportercongnohoadon: boolean;
@@ -223,6 +224,8 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_solpp: boolean;
     isPermissionAll_solpn: boolean;
     isPermissionAll_imwarematerials: boolean;
+    isPermissionAll_imauxiliarysupplies: boolean;
+    isPermissionAll_exauxiliarysupplies: boolean;
     isPermissionAll_exwarematerials: boolean;
     isPermissionAll_imsolpoconcrete: boolean;
     isPermissionAll_solpx: boolean;
@@ -409,6 +412,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_rep03_menulist = Global.getPermissionAll(permission,permission2,'rep03_menulist', 'IsDisplay');
         this.isPermissionAll_rep04_lichsubiendonggia = Global.getPermissionAll(permission,permission2,'rep04_lichsubiendonggia', 'IsDisplay');
         this.isPermissionAll_rep05_kehoachmuahang = Global.getPermissionAll(permission,permission2,'rep05_kehoachmuahang', 'IsDisplay'); 
+        this.isPermissionAll_rep05_khmuahangvtphu = Global.getPermissionAll(permission,permission2,'rep05_khmuahangvtphu', 'IsDisplay'); 
         this.isPermissionAll_rep05_kehoachbetong = Global.getPermissionAll(permission,permission2,'reporterconcretebudget', 'IsDisplay');          
         this.isPermissionAll_rep05_haohutvattu = Global.getPermissionAll(permission,permission2,'rep05_haohutvattu', 'IsDisplay');        
         this.isPermissionAll_reportercongnohoadon = Global.getPermissionAll(permission,permission2,'reportercongnohoadon', 'IsDisplay');
@@ -444,6 +448,8 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_solpp = Global.getPermissionAll(permission,permission2,'solpp-explorer', 'IsDisplay'); 
         this.isPermissionAll_solpn = Global.getPermissionAll(permission,permission2,'solpn-explorer', 'IsDisplay'); 
         this.isPermissionAll_imwarematerials = Global.getPermissionAll(permission,permission2,'imwarematerials-explorer', 'IsDisplay'); 
+        this.isPermissionAll_imauxiliarysupplies = Global.getPermissionAll(permission,permission2,'imauxiliarysupplies-explorer', 'IsDisplay'); 
+        this.isPermissionAll_exauxiliarysupplies = Global.getPermissionAll(permission,permission2,'exauxiliarysupplies-explorer', 'IsDisplay'); 
         this.isPermissionAll_imsolpoconcrete = Global.getPermissionAll(permission,permission2,'imsolpoconcrete-explorer', 'IsDisplay'); 
         this.isPermissionAll_exwarematerials = Global.getPermissionAll(permission,permission2,'exwarematerials-explorer', 'IsDisplay'); 
         this.isPermissionAll_solpx = Global.getPermissionAll(permission,permission2,'solpx-explorer', 'IsDisplay'); 

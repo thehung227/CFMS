@@ -271,6 +271,18 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
                     format: 'P2',
                     col: 6
                 }),
+                 new NumberBoxInput({
+                    key: 'TotalOriginalAmountC',
+                    label: 'Doanh thu tài chính',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'TotalPaymentAmountC',
+                    label: 'Chi phí tài chính',
+                    isDisabled: 'true',
+                    col: 6
+                }),
                 // new NumberBoxInput({
                 //     key: 'HeSoQuanLy',
                 //     label: 'Hệ số quản lý công ty (Dự kiến)',
@@ -409,6 +421,15 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
             binding: 'ItemNo',
             isRequired: true,
             width: 100
+        },
+         {
+            header: 'Gói thầu',
+            binding: 'ItemGroupCode',
+            dataType: 'Array',
+            lookupKey: 'BidPackage',
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            width: 150,
+            // isReadOnly: 'true'
         },
         {
             header: 'Mã XD/ME',

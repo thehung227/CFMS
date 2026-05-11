@@ -314,6 +314,13 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
             DataMember: 'CountImport',
             zExpr: "ProductCostId != ''"
         },
+        'Evaluator_ServerConstraint_DoanhThuChiPhiTC': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ProductCostId',
+            Command: 'usp_Newtecons_CreateReport_Detail_BCTC',
+            DataMember: 'TotalOriginalAmountC,TotalPaymentAmountC',
+            zExpr: "ProductCostId != ''"
+        },
         // 'Evaluator_ServerConstraint_Lay_TenCongViec': {
         //     EvaluatorName: 'EvaluatorQueryChild',
         //     ConstraintKey: 'JobCode',
@@ -379,7 +386,8 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
     serverConstraint = [
         'Evaluator_ServerConstraint_DefaultDocNo',
         //'Evaluator_ServerConstraint_Lay_TenCongViec'
-        'Evaluator_ServerConstraint_Check_ImportedExcel'
+        'Evaluator_ServerConstraint_Check_ImportedExcel',
+        'Evaluator_ServerConstraint_DoanhThuChiPhiTC'
     ];
 
     serverUpdating = [
@@ -401,7 +409,8 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',
         //
         'Evaluator_ServerConstraint_Approve_GetData',
-        'Evaluator_ServerConstraint_K2_LoadPrevious'
+        'Evaluator_ServerConstraint_K2_LoadPrevious',
+        'Evaluator_ServerConstraint_DoanhThuChiPhiTC'
     ];
 
     buttonCommand: string[] = [
@@ -575,6 +584,18 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                     format: 'P2',
                     col: 6
                 }),
+                new NumberBoxInput({
+                    key: 'TotalOriginalAmountC',
+                    label: 'Doanh thu tài chính',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'TotalPaymentAmountC',
+                    label: 'Chi phí tài chính',
+                    isDisabled: 'true',
+                    col: 6
+                }),
                 // new NumberBoxInput({
                 //     key: 'HeSoQuanLy',
                 //     label: 'Hệ số quản lý công ty (Dự kiến)',
@@ -697,6 +718,15 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
             binding: 'ItemNo',
             isRequired: true,
             width: 100
+        },
+         {
+            header: 'Gói thầu',
+            binding: 'ItemGroupCode',
+            dataType: 'Array',
+            lookupKey: 'BidPackage',
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            width: 150,
+            // isReadOnly: 'true'
         },
         {
             header: 'Mã XD/ME',

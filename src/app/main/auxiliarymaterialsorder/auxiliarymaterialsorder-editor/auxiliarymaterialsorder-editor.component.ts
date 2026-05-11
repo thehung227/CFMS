@@ -107,7 +107,7 @@ export class AuxiliaryMaterialsOrderEditorComponent extends BaseEditorComponent 
   onSubmit(formData: any, isApproveSend?: boolean) {
     let _errorSave0: boolean = false;
     for (let i in this.gridArray) {
-      if (this.gridArray[i].itemsSource.items.length == 0 && i != '3' && i != '5') {
+      if (this.gridArray[i].itemsSource.items.length == 0 && i != '3' && i != '5' && i != '2') {
         _errorSave0 = true;
         break;
       }

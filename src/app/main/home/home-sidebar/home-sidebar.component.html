@@ -10,6 +10,27 @@
         background-size: cover;
         background-position: 50%;
     }
+
+    /* ===== Phân biệt sub-menu (treeview lồng trong treeview-menu) =====
+       Không thay đổi màu chủ đạo của hệ thống, chỉ thêm:
+       - Nền nhẹ + border-left accent cho header sub-menu (cấp 2)
+       - Forecolor đậm hơn cho header sub-menu để dễ nhận biết
+       - Thụt lề & icon mờ hơn cho leaf item (cấp 3) */
+    .sidebar-menu .treeview-menu > li.treeview > a {
+        background-color: rgba(5, 80, 150, 0.08);
+        border-left: 3px solid #055096;
+        color: #055096 !important;
+        font-weight: 600;
+    }
+
+    .sidebar-menu .treeview-menu > li.treeview > a:hover {
+        background-color: rgba(5, 80, 150, 0.15);
+        color: #033a6b !important;
+    }
+
+    .sidebar-menu .treeview-menu > li.treeview > a > i {
+        color: #055096;
+    }
 </style>
 
 <aside class="main-sidebar">
@@ -830,7 +851,7 @@
                 </ul>
             </li>
 
-            <!-- thương mại -->
+            <!-- CUNG ỨNG VẬT TƯ (đã tái cấu trúc thành 7 nhóm con) -->
             <li class="treeview" *ngIf="(isSysAdmin=='true' || (isPermissionAll_commandecommerce)) && isPermissionAll_TMDvcs">
                 <a href="#" style="color: #055096;font-weight: bold;">
                     <i class="fa fa-shopping-cart"></i>
@@ -840,232 +861,307 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                    <!-- <li>
-                        <a [routerLink]="['notifications_tm','index']" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Hồ sơ mua hàng cần xử lý
+
+                    <!-- 1. Danh mục hệ thống -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-folder-o"></i> Danh mục hệ thống
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
-                    </li> -->
-                    <li>
-                        <a [routerLink]="['itemgrouplist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemgrouplist)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục nhóm vật tư
-                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['itemgrouplist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemgrouplist)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục nhóm vật tư
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['itemslist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemslist)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục vật tư
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['baremlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_baremlist)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục tiêu chuẩn
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['categorylist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_categorylist)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục hạng mục
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['receiptteam','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_receiptteam)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục đơn vị nhận hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['trademark','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_trademark)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục thương hiệu
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['supplierinfo','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_supplierinfo)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Danh mục người liên hệ
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['itemslist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_itemslist)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục vật tư
+
+                    <!-- 2. Dự án / gói thầu mua hàng -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-briefcase"></i> Dự án / gói thầu mua hàng
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['projectlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_projectlist)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Dự án / gói thầu mua hàng
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['baremlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_baremlist)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục tiêu chuẩn
+
+                    <!-- 3. Kế hoạch mua hàng -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-calendar"></i> Kế hoạch mua hàng
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['purchasebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['purchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherbudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch mua hàng vật tư chính
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['concretebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concretebudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch bê tông
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['auxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsbuget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch mua hàng VTP
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['projectlist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_projectlist)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Dự án/ gói thầu mua hàng
+
+                    <!-- 4. Đơn hàng -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-file-text-o"></i> Đơn hàng
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['solpp','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpp)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đề nghị thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['purchaseorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseorder)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đơn đặt thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['purchasebchorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebchorder)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đơn đặt thép - BCH
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['solpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpoconcrete)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đơn đặt hàng mua bê tông
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['purchaseotherorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherorder)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đơn hàng mua vật tư chính
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['auxiliarymaterialsorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsorder)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Đơn hàng mua VTP
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['categorylist','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_categorylist)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục hạng mục
+
+                    <!-- 5. Quản lý hao hụt -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-exclamation-triangle"></i> Quản lý hao hụt
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
-                    </li>                    
-                    <li>
-                        <a [routerLink]="['receiptteam','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_receiptteam)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục đơn vị nhận hàng
-                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['concreteloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concreteloss)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Hao hụt bê tông
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['steelloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_steelloss)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Hao hụt thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['materialusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialusagestatus)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Tình trạng Hao hụt VT - XD
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['materialmeusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialmeusagestatus)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Tình trạng Hao hụt VT - ME
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['trademark','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_trademark)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục thương hiệu
+
+                    <!-- 6. Quản lý kho -->
+                    <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandquanlykho)">
+                        <a href="#">
+                            <i class="fa fa-cubes"></i> Quản lý kho
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['solpn','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpn)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu nhập thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['solpx','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpx)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu xuất thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['imwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imwarematerials)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu nhập vật tư chính
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['imauxiliarysupplies','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imauxiliarysupplies)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu nhập vật tư phụ
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['exwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_exwarematerials)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu xuất vật tư chính
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['exauxiliarysupplies','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_exauxiliarysupplies)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu xuất vật tư phụ
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['imsolpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imsolpoconcrete)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Phiếu nhập bê tông
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                    <li>
-                        <a [routerLink]="['supplierinfo','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_supplierinfo)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Danh mục người liên hệ
+
+                    <!-- 7. Báo cáo & tổng hợp -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-bar-chart"></i> Báo cáo &amp; tổng hợp
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
                         </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['rep05_kehoachmuahang','view','REP01_KHMH']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachmuahang)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo Kế hoạch mua hàng
+                                </a>
+                            </li>
+                             <li>
+                                <a [routerLink]="['rep05_khmuahangvtphu','view','REP01_KHMHVTPHU']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_khmuahangvtphu)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo KH mua hàng VTPHU
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['reporterconcretebudget','view','REP01_KHBT']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachbetong)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo kế hoạch bê tông
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['rep05_haohutvattu','view','REP01_KHMH']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_haohutvattu)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo Hao hụt vật tư chính
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['rep01_bkddh_mua','view','REP01_BKDDH_MUA']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep01_bkddh_mua)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Bảng chi tiết đơn đặt hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['reporterpn','view','REP03_ReporterPn']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpn)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo nhập kho
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['reporterpx','view','REP03_ReporterPx']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpx)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo xuất kho
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                   
-                    <li>
-                        <a [routerLink]="['purchasebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebudget)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Kế hoạch thép
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['concretebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concretebudget)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Kế hoạch bê tông
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['solpp','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpp)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đề nghị thép
-                        </a>
-                    </li>                 
-                  
-                 <li>
-                        <a [routerLink]="['purchasebchorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasebchorder)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đơn đặt thép - BCH
-                        </a>
-                    </li>    
-                    <li>
-                        <a [routerLink]="['purchaseorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseorder)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đơn đặt thép
-                        </a>
-                    </li>                   
-                    <li>
-                        <a [routerLink]="['solpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpoconcrete)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đơn đặt hàng mua bê tông
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['concreteloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_concreteloss)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Hao hụt bê tông
-                        </a>
-                    </li>     
-                    <li>
-                        <a [routerLink]="['steelloss','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_steelloss)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Hao hụt thép
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['purchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherbudget)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Kế hoạch mua hàng vật tư chính
-                        </a>
-                    </li> 
-                      <li>
-                        <a [routerLink]="['purchaseotherorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherorder)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đơn hàng mua vật tư chính
-                        </a>
-                    </li> 
-                    <li>
-                        <a [routerLink]="['auxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsbuget)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Kế hoạch vật tư phụ
-                        </a>
-                    </li> 
-                  
-                    <li>
-                        <a [routerLink]="['auxiliarymaterialsorder','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsorder)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Đơn hàng mua vật tư phụ
-                        </a>
-                    </li> 
-                    <li>
-                        <a [routerLink]="['materialusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialusagestatus)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Tình trạng hao hụt VT - XD
-                        </a>
-                    </li>     
-                    <li>
-                        <a [routerLink]="['materialmeusagestatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_materialmeusagestatus)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Tình trạng hao hụt VT - ME
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['reporterconcretebudget','view','REP01_KHBT']"
-                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachbetong)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Báo cáo kế hoạch bê tông
-                        </a>
-                    </li>   
-                    <li>
-                        <a [routerLink]="['rep05_kehoachmuahang','view','REP01_KHMH']"
-                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_kehoachmuahang)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Báo cáo kế hoạch mua hàng
-                        </a>
-                    </li> 
-                    <li>
-                        <a [routerLink]="['rep05_haohutvattu','view','REP01_KHMH']"
-                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_haohutvattu)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Báo cáo Hao hụt vật tư
-                        </a>
-                    </li> 
-                    <li>
-                        <a [routerLink]="['rep01_bkddh_mua','view','REP01_BKDDH_MUA']"
-                            *ngIf="isSysAdmin=='true' || (isPermissionAll_rep01_bkddh_mua)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Bảng chi tiết đơn đặt hàng
-                        </a>
-                    </li> 
-                </ul>
-            </li>
-            <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandquanlykho)">
-                <a href="#" style="color: #055096;font-weight: bold;">
-                    <i class="fa fa-check"></i>
-                    <span>Quản lý Kho</span>
-                    <span class="pull-right-container">
-                        <i class="fa fa-angle-left pull-right"></i>
-                    </span>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a [routerLink]="['solpn','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpn)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Phiếu nhập thép
-                        </a>
-                    </li>
-                    <li>
-                        <a [routerLink]="['solpx','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_solpx)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Phiếu xuất thép
-                        </a>
-                    </li>
-                    <li>
-                        <a [routerLink]="['imwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imwarematerials)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Phiếu nhập vật tư
-                        </a>
-                    </li>
-                    <li>
-                        <a [routerLink]="['imsolpoconcrete','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_imsolpoconcrete)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Phiếu nhập bê tông
-                        </a>
-                    </li>
-                    <li>
-                        <a [routerLink]="['exwarematerials','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_exwarematerials)" (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Phiếu xuất vật tư
-                        </a>
-                    </li>
-                    <li>
-                        
-                        <a [routerLink]="['reporterpn','view','REP03_ReporterPn']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpn)"
-                            (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Báo cáo nhập kho
-                        </a>
-                    </li>
-                    <li>
-                        
-                        <a [routerLink]="['reporterpx','view','REP03_ReporterPx']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpx)"
-                            (click)="clickItem($event)">
-                            <i class="fa fa-circle-o"></i>
-                            Báo cáo xuất kho
-                        </a>
-                    </li>
+
                 </ul>
             </li>
             <!--Báo cáo-->
