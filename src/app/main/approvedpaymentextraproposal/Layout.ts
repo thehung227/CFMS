@@ -33,7 +33,7 @@ export class LayoutApprovedPaymentExtraProposalEditor implements IEditorFormulaD
         },
           'Evaluator_ServerUpdated_CCMBudgetDetail_UpdateFromParent': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: 'CCMbudgetId',
+            ConstraintKey: 'CCMBudgetId',
             Command: 'usp_CCMBudgetDetail_UpdateAfterSave_E1',
         }
     };
@@ -139,6 +139,18 @@ export class LayoutApprovedPaymentExtraProposalEditor implements IEditorFormulaD
                         CCMBudgetId: '',
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate'
+                    }
+                },
+                {
+                    Name: 'vB30CCMBudgetClaim',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'CCMBudgetId',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        CCMBudgetId: 'Parent.CCMBudgetId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
                 },
             ]
@@ -874,5 +886,131 @@ export class LayoutApprovedPaymentExtraProposalEditor implements IEditorFormulaD
         },                                                                               
        
     ];
-   
+   childColumns4 = [
+        {
+            header: 'Mã đối tượng',
+            binding: 'CustomerCode',
+            width: 0
+        },
+         {
+            header: 'STT',
+            binding: 'BuiltinOrder',
+            dataType: 'Number',
+            width: 50,
+            align: 'center',
+            isReadOnly: 'true'
+
+        },
+        {
+            header: 'Gói thầu',
+            binding: 'BizDocDescription',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Claim',
+            binding: 'ClaimNo',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Claim',
+            binding: 'BtnClaim',
+            
+            dataType: 'Object',
+            isButton: true,
+            textButton: 'Xem Claim',
+            width: 70,
+            linkCommand: {
+                directory: "planclaim",
+                type: 'detail',
+                key: 'IdClaim',
+                // parameter: { 'Commandkey': "{EXPR=DocCode_Link} == 'P4' ? 'billpaysupp-editor' : {EXPR=DocCode_Link} == 'P3' ? 'billpaydept-editor' : {EXPR=DocCode_Link} == 'C5' ? 'settlement-editor' : ''"}
+            }
+        },
+        {
+            header: 'Giá trị thanh toán claim đã duyệt',
+            binding: 'AmountClaimApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Giá trị đã thanh toán',
+            binding: 'AmountClaimPayment',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Giá trị còn lại chưa thanh toán',
+            binding: 'DebtAmount',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Giá trị thanh toán claim chưa duyệt',
+            binding: 'AmountClaimNotApprove',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+
+        },
+         {
+            header: 'Hạn thanh toán',
+            binding: 'DateDue',
+            isRequired: false,
+            format: 'dd/MM/yyyy',
+            width: 120,
+            dataType: 'Date',
+        },
+        {
+            header: 'Số ngày quá hạn',
+            binding: 'NumberOfDay',
+            dataType: 'Number',
+            width: 90,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Ngày dự kiến tiền về',
+            binding: 'EstimatedTimeDelivery',
+            isRequired: false,
+            format: 'dd/MM/yyyy',
+            width: 120,
+            dataType: 'Date',
+        },
+      
+    
+    
+        {
+            header: 'Ghi chú',
+            binding: 'Remark',
+            
+            width: 200
+        } ,
+      
+        {
+            header: 'Hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 0,
+          
+         
+        }, 
+        {
+            header: 'Stt_Claim',
+            binding: 'Stt_Claim',
+            width: 0,
+          
+         
+        }, 
+       
+        {
+            header: 'Id Claim',
+            binding: 'IdClaim',
+            width: 0
+        }
+                                                      
+       
+    ];
 }

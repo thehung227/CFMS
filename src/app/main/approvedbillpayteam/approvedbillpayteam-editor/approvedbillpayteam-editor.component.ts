@@ -15,6 +15,9 @@ import { Title } from "@angular/platform-browser";
 import { Location } from "@angular/common";
 import { CryptoExtension } from "../../../core/extensions/crypto.extension";
 import { Global } from "../../../shared/global";
+import { Popup } from "wijmo/wijmo.input";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
 
 @Component({
   selector: 'app-approvedbillpayteam-editor-form',
@@ -27,11 +30,14 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
   @ViewChild('grid') grid: wjcGrid.FlexGrid;
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
+  @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
+  @ViewChild('dataPopup') dataPopup: Popup;
+
 
   indexPage = ['/main', 'billpayteam', 'index'];
   folderName = '05.Thanh_Toan_Doi_Nhom';
-
+  dataPopupContent: any = null;
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
     pcs: PanelControlService,
@@ -48,12 +54,14 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
     this.init();
     this.grid.isReadOnly = true;
+    this.grid1.isReadOnly = true;
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
-    this.grid2.isReadOnly = true;
+    this.grid2.allowAddNew = false;
+    this.grid3.isReadOnly = true;
 
     this.dbClickCellContent(this.grid);
   }
@@ -61,6 +69,29 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
 
+    this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+    
+          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+            let data = s.rows[e.row].dataItem;
+    
+            if (e.panel.cellType == wjcGrid.CellType.Cell) {
+                      if (data['IsTitleRow'] == true) {
+                        wjcCore.setCss(e.cell, {
+                          color: '',
+                          fontWeight: 'bold',
+                           backgroundColor: '#CCF381'
+                        });
+                      }
+                      else {
+                        wjcCore.setCss(e.cell, {
+                          color: '',
+                          fontWeight: '',
+                          backgroundColor: ''
+                        });
+                      }
+                    }
+          }
+        });
     //this.wordWrapGrid();
   }
 
@@ -76,6 +107,84 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
     this._location.back();
   }
 
+output: any;
+  _err: boolean = false;
+  _errMess: any;
+  _errItemSets: boolean = false;
+
+async saveData(formData: any,state: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('BizDocId');
+    param1.ParameterValue = this.parentData['BizDocId'];
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('EmployeeCodeBill');
+    param2.ParameterValue = this.editorFrm.controls['EmployeeCode'].value.toString();
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
+
+
+    let _data: any = null;
+
+    try {
+      _data = await this._service.postData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_BCH', params)
+      .toPromise().then();
+    
+      this.output = <Array<Object>>(_data['output']);
+   
+      this._errItemSets = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+
+    if (this._errItemSets) {
+      alert(this._errMess)
+      this.showLoading = true;
+    }
+    else
+    {
+       const output = _data && _data.output ? _data.output : _data;
+      // Lấy phần tử đầu tiên nếu output là mảng
+      // if (Array.isArray(output) && output.length > 0) {
+      //   this.dataPopupContent = output[0]; // 👈 lấy hóa đơn đầu tiên
+      // } else {
+      //   this.dataPopupContent = output || _data;
+      // }
+      this.dataPopupContent = _data;
+
+      console.log('Data để show popup:', this.dataPopupContent);
+      if (this.dataPopup) {
+        this.dataPopup.show(true);
+      }
+      // location.reload()
+      // console.log(this.parentData['Id'])
+      // this.indexPage_Editor.push(this.parentData['Id']);
+      // this.router.navigate(['main']).then(() => {
+      //   this.router.navigate(this.indexPage_Editor).then(() => {
+      //     if (this.indexPage_Editor.length > 3)
+      //     this.indexPage_Editor.pop();
+      //   })
+      // });
+    }
+  }
+
+  closePopup() {
+    this.dataPopup.hide();     // Ẩn popup
+    location.reload();         // Reload lại trang
+  }
+
+
   isLoading = false;
   async onClick(state: any, callPrint: boolean = false) {
     if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])
@@ -84,6 +193,11 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
       this.isLoading = true;
       this.parentData["ApproveStatus"] = state;
       this.parentData["ApproveStatusWeb"] = state;
+      // await this.dfpanel.runConstraint('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(()=>{
+      //   setTimeout(() => {
+      //     window.close();
+      //   }, 1000);
+      // });
       this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
         this.sendMail(this.editorFrm, 'P2', this.parentData['IdBizDocCCM'], false, state).then(() => {
           if (callPrint)
@@ -92,11 +206,12 @@ export class ApprovedBillPayTeamEditorComponent extends BaseEditorComponent impl
             this.router.navigate(['/main', 'notifications', 'index']);
         });
       });
-      //this.backClick();
+      // this.backClick();    
     }
   }
+
   showDocumentInNewTab(id: any) {
-    //exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath, parentData?.Id_TT)
+    //exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath, parentData?.IdBizDocCCM)
     let _command = this._layoutDeclare.layout.PrintDocument.Command;
     let _wordName = this._layoutDeclare.layout.PrintDocument.LayoutPrint[0].WordName;
     let _folderPath = this._layoutDeclare.layout.PrintDocument.LayoutPrint[0].FolderPath;

@@ -486,7 +486,7 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
             Command: 'ufn_Coteccons_HDPLHD_CheckGiaTri_BCTC',
             MessageText: 'Giá trị Hợp đồng + PLHĐ đã vượt quá hạn mức Kế hoạch doanh thu, chi phí - Liên hệ CHT cập nhật',
             IgnoreError: 0,
-            zExpr: 'ApproveSend == true'
+            zExpr: 'ApproveSend == false'
         },
         'Evaluator_ServerConstraint_Check_GiaTriHDPLHD_KHKK': {
             EvaluatorName: 'EvaluatorValidate',
@@ -494,7 +494,7 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
             Command: 'ufn_Coteccons_HDPLHD_CheckGiaTri_KHKK',
             MessageText: 'Giá trị Hợp đồng + PLHĐ đã vượt quá hạn mức Kế hoạch ký kết Hợp đồng - Liên hệ QS cập nhật',
             IgnoreError: 0,
-            zExpr: 'ApproveSend == true'
+            zExpr: 'ApproveSend == false'
         },
         'Evaluator_ServerConstraint_CheckCCMBudgetRowId_C3C4': {
             EvaluatorName: 'EvaluatorValidate',
@@ -520,7 +520,7 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: '{VAR=User.EmployeeCode},BizDocId,{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode',
             Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend_SongSong',
-            zExpr: 'ApproveSend == true'
+            zExpr: 'ApproveSend == false'
         },
         'Evaluator_ServerUpdated_UpdateValueOfC3C4': {
             EvaluatorName: 'EvaluatorQuery',
@@ -790,6 +790,21 @@ export class LayoutRegContractInvestorEditor implements IEditorFormulaDeclaratio
                     hideValueMember: false,
                     col: 6
                 }, this.srv, this.parentData),
+                new DateBoxInput({
+                    key: 'EstimatedTimeDelivery',
+                    label: 'Ngày dự kiến ký HĐ',
+                    type: 'date',
+                    format: 'dd/MM/yyyy',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'DueDate',
+                    label: 'Số ngày cam kết ký HĐ',
+                    type: 'number',
+                    col: 6,
+                    // isDisabled: 'true',
+                    isNewRow: true
+                }),
                 new LookupBoxInput({
                     key: 'ProductCostId',
                     label: 'Gói thầu/ PB',

@@ -99,9 +99,9 @@ export class LayoutApprovedBillPaySuppExplorer implements IExplorerFormulaDeclar
 
 export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaration {
 
-    buttonLoadChild: string[];
+  
     serverUpdated: string[];
-    buttonCommand: string[];
+     buttonCommand: string[] = [];
     constructor(private srv?: any,
         private parentData?: any) { }
 
@@ -117,6 +117,13 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId,Date_Liquidation',
             Command: 'usp_New_Date_Liquidation'
+        },
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,CustomerCode,BizDocId',
+            Command: 'usp_CFMS_InvoiceBizzi_LoadData',
+       
+            OutputTable: 3
         }
     };
 
@@ -127,6 +134,10 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
 
     ]
 
+    buttonLoadChild = [
+         'Evaluator_ServerConstraint_Load_InvoiceBizzi'
+    ];
+    
     columnChanged = {
 
     };
@@ -137,6 +148,7 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
         Structure: {
             Parent: {
                 Name: 'vB30BizDocApprove_EditCCM',
+                IsView: 'view',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'P4',
@@ -146,18 +158,21 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
             Child: [
                 {
                     Name: 'vB30BizDocApproveLog_Edit',
+                    IsView: 'view',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'ApproveGroup'
                 },
                 {
                     Name: 'vB30BizDocDocument',
+                    IsView: 'view',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder'
                 },
                 {
                     Name: 'vB30BizDocApprove_AEditPayment',
+                    IsView: 'view',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
@@ -801,47 +816,92 @@ export class LayoutApprovedBillPaySuppEditor implements IEditorFormulaDeclaratio
             dataType: 'Boolean',
             width: 80
         },
-        {
+           {
+            header: 'Ngày nhận hóa đơn',
+            binding: 'ReceivedAt',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+         {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',
             width: 150,
             dataType: 'Date',
+            isReadOnly: 'true',
             format: 'dd/MM/yyyy'
         },
-        {
+          {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
-            allowEditing: true,
             width: 150,
-        
-       
+            dataType: 'Array',
+            isReadOnly: 'true',
+            lookupKey: 'InvoiceBizzi',
+             bindingList: {
+                IssuedDate: 'AtchDocDate',
+                InvoiceId: 'InvoiceId',
+                InvoiceSeries: 'AtchFormNo',
+                TotalAmountWithoutVat: 'AmountBeforeTax',
+                TotalAmountWithVat: 'Amount'
+            },
+            lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
         },
+        // {
+        //     header: 'Số hóa đơn',
+        //     binding: 'AtchDocNo',
+        //     allowEditing: true,
+        //     width: 150,
+        //     validators: "{EXPR=AtchDocNo} == ''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        // },
         {
             header: 'Ký hiệu',
             binding: 'AtchFormNo',
             allowEditing: true,
             width: 150,
-         
-          
+            isReadOnly: 'true',
+            validators: "{EXPR=AtchDocNo} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
         },
         {
             header: 'Giá trị trước thuế',
             binding: 'AmountBeforeTax',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
         {
             header: 'Giá trị sau thuế',
             binding: 'Amount',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
+         {
+            header: 'Nội dung hóa đơn',
+            binding: 'InvoiceItemsFirst',
+            allowEditing: true,
+            width: 250,
+            isReadOnly: 'true',
+          
+        },
         {
-            header: 'Ngày nhận đủ hồ sơ',
-            binding: 'DateReceive',
-            width: 150,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy'
+            header: 'Link',
+            binding: 'HrefLink',
+            allowEditing: false,
+            isReadOnly: 'true',
+            width: 200
+
+        },
+        {
+            header: 'Hóa đơn Bizzi',
+            binding: 'InvoiceId',
+            allowEditing: true,
+            width: 0,
+            isReadOnly: 'true',
+            validatorMessage: 'Không được bỏ trắng giá trị',
         },
     ];     
 }

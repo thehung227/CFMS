@@ -37,7 +37,7 @@
             [disabled]="!editorFrm.valid">Duyệt hóa đơn</button>
     
           <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
-          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
+          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid || showLoading==true || parentData?.ApproveSend==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
           <a class="btn btn-default" [routerLink]="['/main','billpaysupp','index']">Thoát</a>
           <!-- (click)="closeWindow()" -->
         </div>

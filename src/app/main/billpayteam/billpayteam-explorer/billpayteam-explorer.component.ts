@@ -33,55 +33,56 @@ import { BaseExplorerComponent } from '../../_baseform/base-explorer.component';
 import { BaseEditorService } from '../../../base/base.service-editor';
 import { BaseExplorerService } from '../../../base/base.service-explorer';
 import { DialogComponent } from '../../../ui/dialog/dialog.component';
-import { LayoutPrinter } from './billbayteam-printer.data';
 import { Title } from '@angular/platform-browser';
+import { LayoutPrinter } from './billpayteam-printer.data';
 
 @Component({
-    selector: 'billpayteam-explorer',
-    templateUrl: './billpayteam-explorer.component.html',
-    styleUrls: ['./billpayteam-explorer.component.css']
+  selector: 'billpayteam-explorer',
+  templateUrl: './billpayteam-explorer.component.html',
+  styleUrls: ['./billpayteam-explorer.component.css']
 })
 
 export class BillPayTeamExplorerComponent extends BaseExplorerComponent implements OnInit, OnDestroy {
 
-    @ViewChild('grid') grid: wjcGrid.FlexGrid;
-    @ViewChild('contentFilter') contentFilter: ElementRef;
-    @ViewChild('dialogFrm') dialogFrm: DialogComponent;
-    @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
-    
-    layoutPrint: LayoutPrinter = new LayoutPrinter();
+  @ViewChild('grid') grid: wjcGrid.FlexGrid;
+  @ViewChild('contentFilter') contentFilter: ElementRef;
+  @ViewChild('dialogFrm') dialogFrm: DialogComponent;
+  @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
+  @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
+  
+  layoutPrint: LayoutPrinter = new LayoutPrinter();
 
-    pathPage = ['/main', 'billpayteam', 'detail'];
-    _layoutDeclare: LayoutBillPayTeamExplorer = new LayoutBillPayTeamExplorer()
+  pathPage = ['/main', 'billpayteam', 'detail'];
+  _layoutDeclare: LayoutBillPayTeamExplorer = new LayoutBillPayTeamExplorer()
 
-    constructor(srv: BaseExplorerService,
-        router: Router,
-        ics: InputControlService, titleService: Title,route: ActivatedRoute) {
-            super(srv, router, ics, titleService,route)
-        this.zParentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
-        this.zFilterKey = this._layoutDeclare.layout.Structure.Parent.FilterKey;
-        this.rowPage = this._layoutDeclare.layout.Structure.Parent.RowPage;
-        this.fieldOrderBy = this._layoutDeclare.layout.Structure.Parent.OrderBy;
-        this.pageNumber = 1;
-        this._layoutPrinter = this.layoutPrint.Layout;
-    }
+  constructor(srv: BaseExplorerService,
+    router: Router,
+    ics: InputControlService, titleService: Title,route: ActivatedRoute) {
+      super(srv, router, ics, titleService,route)
+    this.zParentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
+    this.zFilterKey = this._layoutDeclare.layout.Structure.Parent.FilterKey;
+    this.rowPage = this._layoutDeclare.layout.Structure.Parent.RowPage;
+    this.fieldOrderBy = this._layoutDeclare.layout.Structure.Parent.OrderBy;
+    this.pageNumber = 1;
+    this._layoutPrinter = this.layoutPrint.Layout;
+  }
 
-    async ngOnInit() {
-        await this.init(this.pathPage).then();
-        this.grid.columns[0].width = 45;
+  async ngOnInit() {
+    await this.init(this.pathPage).then();
+    this.grid.columns[0].width = 45;
 
-        this.grid.rowHeaders.columns.maxSize = 2;
-    }
+    this.grid.rowHeaders.columns.maxSize = 2;
+  }
 
-    ngOnDestroy() {
-        this.destroy();
-    }
+  ngOnDestroy() {
+    this.destroy();
+  }
 
-    onSubmit(formData: FormGroup) {
-        this.submit(formData);
-    }
+  onSubmit(formData: FormGroup) {
+    this.submit(formData);
+  }
 
-    private _groupBy = 'ProductName,CustomerName';
+  private _groupBy = 'ProductName,CustomerName';
     get groupBy(): string {
         return this._groupBy;
     }
@@ -113,17 +114,15 @@ export class BillPayTeamExplorerComponent extends BaseExplorerComponent implemen
         this.grid.collapseGroupsToLevel(1);
     }
 
-    showPrintVoucher(flex: wjcGrid.FlexGrid, layoutName?: string) {
-        let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-        // popupWin.document.open();
+  showPrintVoucher(flex: wjcGrid.FlexGrid,layoutName?:string) {
+    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
 
-        let html = this.printVoucher(flex, layoutName);
+    let html = this.printVoucher(flex,layoutName);
 
-        html.then(data => {
-            popupWin.document.write(data);
-            popupWin.document.close();
-        });
-        // popupWin.document.write(html);
-        // popupWin.document.close();
-    }
+    html.then(data => {
+      popupWin.document.write(data);
+      popupWin.document.close();
+    });
+  }
+
 }

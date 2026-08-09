@@ -347,7 +347,14 @@ export class LayoutApprovedExWareMaterialsEditor implements IEditorFormulaDeclar
         },
         {
             header: 'Tên mặt hàng',
-            binding: 'Description0',
+            binding: 'ItemName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tên mặt hàng (NCC)',
+            binding: 'Description',
             dataType: 'String',
             width: 200,
             isReadOnly: 'true'

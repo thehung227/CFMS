@@ -25,7 +25,7 @@ export class LayoutBillPayEquipmentExplorer implements IExplorerFormulaDeclarati
             Parent: {
                 Name: 'vB30BizDocCCM_Explore',
                 //FilterKey: "(ProductCostId0 = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('P5') AND IsActive=1 AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId0 IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))",
-                FilterKey: "((ProductCostId = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'P5' AND IsActive=1)",
+                FilterKey: "((ProductCostId = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'P5' AND IsActive=1 AND PayTeamType IN ('00','01','04'))",
                 OrderBy: 'ProductName,CustomerName,DocDate DESC,DocNo DESC',
                 RowPage: 50
             },
@@ -1105,8 +1105,6 @@ export class LayoutBillPayEquipmentEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     isDisabled: 'true'
                 }),
-               
-               
                 new TextBoxInput({
                     key: 'Description',
                     label: 'Ghi chú',

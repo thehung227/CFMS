@@ -719,7 +719,6 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             header: 'BOQ CĐT (m3)',
             binding: 'Quantity1',
             dataType: 'Number',
-             exprReadOnly: "{EXPR=IsGiftItem} != 0",
             width: 100,
             format: 'n3'
         },
@@ -728,8 +727,16 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             binding: 'Quantity2',
             dataType: 'Number',
             width: 100,
+            format: 'n3'
+        },
+            {
+            header: 'Khối lượng tính toán (m3) - trước dc',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            width: 0,
             format: 'n3',
-             exprReadOnly: "{EXPR=IsGiftItem} != 0",
+            isReadOnly: 'true'
+           
         },
         {
             header: 'Khối lượng đặt hàng (m3)',
@@ -739,6 +746,7 @@ export class LayoutConcreteLossEditor implements IEditorFormulaDeclaration {
             format: 'n3',
             exprReadOnly: "{EXPR=IsGiftItem} != 0",
         },
+     
         {
             header: 'Khối lượng thực tế',
             binding: 'Quantity9',

@@ -23,7 +23,7 @@ export class LayoutSettlementExplorer implements IExplorerFormulaDeclaration {
         Structure: {
             Parent: {
                 Name: 'vB30BizDoc_Explore',
-                FilterKey: "(ProductCostId = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('C5') AND IsActive=1 AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))",
+                FilterKey: "(ProductCostId = '{VAR=Filter.ProductCostId}') AND IsGiftItem = 0 AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('C5') AND IsActive=1 AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))",
                 OrderBy: 'ProductName,CustomerName,DocNo DESC',
                 RowPage: 50
             },
@@ -1386,6 +1386,22 @@ buttonLoadChild2: string[] = [
             dataType: 'Boolean',
             width: 80
         },
+           {
+            header: 'Ngày nhận hóa đơn',
+            binding: 'ReceivedAt',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+         {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
           {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
@@ -1401,14 +1417,6 @@ buttonLoadChild2: string[] = [
                 TotalAmountWithVat: 'Amount'
             },
             lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
-        },
-        {
-            header: 'Ngày hóa đơn',
-            binding: 'AtchDocDate',
-            width: 150,
-            dataType: 'Date',
-            isReadOnly: 'true',
-            format: 'dd/MM/yyyy'
         },
         // {
         //     header: 'Số hóa đơn',
@@ -1441,13 +1449,21 @@ buttonLoadChild2: string[] = [
             isReadOnly: 'true',
             dataType: 'Number'
         },
+         {
+            header: 'Nội dung hóa đơn',
+            binding: 'InvoiceItemsFirst',
+            allowEditing: true,
+            width: 250,
+            isReadOnly: 'true',
+          
+        },
         {
-            header: 'Ngày nhận đủ hồ sơ',
-            binding: 'DateReceive',
-            width: 150,
-            dataType: 'Date',
+            header: 'Link',
+            binding: 'HrefLink',
+            allowEditing: false,
+            isReadOnly: 'true',
+            width: 200
 
-            format: 'dd/MM/yyyy'
         },
         {
             header: 'Hóa đơn Bizzi',

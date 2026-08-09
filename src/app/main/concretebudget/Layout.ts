@@ -619,6 +619,7 @@ export class LayoutConcreteBudgetEditor implements IEditorFormulaDeclaration {
             dataType: 'Array',
             lookupKey: 'SizeDes',
             lookupfilter: "ItemGroupCode = 'BETONG'",
+            maxRow: 30,
             bindingList: {
                 Code: 'ProductSize'
             },

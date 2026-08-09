@@ -32,7 +32,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
-  @ViewChild('grid6') grid6: wjcGrid.FlexGrid;
+  // @ViewChild('grid6') grid6: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
 
@@ -60,7 +60,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
     this.init();
     //this.grid1.isReadOnly = true;
     this.grid.allowAddNew = false;
@@ -71,7 +71,7 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
     this.grid4.allowAddNew = false;
     this.grid5.allowAddNew = false;
     this.grid5.isReadOnly = true;
-    this.grid6.allowAddNew = false;
+    // this.grid6.allowAddNew = false;
     // this.grid5.allowAddNew = false;
 
     this.dbClickCellContent(this.grid2);
@@ -170,35 +170,35 @@ export class PaymentProposalEditorComponent extends BaseEditorComponent implemen
       }
     });
 
-    this.grid6.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+    // this.grid6.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
-      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
-        let data = s.rows[e.row].dataItem;
+    //   if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+    //     let data = s.rows[e.row].dataItem;
 
-        if (e.panel.cellType == wjcGrid.CellType.Cell) {
-          if (data['EstimatedTimeDelivery'] < this.parentData["DocDate"] && data['IsTitleRow'] == false) {
-            wjcCore.setCss(e.cell, {
-              color: 'red',
-              fontWeight: ''
-            });
-          }
-          else
-            if (data['IsTitleRow'] == true) {
-              wjcCore.setCss(e.cell, {
-                color: 'black',
-                fontWeight: 'bold'
-              });
-            }
-            else {
-              wjcCore.setCss(e.cell, {
-                color: '',
-                fontWeight: '',
-                // backgroundColor: ''
-              });
-            }
-        }
-      }
-    });
+    //     if (e.panel.cellType == wjcGrid.CellType.Cell) {
+    //       if (data['EstimatedTimeDelivery'] < this.parentData["DocDate"] && data['IsTitleRow'] == false) {
+    //         wjcCore.setCss(e.cell, {
+    //           color: 'red',
+    //           fontWeight: ''
+    //         });
+    //       }
+    //       else
+    //         if (data['IsTitleRow'] == true) {
+    //           wjcCore.setCss(e.cell, {
+    //             color: 'black',
+    //             fontWeight: 'bold'
+    //           });
+    //         }
+    //         else {
+    //           wjcCore.setCss(e.cell, {
+    //             color: '',
+    //             fontWeight: '',
+    //             // backgroundColor: ''
+    //           });
+    //         }
+    //     }
+    //   }
+    // });
     // this.grid5.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
     //   if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {

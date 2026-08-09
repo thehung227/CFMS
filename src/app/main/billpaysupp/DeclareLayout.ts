@@ -1021,7 +1021,7 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                         DocCode: 'DocCode_HdPl'
                     },
                     validators: [Validators.required],
-                    lookupfilter: "(((DocCode = 'C3' OR (DocCode = 'C4' AND IsSubContractPay = 1)) AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId IN (SELECT RowId FROM B20Product WHERE ParentRowId='{EXPR=ProductCostId}') OR ProductCostId IN (SELECT ParentRowId FROM B20Product WHERE RowId='{EXPR=ProductCostId}' AND ParentRowId <> '')) AND ContractTypeFilter='B4') OR (DocCode='C3' AND IsSubContractPay = 1)) AND Closed = 0 AND CompletedApprove=1 AND DocDate <= '{EXPR=DocDate}' AND BranchCode='{VAR=Branch.Ma_Dvcs}'",
+                    lookupfilter: "((((DocCode = 'C3' OR (DocCode = 'C4' AND IsSubContractPay = 1)) AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId IN (SELECT RowId FROM B20Product WHERE ParentRowId='{EXPR=ProductCostId}') OR ProductCostId IN (SELECT ParentRowId FROM B20Product WHERE RowId='{EXPR=ProductCostId}' AND ParentRowId <> '')) AND ContractTypeFilter='B4') OR (DocCode='C3' AND IsSubContractPay = 1)) AND Closed = 0 AND CompletedApprove=1 AND DocDate <= '{EXPR=DocDate}' AND BranchCode='{VAR=Branch.Ma_Dvcs}') OR BizDocId = 'N0100000045551C3'",
                     hideValueMember: true,
                     //isDisabled: "'{EXPR=PayTeamType}' == '00'",// || '{EXPR=PayTeamType}' == '03'",
                     col: 12
@@ -1533,6 +1533,22 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
+           {
+            header: 'Ngày nhận hóa đơn',
+            binding: 'ReceivedAt',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+         {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
           {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
@@ -1548,14 +1564,6 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                 TotalAmountWithVat: 'Amount'
             },
             lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
-        },
-        {
-            header: 'Ngày hóa đơn',
-            binding: 'AtchDocDate',
-            width: 150,
-            dataType: 'Date',
-            isReadOnly: 'true',
-            format: 'dd/MM/yyyy'
         },
         // {
         //     header: 'Số hóa đơn',
@@ -1588,13 +1596,21 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             isReadOnly: 'true',
             dataType: 'Number'
         },
+         {
+            header: 'Nội dung hóa đơn',
+            binding: 'InvoiceItemsFirst',
+            allowEditing: true,
+            width: 250,
+            isReadOnly: 'true',
+          
+        },
         {
-            header: 'Ngày nhận đủ hồ sơ',
-            binding: 'DateReceive',
-            width: 150,
-            dataType: 'Date',
+            header: 'Link',
+            binding: 'HrefLink',
+            allowEditing: false,
+            isReadOnly: 'true',
+            width: 200
 
-            format: 'dd/MM/yyyy'
         },
         {
             header: 'Hóa đơn Bizzi',

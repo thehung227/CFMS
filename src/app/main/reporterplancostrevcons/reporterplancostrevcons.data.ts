@@ -86,6 +86,18 @@ export class LayoutData {
                         width: 120,
                         isColumnOriginal: true
                     },
+                     {
+                        header: 'Mã Gói thầu',
+                        binding: 'ItemGroupCode',
+                        width: 120,
+                        isColumnOriginal: true
+                    },
+                      {
+                        header: 'Tên Gói thầu',
+                        binding: 'BidName',
+                        width: 120,
+                        isColumnOriginal: true
+                    },
                     {
                         header: 'Mã công việc',
                         binding: 'JobCode',
@@ -199,12 +211,12 @@ export class LayoutData {
                         width: 150,
                         isColumnOriginal: true
                     },
-                    // {
-                    //     header: 'Giá trị đã chi (chưa VAT)',
-                    //     binding: 'Amount_KTSum',
-                    //     width: 150,
-                    //     isColumnOriginal: true
-                    // },
+                     {
+                        header: 'Giá trị đã chi',
+                        binding: 'Amount_UNC',
+                         width: 150,
+                         isColumnOriginal: true
+                     },
                     // {
                     //     header: 'Ghi chú',
                     //     binding: 'Ghi_Chu_TT',

@@ -28,6 +28,7 @@ export class BillEditPayTeamEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
@@ -54,7 +55,7 @@ export class BillEditPayTeamEditorComponent extends BaseEditorComponent implemen
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     this.grid1.allowAddNew = false;
     this.grid2.allowAddNew = false;
@@ -65,7 +66,21 @@ export class BillEditPayTeamEditorComponent extends BaseEditorComponent implemen
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+     this.grid4.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+                  if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+                  let col = s.columns[e.col];
+                  if (!col || col.binding != 'HrefLink') return;
+            
+                  let url = (s.getCellData(e.row, e.col, false) || '').toString().trim();
+                  if (url) {
+                    e.cell.innerHTML = '<button type="button" class="btn btn-link" '
+                      + 'style="padding:0;color:#1565c0;text-decoration:underline;cursor:pointer;" '
+                      + 'onclick="event.stopPropagation();window.open(\'' + url.replace(/'/g, "\\'") + '\',\'_blank\')">'
+                      + 'Link</button>';
+                  } else {
+                    e.cell.innerHTML = '';
+                  }
+                });
   }
 
   backClick() {
@@ -149,7 +164,29 @@ export class BillEditPayTeamEditorComponent extends BaseEditorComponent implemen
     });
   }
 
+  async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
 
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
+  
   showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
     let html = this.printVoucher_WordFlow(input, 'MAU1', gridForm, extInput, 'DocCode');

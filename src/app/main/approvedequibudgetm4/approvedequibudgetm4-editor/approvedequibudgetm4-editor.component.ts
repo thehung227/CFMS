@@ -33,7 +33,7 @@ export class ApprovedEquiBudgetM4EditorComponent extends BaseEditorComponent imp
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'billpaydept', 'index'];
-  folderName = '08.Thanh_Toan_BCH';
+    folderName = 'Du_Tru_Dau_Cong_Truong';
   // indexPage_Editor = ['/main', 'approvedequibudgetm4', 'detail'];
 
   constructor(service: BaseEditorService,
@@ -57,7 +57,7 @@ export class ApprovedEquiBudgetM4EditorComponent extends BaseEditorComponent imp
       // this.showDefaultFile();
       this.showPrintVoucher(this.id);
     });
-    this.grid.isReadOnly = true;
+    // this.grid.isReadOnly = true;
     this.grid1.isReadOnly = true;
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;

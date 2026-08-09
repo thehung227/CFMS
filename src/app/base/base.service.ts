@@ -198,7 +198,7 @@ export class BaseService {
             .catch(this.handleError);
     }
 
-    getLookupNew(url: string, lookupKey: string, term: string, filter: string, cols: string, maxRow: number = 10): Observable<any> {
+    getLookupNew(url: string, lookupKey: string, term: string, filter: string, cols: string, maxRow: number = 30): Observable<any> {
         if (!filter) { filter = ''; }
         filter = Global.convertConfig(filter);
 

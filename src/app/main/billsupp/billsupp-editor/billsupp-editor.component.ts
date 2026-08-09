@@ -162,6 +162,34 @@ export class BillSuppEditorComponent
         }
       }
     });
+    this.grid3.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+        let data = s.rows[e.row].dataItem;
+
+        if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          if (data["IsTitleRow"] == true) {
+            wjcCore.setCss(e.cell, {
+              color: "",
+              fontWeight: "bold",
+              backgroundColor: "#CCF381",
+            });
+          } else if (data["NoChangeInBill"] == false) {
+            wjcCore.setCss(e.cell, {
+              color: "red",
+              fontWeight: "",
+              // fontWeight: '',
+              backgroundColor: "",
+            });
+          } else {
+            wjcCore.setCss(e.cell, {
+              color: "",
+              fontWeight: "",
+              backgroundColor: "",
+            });
+          }
+        }
+      }
+    });
     this.grid4.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
         let data = s.rows[e.row].dataItem;

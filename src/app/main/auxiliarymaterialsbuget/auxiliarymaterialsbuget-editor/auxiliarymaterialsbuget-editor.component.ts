@@ -149,11 +149,11 @@ export class AuxiliaryMaterialsBugetEditorComponent
         break;
       }
     }
-
+if (isApproveSend == true) {
     if (_numEror == 0) {
       //if (this.taidulieu == true || this.id > 0) {
 
-      if (isApproveSend == true) {
+      
         if (_errorSave == false) {
           if (_errorSave1 == false) {
             this.checkKhoiLuong_KeHoach_PO(formData).then(() => {
@@ -174,16 +174,16 @@ export class AuxiliaryMaterialsBugetEditorComponent
             alert("Mã nhân viên quy trình duyệt, không được bỏ trắng giá trị");
         } else alert("Mã nhóm hàng, Mã đối tượng, Id hợp đồng, Tên mặt hàng không được bỏ trắng giá trị");
       } else {
-        this.submit(formData, this.indexPage_Editor);
+        alert(
+        'Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).',
+      );
       }
 
-      //}
+      // }
       //else
       //  alert('Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu chi tiết.');
     } else {
-      alert(
-        'Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).',
-      );
+      this.submit(formData, this.indexPage_Editor);
     }
   }
 

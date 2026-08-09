@@ -48,7 +48,7 @@
             *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
 
           <button class="btn btn-success" type="submit"
-            [disabled]="!editorFrm.valid  || showLoading==true"
+            [disabled]="!editorFrm.valid  || showLoading==true || parentData?.ApproveSend==true"
             *ngIf=" isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
 
           <a class="btn btn-default" [routerLink]="['/main','tenderselection','index']">Thoát</a>

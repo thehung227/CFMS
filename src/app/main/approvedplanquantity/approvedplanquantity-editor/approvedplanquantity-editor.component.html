@@ -4,7 +4,7 @@
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Duyệt kế hoạch quản lý khối lượng</h3>
+        <h3 class="box-title" id="titleName">Duyệt kế hoạch QLKL - Kết cấu</h3>
         <div class="box-tools pull-right">
           <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
                         <i class="fa fa-minus"></i>
@@ -16,9 +16,11 @@
           <!-- <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.IdCCMBudget)">
             Xem KHKK
           </button> -->
-          <button class="btn btn-success" type="button" (click)=onClick(3) *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
+          <button class="btn btn-success" type="button" (click)=onClick(3)
+            *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>
-          <button class="btn btn-danger" type="button" (click)=onClick(0) *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"
+          <button class="btn btn-danger" type="button" (click)=onClick(0)
+            *ngIf="parentData?.ApproveReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Trả lại</button>
           <button class="btn btn-primary" type="button" (click)=onClick(1) *ngIf="parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Duyệt</button>
@@ -55,6 +57,11 @@
                 </a>
               </li>
               <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
+                  Liên kết đối tác
+                </a>
+              </li>
+              <li>
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
                   WorkFlow
                 </a>
@@ -68,7 +75,7 @@
                 <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
                   Đính kèm
                 </a>
-              </li>                            
+              </li>
             </ul>
           </div>
           <div class="tab-content">
@@ -101,7 +108,7 @@
                   </template>
                 </wj-flex-grid>
               </section>
-            </div>     
+            </div>
             <div class="tab-pane" id="tab4">
               <section id="new">
                 <wj-flex-grid class="grid3" #grid3 [ngStyle]="setHeightGrid()">
@@ -110,14 +117,20 @@
                   </template>
                 </wj-flex-grid>
               </section>
-            </div>       
-            <!-- <div class="tab-pane active" id="glyphicons">
-                                            <section id="new">
-                                            </section>
-                                        </div> -->
+            </div>
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    <label>{{cell.row.index + 1}}</label>
+                  </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <!-- <button class="btn fa fa-trash" (click)=deleteSelectedRows(grid1)></button>               -->
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
           </div>
-
-
         </div>
       </div>
     </div>
@@ -136,10 +149,12 @@
 
 <wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
   <div class="box" style="height: 400px;overflow-y: auto;">
-    <div class="box-header with-border" style="background:linear-gradient(to right,#0288D1,#a8dac3); position: fixed; width: 40%;">
+    <div class="box-header with-border"
+      style="background:linear-gradient(to right,#0288D1,#a8dac3); position: fixed; width: 40%;">
       <h3 class="box-title" style="color: white;">Ý kiến</h3>
       <div class="box-tools pull-right">
-        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool" (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+          (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
           <i class="fa fa-times"></i>
         </button>
       </div>

@@ -390,18 +390,18 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
                 },
-                {
-                    Name: 'vB30CCMBudgetDebt',
-                    ParentKey: 'CCMBudgetId',
-                    ChildKey: 'CCMBudgetId',
-                    // Sort: 'BuiltinOrder',
-                    DefaultValues: {
-                        CCMBudgetId: 'Parent.CCMBudgetId',
-                        BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate',
-                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
-                    }
-                }
+                // {
+                //     Name: 'vB30CCMBudgetDebt',
+                //     ParentKey: 'CCMBudgetId',
+                //     ChildKey: 'CCMBudgetId',
+                //     // Sort: 'BuiltinOrder',
+                //     DefaultValues: {
+                //         CCMBudgetId: 'Parent.CCMBudgetId',
+                //         BuiltinOrder: '1',
+                //         DocDate: 'Parent.DocDate',
+                //         BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                //     }
+                // }
                
                
             ]
@@ -1773,189 +1773,189 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
             // lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId0='{EXPR=ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
         }, 
     ];
-    childColumns6 = [
-        {
-            header: 'Tiêu đề',
-            binding: 'IsTitleRow',
-            dataType: 'Boolean',
-            width: 80
-        },
-        {
-            header: 'STT',
-            binding: 'ItemNo',
-            width: 60,
+    // childColumns6 = [
+    //     {
+    //         header: 'Tiêu đề',
+    //         binding: 'IsTitleRow',
+    //         dataType: 'Boolean',
+    //         width: 80
+    //     },
+    //     {
+    //         header: 'STT',
+    //         binding: 'ItemNo',
+    //         width: 60,
              
-        },
-        {
-            header: 'Mã công trình',
-            binding: 'ProductCostId',
-            dataType: 'Array',
-            lookupKey: 'ProductCost',
-            bindingList: {
-                ProductName: 'Description0'
-            },
-            lookupfilter: "ProductType IN ('1','3','2') AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
-            hideValueMember: true,
-            width: 100
-        },
-        // {
-        //     header: 'Tên dự án',
-        //     binding: 'ProductName',
-        //     width: 180,
-        //     wordWrap: 'true',
-        //      isReadOnly: 'true'
-        // },
+    //     },
+    //     {
+    //         header: 'Mã công trình',
+    //         binding: 'ProductCostId',
+    //         dataType: 'Array',
+    //         lookupKey: 'ProductCost',
+    //         bindingList: {
+    //             ProductName: 'Description0'
+    //         },
+    //         lookupfilter: "ProductType IN ('1','3','2') AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
+    //         hideValueMember: true,
+    //         width: 100
+    //     },
+    //     // {
+    //     //     header: 'Tên dự án',
+    //     //     binding: 'ProductName',
+    //     //     width: 180,
+    //     //     wordWrap: 'true',
+    //     //      isReadOnly: 'true'
+    //     // },
        
-        {
-            header: 'Gói thầu',
-            binding: 'Description0',
-            width: 400,
-            wordWrap: 'true'
-        },
-        {
-            header: 'Id hợp đồng CĐT',
-            binding: 'BizDocId_C2',
-            width: 0,
-             isReadOnly: 'true'
-        },
+    //     {
+    //         header: 'Gói thầu',
+    //         binding: 'Description0',
+    //         width: 400,
+    //         wordWrap: 'true'
+    //     },
+    //     {
+    //         header: 'Id hợp đồng CĐT',
+    //         binding: 'BizDocId_C2',
+    //         width: 0,
+    //          isReadOnly: 'true'
+    //     },
        
         
-        {
-            header: 'Id Claim',
-            binding: 'Stt_CL',
-            width: 0,
-             isReadOnly: 'true'
-        },
-        {
-            header: 'IPC số',
-            binding: 'ClaimNo',
-            width: 200,
-            wordWrap: 'true'
-        },
-        {
-            header: 'Dự kiến giá trị Quyết toán',
-            binding: 'ContractValue',
-            dataType: 'Number',
-            isRequired: true,
-            width: 120
-        },
-        {
-            header: 'CĐT đã thanh toán',
-            binding: 'DaThuLuyKe',
-            dataType: 'Number',
-            isRequired: true,
-            width: 120
-        },
+    //     {
+    //         header: 'Id Claim',
+    //         binding: 'Stt_CL',
+    //         width: 0,
+    //          isReadOnly: 'true'
+    //     },
+    //     {
+    //         header: 'IPC số',
+    //         binding: 'ClaimNo',
+    //         width: 200,
+    //         wordWrap: 'true'
+    //     },
+    //     {
+    //         header: 'Dự kiến giá trị Quyết toán',
+    //         binding: 'ContractValue',
+    //         dataType: 'Number',
+    //         isRequired: true,
+    //         width: 120
+    //     },
+    //     {
+    //         header: 'CĐT đã thanh toán',
+    //         binding: 'DaThuLuyKe',
+    //         dataType: 'Number',
+    //         isRequired: true,
+    //         width: 120
+    //     },
      
-        {
-            header: '% TT',
-            binding: 'RateTT',
-            dataType: 'Number',
-            format: 'p2',
-            isRequired: true,
-            min: 0,
-            max: 1,
-            width: 60
-        },
-        {
-            header: 'Dự kiến số tiền phải thu',
-            binding: 'TienNo',
-            dataType: 'Number',
-            isRequired: true,
-            width: 120
-        },
-        // {
-        //     header: 'Cam kết ký PLHĐ chốt phát sinh'	,
-        //     binding: 'DatePS',
-        //     dataType: 'Date',
-        //     isRequired: false,
-        //     format: 'dd/MM/yyyy',
-        //     width:100
-        // },
-        // {
-        //     header: 'Hoàn thành PLHĐ',
-        //     binding: 'IsDatePS',
-        //     dataType: 'Boolean',
-        //     width: 80,
-        //     // isReadOnly: 'true'
-        // },
-        // {
-        //     header: 'Cam kết TOC'	,
-        //     binding: 'DateTOC',
-        //     dataType: 'Date',
-        //     isRequired: false,
-        //     format: 'dd/MM/yyyy',
-        //     width:100							
-        // },
-        // {
-        //     header: 'Hoàn thành TOC',
-        //     binding: 'IsDateTOC',
-        //     dataType: 'Boolean',
-        //     width: 80,
-        //     // isReadOnly: 'true'
-        // },
-        {
-            header: 'Cam kết ký QT/Xuất HĐ'	,
-            binding: 'DateQT',
-            dataType: 'Date',
-            isRequired: false,
-            format: 'dd/MM/yyyy',
-            width:100							
-        },
-        {
-            header: 'Hoàn thành QT',
-            binding: 'IsDateQT',
-            dataType: 'Boolean',
-            width: 80,
-            // isReadOnly: 'true'
-        },
-        // {
-        //     header: 'Ngày đến hạn'	,
-        //     binding: 'DueDate',
-        //     dataType: 'Date',
-        //     isRequired: false,
-        //     format: 'dd/MM/yyyy',
-        //     width:100					
-        // },
-        // {
-        //     header: 'Số ngày quá hạn',
-        //     binding: 'DateDue',
-        //     dataType: 'Number',
-        //     isRequired: true,
-        //     width: 150,
-        //      isReadOnly: 'true'
-        // },
-        // {
-        //     header: 'Ngày cam kết thu hồi công nợ'	,
-        //     binding: 'CommitmentDate',
-        //     dataType: 'Date',
-        //     isRequired: false,
-        //     format: 'dd/MM/yyyy',
-        //     width:140					
-        // },
-        {
-            header: 'Lý do/Vướng mắc chưa hoàn thành các mốc cam kết',
-            binding: 'Note',
-            width: 350,
-            wordWrap: 'true'
-        },
-        // {
-        //     header: 'CHT',
-        //     binding: 'EmployeeCodeCHT',
-        //     width: 150,
-        //     wordWrap: 'true'
-        // },
-        // {
-        //     header: 'CHT',
-        //     binding: 'EmployeeNameCHT',
-        //     width: 150,
-        //     wordWrap: 'true'
-        // },
-        {
-            header: 'ProductCostId0',
-            binding: 'ProductCostId0',
-            width: 0,
-             isReadOnly: 'true'
-        },
-    ];
+    //     {
+    //         header: '% TT',
+    //         binding: 'RateTT',
+    //         dataType: 'Number',
+    //         format: 'p2',
+    //         isRequired: true,
+    //         min: 0,
+    //         max: 1,
+    //         width: 60
+    //     },
+    //     {
+    //         header: 'Dự kiến số tiền phải thu',
+    //         binding: 'TienNo',
+    //         dataType: 'Number',
+    //         isRequired: true,
+    //         width: 120
+    //     },
+    //     // {
+    //     //     header: 'Cam kết ký PLHĐ chốt phát sinh'	,
+    //     //     binding: 'DatePS',
+    //     //     dataType: 'Date',
+    //     //     isRequired: false,
+    //     //     format: 'dd/MM/yyyy',
+    //     //     width:100
+    //     // },
+    //     // {
+    //     //     header: 'Hoàn thành PLHĐ',
+    //     //     binding: 'IsDatePS',
+    //     //     dataType: 'Boolean',
+    //     //     width: 80,
+    //     //     // isReadOnly: 'true'
+    //     // },
+    //     // {
+    //     //     header: 'Cam kết TOC'	,
+    //     //     binding: 'DateTOC',
+    //     //     dataType: 'Date',
+    //     //     isRequired: false,
+    //     //     format: 'dd/MM/yyyy',
+    //     //     width:100							
+    //     // },
+    //     // {
+    //     //     header: 'Hoàn thành TOC',
+    //     //     binding: 'IsDateTOC',
+    //     //     dataType: 'Boolean',
+    //     //     width: 80,
+    //     //     // isReadOnly: 'true'
+    //     // },
+    //     {
+    //         header: 'Cam kết ký QT/Xuất HĐ'	,
+    //         binding: 'DateQT',
+    //         dataType: 'Date',
+    //         isRequired: false,
+    //         format: 'dd/MM/yyyy',
+    //         width:100							
+    //     },
+    //     {
+    //         header: 'Hoàn thành QT',
+    //         binding: 'IsDateQT',
+    //         dataType: 'Boolean',
+    //         width: 80,
+    //         // isReadOnly: 'true'
+    //     },
+    //     // {
+    //     //     header: 'Ngày đến hạn'	,
+    //     //     binding: 'DueDate',
+    //     //     dataType: 'Date',
+    //     //     isRequired: false,
+    //     //     format: 'dd/MM/yyyy',
+    //     //     width:100					
+    //     // },
+    //     // {
+    //     //     header: 'Số ngày quá hạn',
+    //     //     binding: 'DateDue',
+    //     //     dataType: 'Number',
+    //     //     isRequired: true,
+    //     //     width: 150,
+    //     //      isReadOnly: 'true'
+    //     // },
+    //     // {
+    //     //     header: 'Ngày cam kết thu hồi công nợ'	,
+    //     //     binding: 'CommitmentDate',
+    //     //     dataType: 'Date',
+    //     //     isRequired: false,
+    //     //     format: 'dd/MM/yyyy',
+    //     //     width:140					
+    //     // },
+    //     {
+    //         header: 'Lý do/Vướng mắc chưa hoàn thành các mốc cam kết',
+    //         binding: 'Note',
+    //         width: 350,
+    //         wordWrap: 'true'
+    //     },
+    //     // {
+    //     //     header: 'CHT',
+    //     //     binding: 'EmployeeCodeCHT',
+    //     //     width: 150,
+    //     //     wordWrap: 'true'
+    //     // },
+    //     // {
+    //     //     header: 'CHT',
+    //     //     binding: 'EmployeeNameCHT',
+    //     //     width: 150,
+    //     //     wordWrap: 'true'
+    //     // },
+    //     {
+    //         header: 'ProductCostId0',
+    //         binding: 'ProductCostId0',
+    //         width: 0,
+    //          isReadOnly: 'true'
+    //     },
+    // ];
 }

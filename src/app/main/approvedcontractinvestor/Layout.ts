@@ -262,14 +262,27 @@ export class LayoutApprovedContractInvestorEditor implements IEditorFormulaDecla
                 new LookupBoxInput({
                     key: 'ProjectContractType',
                     label: 'Hình thức hợp đồng',
-                    
-                 
                     lookupKey: 'Class',
                     lookupfilter: "ParentCode='ProjectContractType'",
                     style: 'background-color:#F8F0D7',
                     hideValueMember: false,
                     col: 6
                 }, this.srv, this.parentData),
+                new DateBoxInput({
+                    key: 'EstimatedTimeDelivery',
+                    label: 'Ngày dự kiến ký HĐ',
+                    type: 'date',
+                    format: 'dd/MM/yyyy',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'DueDate',
+                    label: 'Số ngày cam kết ký HĐ',
+                    type: 'number',
+                    col: 6,
+                    // isDisabled: 'true',
+                    isNewRow: true
+                }),
                 new LookupBoxInput({
                     key: 'ProductCostId',
                     label: 'Gói thầu/ PB',

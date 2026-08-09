@@ -4,7 +4,7 @@
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Quy trình phê duyệt Hồ sơ quyết toán CĐT</h3>
+        <h3 class="box-title" id="titleName">BẢNG ƯỚC TÍNH GIÁ TRỊ THỰC HIỆN DỰ ÁN</h3>
         <div class="box-tools pull-right">
          
           <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
@@ -48,53 +48,23 @@
           [disabled]="editorFrm.disabled" style="margin-bottom:10px;" (click)=onclickCollapsablePanel([grid])>
           <span style="font-size:12pt;"></span>
         </button>
-      <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
-        style="margin-bottom:10px;" (click)="onClick_2()">
-        <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tải kế hoạch chi tiết</span>
-      
-      </button>
-        <!-- <div class="bravo-dropdown">
-          <button type="button" (click)="openbravoDropdown()" class="bravo-dropbtn btn btn-success fa fa-database"
-            style="margin-bottom:10px;">
-            <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Lấy dữ liệu</span>
-            <span class="caret"></span>
-          </button>
-          <div id="bravoDropdown" class="bravo-dropdown-content">
-            <a class="dropdown-item" style="cursor: pointer;" *ngFor="let linkCommand of listlinkCommandPopup"
-              (click)="openLinkCommand(linkCommand)">
-              {{linkCommand.Text}}
-            </a>
-          </div>
-        </div> -->
-
-        <!-- <button class="btn btn-success fa fa-file" type="button" style="margin-bottom:10px;"
-          (click)="showDocumentInNewTab(parentData?.BizDocId_PO)">
-          <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif"> Xem đơn hàng</span>
-        </button> -->
 
         <div class="form-row" style="border:1px solid #ddd;">
           <div id="cssmenu">
             <ul>
               <li class="active">
-                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">Quy trình</a>
+                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">Chi tiết</a>
               </li>
               <li>
-                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Giá trị</a>
-              </li>
-             
-              <li>
-                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">Kế hoạch chi tiết</a>
-              </li>
-              <li>
-                <a href="#tab6" data-toggle="tab" (click)="onTabClick(grid5)">Đính kèm</a>
+                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">NTP/NCC Khác</a>
               </li>
                <li>
-                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
+                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
                   Bước duyệt thanh toán
                 </a>
               </li>
               <li>
-                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
+                <a href="#tab4" data-toggle="tab" (click)="onTabClick(grid3)">
                   WorkFlow
                 </a>
               </li>
@@ -170,42 +140,6 @@
                   <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     <i class="fa fa-plus-square-o" style="font-size:12pt;color:#53697c" title="Mở form nhập liệu" (click)="showPopup2(cell.row,frmPopup2)"></i>
                   </template> -->
-                </wj-flex-grid>
-              </section>
-            </div>
-            <div class="tab-pane" id="tab5">
-              <section id="new">
-                <wj-flex-grid class="grid4" #grid4 style="height:280px;" [ngStyle]="setHeightGrid()"
-                [(itemsSource)]="data">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
-                   <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
-                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;"
-                      (click)=deleteSelectedRows(grid2)>
-                      <a class="fa fa-trash-o" style="color:red;"></a>
-                    </button>
-                  </template> -->
-                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    <i class="fa fa-plus-square-o" style="font-size:12pt;color:#53697c" title="Mở form nhập liệu" (click)="showPopup2(cell.row,frmPopup2)"></i>
-                  </template> -->
-                </wj-flex-grid>
-              </section>
-            </div>
-            <div class="tab-pane" id="tab6">
-              <section id="new">
-                <wj-flex-grid class="grid5" #grid5 style="height:280px;" [ngStyle]="setHeightGrid()"
-                [(itemsSource)]="data">
-                 
-                  <!-- <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    <i class="fa fa-plus-square-o" style="font-size:12pt;color:#53697c" title="Mở form nhập liệu" (click)="showPopup1(cell.row,frmPopup1)"></i>
-                  </template> -->
-                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
-                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;"
-                      (click)=deleteSelectedRows(grid5)>
-                      <a class="fa fa-trash-o" style="color:red;"></a>
-                    </button>
-                  </template>
                 </wj-flex-grid>
               </section>
             </div>

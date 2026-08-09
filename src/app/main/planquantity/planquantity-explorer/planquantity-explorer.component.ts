@@ -126,7 +126,7 @@ export class PlanQuantityExplorerComponent extends BaseExplorerComponent impleme
     return Math.round((num1 / num2) * 100).toString() + '%';
   }
 
-  private _groupBy = 'ProductName,TransType';
+  private _groupBy = 'ProductName';
   get groupBy(): string {
       return this._groupBy;
   }

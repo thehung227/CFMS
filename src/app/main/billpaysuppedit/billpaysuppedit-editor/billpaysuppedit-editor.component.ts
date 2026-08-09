@@ -16,6 +16,10 @@ import { LayoutPrinter } from "../billpaysuppedit-explorer/billpaysuppedit-print
 import { LayoutPrinterWordFlow } from "../../_printerlayout/workflow/workflowTT-printer.data";
 import { FormGroup } from "@angular/forms";
 import { SystemConstants } from "../../../core/common/system.constants";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { Global } from "../../../shared/global";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { Popup } from "wijmo/wijmo.input";
 
 @Component({
   selector: 'app-billpaysuppedit-editor-form',
@@ -30,6 +34,8 @@ export class BillPaySuppEditEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
+    @ViewChild('dataPopup') dataPopup: Popup;
+
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   @ViewChild('gridPrint') gridPrint: wjcGrid.FlexGrid;
@@ -90,13 +96,30 @@ export class BillPaySuppEditEditorComponent extends BaseEditorComponent implemen
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+     this.grid5.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+              if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+              let col = s.columns[e.col];
+              if (!col || col.binding != 'HrefLink') return;
+        
+              let url = (s.getCellData(e.row, e.col, false) || '').toString().trim();
+              if (url) {
+                e.cell.innerHTML = '<button type="button" class="btn btn-link" '
+                  + 'style="padding:0;color:#1565c0;text-decoration:underline;cursor:pointer;" '
+                  + 'onclick="event.stopPropagation();window.open(\'' + url.replace(/'/g, "\\'") + '\',\'_blank\')">'
+                  + 'Link</button>';
+              } else {
+                e.cell.innerHTML = '';
+              }
+            });
   }
 
   ngOnDestroy() {
     this.destroy();
   }
-
+  
+ output: any;
+  _err: boolean = false;
+  _errMess: any;
   onSubmit(formData: any) {
     let _numEror = 0;
     // for (let i in this.gridArray) {
@@ -152,6 +175,114 @@ export class BillPaySuppEditEditorComponent extends BaseEditorComponent implemen
     });
   }
 
+async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
+
+_errItemSets: boolean = false;
+dataPopupContent: any = null;
+async saveData(formData: any,state: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('BizDocId');
+    param1.ParameterValue = this.parentData['BizDocId'];
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('nUserId');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID);
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('ProductCostId');
+    param3.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
+    params.push(param3);
+
+
+
+    let _data: any = null;
+
+    try {
+      let paramXML = new ParameterContract();
+      paramXML.ParameterName = this.convertParameterName('B30BizDocContactInfo');
+      paramXML.ParameterValue = 'B30BizDocContactInfo';
+      params.push(paramXML);
+
+      let ds = Global.getDataSetContract(
+        {
+          name: 'B30BizDocContactInfo',
+          collection: Global.createColection(this.grid5.itemsSource)
+        }
+      )
+      let _data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CFMS_AutoCreateAccountDocument_Bill', params, ds)
+        .toPromise().then();
+
+      this.output = <Array<Object>>(_data['data']);
+
+      this._errItemSets = this.output['@_Error'];
+      this._errMess = this.output['@_ErrorMessage'];
+    }
+    catch (ex) {
+      console.log(ex);
+    }
+
+    if (this._errItemSets) {
+      alert(this._errMess)
+      this.showLoading = true;
+    }
+    else
+    {
+      // Lấy phần tử đầu tiên nếu output là mảng
+      // if (Array.isArray(output) && output.length > 0) {
+      //   this.dataPopupContent = output[0]; // 👈 lấy hóa đơn đầu tiên
+      // } else {
+      //   this.dataPopupContent = output || _data;
+      // }
+      this.dataPopupContent = this.output[0];
+
+      console.log('Data để show popup:', this.dataPopupContent);
+      if (this.dataPopup) {
+        this.dataPopup.show(true);
+        
+      }
+      // location.reload()
+      // console.log(this.parentData['Id'])
+      // this.indexPage_Editor.push(this.parentData['Id']);
+      // this.router.navigate(['main']).then(() => {
+      //   this.router.navigate(this.indexPage_Editor).then(() => {
+      //     if (this.indexPage_Editor.length > 3)
+      //     this.indexPage_Editor.pop();
+      //   })
+      // });
+    }
+  }
+
+  closePopup() {
+    this.dataPopup.hide();     // Ẩn popup
+    location.reload();         // Reload lại trang
+  }
+  
   exportHtmlWorkFlow(input: any, extInput?: string) {
     this.exportHtml_WorkFlow('WorkFlow_TT.docx', 'WorkFlow TP.NCC - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}', '/3.Mau_In/{VAR=Branch.Ma_Dvcs}/', input, extInput, 'DocCode');
   }

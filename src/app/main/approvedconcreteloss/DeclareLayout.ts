@@ -453,6 +453,14 @@ export class LayoutApprovedConcreteLossEditor implements IEditorFormulaDeclarati
             isReadOnly: 'true',
         },
         {
+            header: 'Khối lượng tính toán (m3) - trước dc',
+            binding: 'RequestQuantity',
+            dataType: 'Number',
+            width: 0,
+            format: 'n3',
+            isReadOnly: 'true'
+        },
+        {
             header: 'Khối lượng đặt hàng (m3)',
             binding: 'Quantity3',
             dataType: 'Number',

@@ -13,7 +13,7 @@
                         <i class="fa fa-times"></i>
                     </button> -->
                     <!-- [disabled]="!editorFrm.valid" -->
-          <button class="btn btn-success" type="submit" >Lưu</button>
+          <button class="btn btn-success" type="submit" *ngIf="parentData?.ApproveSend != true">Lưu</button>
           <a class="btn btn-default" (click)="closePopup()">Thoát</a>
         </div>
       </div>

@@ -4,7 +4,7 @@
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Kế hoạch mua hàng dự án</h3>
+        <h3 class="box-title" id="titleName">Kế hoạch mua hàng dự án - XD</h3>
         <div class="box-tools pull-right">
           <button class="btn btn-warning dropdown-toggle" title="In, kết xuất" type="button" data-toggle="dropdown"
           [disabled]="parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">
@@ -147,6 +147,7 @@
           </div>
           <div class="tab-content">
             <div class="tab-pane active" id="tab1">
+              <h4 style="color: red; font-weight: bold;">Lưu ý: Yêu cầu bấm tải dữ liệu trước khi nhập liệu !!!</h4>
               <section id="new">
                   <!-- [ngStyle]="setHeightGrid()" -->
                 <wj-flex-grid class="grid" #grid style="height:650px;" (contextmenu)="openRowContextMenu($event, grid)">

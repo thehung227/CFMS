@@ -17,6 +17,7 @@ import { UploadImage } from '../../input/UploadImage';
 import { CKEditorExtension, CKEDITOR } from '../../../core/extensions/ckeditor.extension';
 import { RichTextBoxInput } from '../../input/RichTextBoxInput';
 import { TextBoxInput } from '../../input/TextBoxInput';
+import { Global } from '../../../shared/global';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -170,10 +171,10 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
     this.form.get(this.input.key).setValue(this.wjNumber.value);
   }
 
- async onTextChanged(control: any, e : any) {
-  if (control instanceof LookupBoxInput) {
-    let tmp = this.wjAuto.text || '';
-   if (tmp == '') {
+  async onTextChanged(control: any, e: any) {
+    if (control instanceof LookupBoxInput) {
+      let tmp = this.wjAuto.text || '';
+      if (tmp == '') {
         control.lookupfilterCurrent = this.translate_expr(control.lookupfilter);
         await control.getLookupData('').then();
         if (this.wjAuto.itemsSource.items.length != control.options.items.length)
@@ -189,6 +190,8 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
         let date = this.wjDate.value;
         let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
         this.form.get(this.input.key).setValue(_value);
+      } else {
+        this.form.get(this.input.key).setValue(null);
       }
     }
   }
@@ -237,13 +240,6 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
     }
     catch (e) { }
 
-    if (this.input.styleLabel) {
-      let _element = document.getElementById(this.input.key).parentElement.firstElementChild;
-
-      if(_element && _element.tagName == 'LABEL') {
-        _element.setAttribute("style",this.input.styleLabel)
-      }
-    }
     if (this.input.isReadOnly) {
       let _element = document.getElementById(this.input.key);
       if (_element) {
@@ -274,7 +270,7 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
       else {
         if (this.input instanceof LookupBoxInput) {
           let _value = this.form.get(this.input.key).value;
-          if(val == null) this.form.get(this.input.key).setValue('');//Dương fix 05/11: delete lookup
+          if (val == null) this.form.get(this.input.key).setValue('');//Dương fix 05/11: delete lookup
           if (_value && this.input.options._idx == -1 && !this.flag) {
             if (this.input.lookupfilter.indexOf('{EXPR=') > 0)
               this.input.lookupfilterCurrent = '';
@@ -509,6 +505,22 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
     }
   }
 
+  // Xóa file đính kèm: FilePath về rỗng, không upload file mới. File cũ trên server API giữ nguyên (không xóa BE).
+  clearFile() {
+    if (this.input instanceof UploadInput) {
+      this.input.file = undefined;
+      this.input.fileName = '';
+      this.input.fileNameDownLoad = '';
+      try {
+        this.form.get(this.input.key).setValue('');
+      }
+      catch (e) {
+      }
+      if (this.fileInput && this.fileInput.nativeElement)
+        this.fileInput.nativeElement.value = '';
+    }
+  }
+
   imageChanged(event) {
     var reader = new FileReader()
     var imageField = document.getElementById("image-field");
@@ -545,7 +557,6 @@ export class DynamicFormEditorInputComponent implements OnDestroy {
   }
 
   init(control: InputBase<any>) {
-    
     if (control instanceof MultiSelectInput) {
       this.wjMultiSelect.inputElement.id = "alterInput" + control.key;
       this.wjMultiSelect.inputElement.outerHTML += '<input wj-part="input" type="text" class="wj-form-control" style="display:none;" readonly="">';

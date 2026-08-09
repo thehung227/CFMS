@@ -326,7 +326,7 @@ export class LayoutApprovedInternalDocumentEditor implements IEditorFormulaDecla
                     lookupKey: 'Employee',
                     hideValueMember: false,
                     col: 6,
-                    isDisabled: "{EXPR=PositionCode} != 'CB-098'",
+                    // isDisabled: "{EXPR=PositionCode} != 'CB-098'",
                     
                 }, this.srv, this.parentData),
                 new TextBoxInput({

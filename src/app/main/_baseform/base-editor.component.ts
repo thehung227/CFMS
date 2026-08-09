@@ -61,9 +61,7 @@ import { invalid } from 'moment';
 import { NULL_EXPR } from '@angular/compiler/src/output/output_ast';
 import { CryptoExtension } from '../../core/extensions/crypto.extension';
 import { CKEDITOR, CKEditorExtension } from '../../core/extensions/ckeditor.extension';
-import { remove } from 'daterangepicker';
 
-declare var $: any;
 // @Component({
 //   selector: 'base-editor-form',
 //   templateUrl: './base-editor-form.component.html',
@@ -256,8 +254,10 @@ export abstract class BaseEditorComponent implements OnDestroy {
       case 9:
         this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns9, 0);
         break;
+      case 10:
+        this.createColumnGroups(gridtmp, this._layoutDeclare.childColumns10, 0);
+        break;
     }
-
   }
 
   async init() {
@@ -302,6 +302,9 @@ export abstract class BaseEditorComponent implements OnDestroy {
           break;
         case 9:
           this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns9);
+          break;
+        case 10:
+          this.bindColumnGroups(this.gridArray[i], this._layoutDeclare.childColumns10);
           break;
       }
       this.gridArray[i].columnHeaders.rows[0].height = 42;
@@ -718,6 +721,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
   protected async cellValueChanged(index: string, column: string, e: wjcGrid.FormatItemEventArgs) {
     await this.dfpanel.onCellValueChanged(index, column, e);
+
     if (this.dataItem) {
       for (let i = 0; i < this.dataItem.length; i++) {
         let value: number = 0;
@@ -819,7 +823,6 @@ export abstract class BaseEditorComponent implements OnDestroy {
         let childs = this._layoutDeclare.layout.Structure.Child;
         for (let i = 0; i < childs.length; i++) {
           this.gridArray[i].itemsSource = new CollectionView(data[childs[i].Name]);
-          
           if (childs[i].frozenColumns)
             this.gridArray[i].frozenColumns = Number(childs[i].frozenColumns);
 
@@ -856,7 +859,6 @@ export abstract class BaseEditorComponent implements OnDestroy {
         for (let i = 0; i < childs.length; i++) {
           this.gridArray[i].itemsSource = new CollectionView();
           this.gridArray[i].itemsSource.trackChanges = true;
-
           if (childs[i].frozenColumns)
             this.gridArray[i].frozenColumns = Number(childs[i].frozenColumns);
 
@@ -936,7 +938,6 @@ export abstract class BaseEditorComponent implements OnDestroy {
       }
 
       for (let i in spliceColumns) {
-
         if (columnGroups.length == lenghtGroup)
           columnGroups.splice(spliceColumns[i], 1);
         else {
@@ -1160,53 +1161,53 @@ export abstract class BaseEditorComponent implements OnDestroy {
     // flex.pasted.addHandler(_pasted);
   }
 
-   async ButtonGridClick(grid: wjcGrid.FlexGrid, column: any) {
-      let host = grid.hostElement;
-      let self = this;
-      let key = grid.selectedItems[0]['Id'];
-      let data: any = grid.selectedItems[0];
-      let linkCommand = column['linkCommand'];
+  async ButtonGridClick(grid: wjcGrid.FlexGrid, column: any) {
+    let host = grid.hostElement;
+    let self = this;
+    let key = grid.selectedItems[0]['Id'];
+    let data: any = grid.selectedItems[0];
+    let linkCommand = column['linkCommand'];
 
-      if (key && linkCommand) {
-         let navigateUrl = [];
-         navigateUrl.push('#/main');
+    if (key && linkCommand) {
+      let navigateUrl = [];
+      navigateUrl.push('#/main');
 
-         let _dic = linkCommand['directory'];
+      let _dic = linkCommand['directory'];
 
-         if (_dic.indexOf('{EXPR=') > -1) {
+      if (_dic.indexOf('{EXPR=') > -1) {
 
-            _dic = Global.translate_expr_control(_dic, data, this.parentData);
-        console.log(eval(_dic))
-            if (eval(_dic) == '') {
-               alert('Không xác định được thông tin điều hướng. Vui lòng kiểm tra lại dữ liệu!');
-               return;
-            }
-            navigateUrl.push(eval(_dic));
-         }
-         else {
-            navigateUrl.push(linkCommand['directory']);
-         }
-         
-         if (linkCommand['command'] != undefined) {
-            let _cmd = linkCommand['command'];
+        _dic = Global.translate_expr_control(_dic, data, this.parentData);
 
-            if (_cmd.indexOf('{EXPR=') > -1) {
+        if (eval(_dic) == '') {
+          alert('Không xác định được thông tin điều hướng. Vui lòng kiểm tra lại dữ liệu!');
+          return;
+        }
+        navigateUrl.push(eval(_dic));
+      }
+      else {
+        navigateUrl.push(linkCommand['directory']);
+      }
 
-               _cmd = Global.translate_expr_control(_cmd, data, this.parentData);
+      if (linkCommand['command'] != undefined) {
+        let _cmd = linkCommand['command'];
 
-               try {
-                  if (eval(_cmd) != '')
-                     navigateUrl.push(eval(_cmd));
-               }
-               catch (e) {
+        if (_cmd.indexOf('{EXPR=') > -1) {
 
-               }
-            }
-            else
-               navigateUrl.push(linkCommand['command']);
-         }
-         else
-            navigateUrl.push(linkCommand['type']);
+          _cmd = Global.translate_expr_control(_cmd, data, this.parentData);
+
+          try {
+            if (eval(_cmd) != '')
+              navigateUrl.push(eval(_cmd));
+          }
+          catch (e) {
+
+          }
+        }
+        else
+          navigateUrl.push(linkCommand['command']);
+      }
+      else
+        navigateUrl.push(linkCommand['type']);
 
 
          if (linkCommand['type'] == 'view') {
@@ -1266,45 +1267,50 @@ export abstract class BaseEditorComponent implements OnDestroy {
     let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
 
     if (_col.dataType === 'Date') {
+      // isRequired=true: cột ngày bắt buộc -> control chặn clear (không cho về null).
+      // isRequired=false hoặc không khai báo: cho phép xóa giá trị về null.
+      let dateRequired = (_col.isRequired === true);
       if (column.format.includes('HH:mm:ss')) {
         input = new InputDateTime(editorRoot);
-        // input.mask = '99/99/9999';
+        input.isRequired = dateRequired;
         input.format = column.format;
         input.hostElement.style.width = '100%';
         input.isAnimated = true;
-        input.isRequired = _col.isRequired;
-        if(_col.isRequired)
-        {
-          let d = <InputDateTime>input;
+        input.timeStep = _col.timeStep || 15;
+        let d = <InputDateTime>input;
+        d.inputTime.isRequired = dateRequired;
 
-          d.valueChanged.addHandler(() => {
-            if (d.value != undefined && d.value != null) {
-              let date = d.value;
-              let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-              d.value = _value;
-            }
-          });
-        }
+        d.valueChanged.addHandler(() => {
+          if (d.value != undefined && d.value != null) {
+            let date = d.value;
+            let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            d.value = _value;
+          } else if (!dateRequired) {
+            // Xóa giá trị: ghi null xuống model ngay khi control clear (mirror form panel onDateChanged),
+            // không phụ thuộc timing commit của cellEditEnding.
+            flex.itemsSource.sourceCollection[e.row][column['binding']] = null;
+          }
+        });
 
       } else {
         input = new InputDate(editorRoot);
-        // input.mask = '99/99/9999';
+        input.isRequired = dateRequired;
         input.format = column.format;
-        input.isRequired = _col.isRequired;
         input.hostElement.style.width = '100%';
         input.isAnimated = true;
-        if(_col.isRequired)
-        {
-          let d = <InputDateTime>input;
+        let d = <InputDateTime>input;
 
-          d.valueChanged.addHandler(() => {
-            if (d.value != undefined && d.value != null) {
-              let date = d.value;
-              let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-              d.value = _value;
-            }
-          });
-        }
+        d.valueChanged.addHandler(() => {
+          if (d.value != undefined && d.value != null) {
+            let date = d.value;
+            let _value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            d.value = _value;
+          } else if (!dateRequired) {
+            // Xóa giá trị: ghi null xuống model ngay khi control clear (mirror form panel onDateChanged),
+            // không phụ thuộc timing commit của cellEditEnding.
+            flex.itemsSource.sourceCollection[e.row][column['binding']] = null;
+          }
+        });
       }
       if (_value != undefined)
         input.value = _value;
@@ -1689,7 +1695,6 @@ console.log(_col['folderId'])
     // cellEditEnding that updates cell with user's input
     let editEndingEH = (s, args) => {
       flex.cellEditEnding.removeHandler(editEndingEH);
-    
       if (!args.cancel) {
         args.cancel = true;
         let _c = flex.columns[args.col];
@@ -1713,14 +1718,13 @@ console.log(_col['folderId'])
               let des = _lookup.binding[source];
               flex.itemsSource.sourceCollection[args.row][des] = arrBind.join(',');
             }
-           
           }
           else { //Dương fix ngày 13.04
             if (input.text)
               _value = input.selectedValue;
             else
               _value = '';
- 
+
             if (_value != undefined) {
               flex.itemsSource.sourceCollection[args.row][column['binding']] = _value;
               for (const source in _lookup.binding) {
@@ -1732,7 +1736,6 @@ console.log(_col['folderId'])
               }
             }
           }
-           
           flex.itemsSource.refresh();
         } else if (_col.dataType == 'Object') {
                if (!_col['isButton']) {
@@ -1757,10 +1760,13 @@ console.log(_col['folderId'])
           }
                }
 
-        } 
-        else if (_col.dataType == 'Date')
-          flex.setCellData(args.row, args.col, input.value);
-        else if (input.value != undefined)
+        } else if (_col.dataType === 'Date' && input.value == null && _col.isRequired !== true) {
+          // Xóa ngày về null: Wijmo setCellData CHẶN null cho cột Date qua type-check
+          // (changeType(null,Date)=null, getType(null)=Object != Date => return false),
+          // nên ghi thẳng xuống sourceCollection giống nhánh Array/Object để giá trị null được giữ lại.
+          flex.itemsSource.sourceCollection[args.row][_c['binding']] = null;
+          flex.itemsSource.refresh();
+        } else if (input.value != undefined)
           flex.setCellData(args.row, args.col, input.value);
         // this.filesUpload.i
       }
@@ -1780,6 +1786,7 @@ console.log(_col['folderId'])
     if (level >= colHdrs.rows.length) {
       colHdrs.rows.splice(colHdrs.rows.length, 0, new wjcGrid.Row());
     }
+
     // loop through the groups adding columns or groups
     for (var i = 0; i < columnGroups.length; i++) {
       var group = columnGroups[i];
@@ -1800,6 +1807,14 @@ console.log(_col['folderId'])
               }
             }
           }
+        }
+
+        // Cột ngày: chuẩn hóa isRequired về boolean để việc xóa về NULL hoạt động đúng theo khai báo layout.
+        // - isRequired=true  -> col.isRequired=true  : Wijmo chặn commit null (cột bắt buộc, không cho clear).
+        // - isRequired=false / KHÔNG khai báo -> col.isRequired=false (boolean) : setCellData cho phép ghi null.
+        //   (Bắt buộc ép về boolean false vì nếu để undefined, type-check của Wijmo vẫn chặn null cho cột Date.)
+        if (group.dataType === 'Date') {
+          col.isRequired = (group.isRequired === true);
         }
 
         // add the new column to the grid, set the header
@@ -1867,11 +1882,11 @@ console.log(_col['folderId'])
 
       if (this.paramsRoute == 'split')
         this.id = -1
-        
+
       if (isApproveSend == true) {
         this.editorFrm.controls['ApproveSend'].setValue(true);
       }
-      
+
       if (this._layoutDeclare.serverUpdating)
         for (let command of this._layoutDeclare.serverUpdating) {
           if (formData.valid)
@@ -1917,9 +1932,9 @@ console.log(_col['folderId'])
       });
 
       let _ds = new DataSetContract();
-   
+
       let _tbParent = new TableContract(parentTableName);
-     
+
       if (formData && formData.value) {
 
         for (let key in formData.value) {
@@ -1939,6 +1954,7 @@ console.log(_col['folderId'])
         }
 
         let _defaultValues = this.id > -1 ? {} : this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+
         let _row = this.createRow(this.parentData, _defaultValues, formData.value, _tbParent.Columns);
 
         if (!this.id) {
@@ -2027,7 +2043,6 @@ console.log(_col['folderId'])
 
         _tbParent.Rows.push(_row);
 
-       
         if (this.id > -1) {
           let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedBy');
 
@@ -2063,18 +2078,20 @@ console.log(_col['folderId'])
         }
 
         let _tbChild = new TableContract(childs[i].Name);
-
-
         if (this.gridArray[i].columns) {
           for (let j = 0; j < this.gridArray[i].columns.length; j++) {
             let _colContract = new ColumnContract();
             _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+            // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
+            // nếu dòng đầu trống thì cột bị hiểu sai kiểu -> mất cả cột ngày khi lưu. Khai báo rõ để server không đoán.
+            if (this.gridArray[i].columns[j].dataType == wjcCore.DataType.Date)
+              _colContract.DataType = 'System.DateTime';
 
             _tbChild.Columns.push(_colContract);
           }
         }
         const _defaultValuesChild = childs[i].DefaultValues;
-      
+
         for (const key in _defaultValuesChild) {
           let _colContract = new ColumnContract();
           _colContract.ColumnName = key as string;
@@ -2140,7 +2157,7 @@ console.log(_col['folderId'])
           this.gridArray[i].itemsSource.itemsEdited.clear();
           this.gridArray[i].itemsSource.itemsRemoved.clear();
         }
-       
+
         if (this.paramsRoute == 'split') {
           this.gridArray[i].itemsSource.itemsAdded.clear();
 
@@ -2151,7 +2168,7 @@ console.log(_col['folderId'])
           }
 
           let splitLst = childs[i].ResetWhenSplit.split(',')
-          
+
           for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
             for (let _col in splitLst) {
               if (splitLst[_col] == 'Id')
@@ -2160,7 +2177,7 @@ console.log(_col['folderId'])
                 this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = ''
             }
           }
-          
+
           for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
             for (let _col in splitLst) {
               if (splitLst[_col] == 'Id')
@@ -2169,12 +2186,12 @@ console.log(_col['folderId'])
                 this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = ''
             }
           }
-          
+
           this.gridArray[i].itemsSource.itemsEdited.clear();
           this.gridArray[i].itemsSource.itemsRemoved.clear();
         }
 
-      
+
         if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsAdded.length > 0) {
           for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsAdded.length; _n++) {
             let added = this.gridArray[i].itemsSource.itemsAdded[_n];
@@ -2237,6 +2254,7 @@ console.log(_col['folderId'])
         Layout: this._layoutDeclare.layout.Structure,
         EditorData: _ds
       }).toPromise();
+
       if (data instanceof Object) {
       }
       else {
@@ -2247,47 +2265,38 @@ console.log(_col['folderId'])
         }
       }
       //2201: xử lý view thành table
-  
-
       try {
-       
         if (this.id == -1 || this.id == undefined) {
-         
           let _tbName = this._layoutDeclare.layout.Structure.Parent.Name;
           if (_tbName.startsWith('v')) {
-           
             if (_tbName.indexOf('_') > - 1)
               _tbName = _tbName.substr(1, _tbName.indexOf('_') - 1);
             else
               _tbName = _tbName.substr(1, _tbName.length);
           }
- 
+
           let _parent = data[_tbName][0];
 
           for (let key in _parent) {
             this.parentData[key] = _parent[key];
           }
-      
+
           this.dfpanel.updateValueForm(_parent);
         }
 
-      
+
         try {
           for (let grid of this.gridArray) {
             for (let row of grid.itemsSource.sourceCollection) {
-           
               if (row['Data'] != undefined) {
-              
                 this.filesUpload.push(row['Data']);
-                console.log(row['Data']);
               }
             }
           }
         }
         catch (e) { }
-  
+
         this.upLoadFiles().then(async (result) => {
-       
           // this.showLoading = true;
           // console.log(result);
           if (result) {
@@ -2318,7 +2327,6 @@ console.log(_col['folderId'])
                 }
               }
             }
-
 
             const params = new Array<ParameterContract>();
             const param1 = new ParameterContract();
@@ -2359,7 +2367,7 @@ console.log(_col['folderId'])
             if (isApproveSend == false || isApproveSend == undefined || isApproveSend == null) {
               navigateUrl.push(this.parentData['Id']);
             }
-  
+
             if (this._layoutDeclare.serverUpdated != undefined && this._layoutDeclare.serverUpdated.length > 0) {
               for (let i = 0; i < this._layoutDeclare.serverUpdated.length; i++) {
                 await this.dfpanel.runConstraint(this._layoutDeclare.serverUpdated[i]).then(() => {
@@ -2412,8 +2420,442 @@ console.log(_col['folderId'])
     }
   }
 
+  protected async submitNoUpdated(formData: FormGroup, navigateUrl: any[], isApproveSend?: boolean, func?: Promise<void>) {
+    try {
+      this.showLoading = true;
+      if (this.paramsRoute == 'copy')
+        this.id = -1
 
-  
+      if (this.paramsRoute == 'split')
+        this.id = -1
+
+      if (isApproveSend == true) {
+        this.editorFrm.controls['ApproveSend'].setValue(true);
+      }
+
+      // if (this._layoutDeclare.serverUpdating)
+      //   for (let command of this._layoutDeclare.serverUpdating) {
+      //     if (formData.valid)
+      //       await this.dfpanel.runConstraint(command).then();// => console.log(command + '- success'));
+      //   }
+
+      // if (formData.invalid) {
+      //   this.allowSendMail = false;
+      //   this.showLoading = false;
+      //   return false;
+      // }
+
+      //////////////////////////////////////////////////////////
+      if (!this._layoutDeclare.layout) {
+        alert('Declare layout data');
+        return;
+      }
+
+      let parentTableName = this._layoutDeclare.layout.Structure.Parent.Name;
+      if (!parentTableName) {
+        alert('Parent Table Name is not declare');
+        return;
+      }
+      this.IsSubmit = true;
+      this._layoutDeclare.panels.forEach(panel => {
+        panel.controls.forEach(control => {
+          if (control instanceof UploadInput) {
+            if (control.file)
+              this.filesUpload.push(control.file);
+          }
+        })
+      });
+
+      this._layoutDeclare.panels.forEach(panel => {
+        panel.controls.forEach(control => {
+          if (control instanceof UploadImage) {
+            if (control.file)
+              this.imageUpload.push(control.file);
+          }
+        })
+      });
+
+      let _ds = new DataSetContract();
+
+      let _tbParent = new TableContract(parentTableName);
+
+      if (formData && formData.value) {
+
+        for (let key in formData.value) {
+          const _colContract = new ColumnContract();
+          _colContract.ColumnName = key;
+
+          _tbParent.Columns.push(_colContract);
+        }
+
+        for (let key in this.parentData) {
+          if (!formData.contains(key)) {
+            const _colContract = new ColumnContract();
+            _colContract.ColumnName = key;
+
+            _tbParent.Columns.push(_colContract);
+          }
+        }
+
+        let _defaultValues = this.id > -1 ? {} : this._layoutDeclare.layout.Structure.Parent.DefaultValues;
+
+        let _row = this.createRow(this.parentData, _defaultValues, formData.value, _tbParent.Columns);
+
+        if (!this.id) {
+          _row.RowState = DataRowState.Added;
+        } else {
+          if (this.id > -1) {
+            _row.RowState = DataRowState.Modified;
+          }
+          else {
+            _row.RowState = DataRowState.Added;
+          }
+        }
+
+        if (this.paramsRoute == 'copy') {
+
+          let newAsCopyLstParent = this._layoutDeclare.layout.Structure.Parent.ResetNewAsCopy.split(',');
+          for (let _col in newAsCopyLstParent) {
+            let _coltmp;
+            if (newAsCopyLstParent[_col] == 'Id' || newAsCopyLstParent[_col] == 'CreatedBy' || newAsCopyLstParent[_col] == 'ModifiedBy') {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col]);
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+            }
+            else {
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == newAsCopyLstParent[_col]);
+              if (this.editorFrm.controls[_coltmp.ColumnName] != undefined) {
+
+                if (this.editorFrm.controls[_coltmp.ColumnName] instanceof NumberBoxInput)
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = 0;
+                else
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+              else {
+                _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+            }
+          }
+        }
+
+        if (this.paramsRoute == 'split') {
+
+          let splitLstParent = this._layoutDeclare.layout.Structure.Parent.ResetWhenSplit.split(',')
+
+          if (this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit) {
+            let copyValueWhenSplit = this._layoutDeclare.layout.Structure.Parent.CopyWhenSplit;
+
+            for (let _w in copyValueWhenSplit) {
+              let colFrom = copyValueWhenSplit[_w].FromColumn;
+              let colTo = copyValueWhenSplit[_w].ToColumn;
+
+
+              let _coltmp = _tbParent.Columns.find(col => col.ColumnName == colFrom);
+              let _coltmp2 = _tbParent.Columns.find(col => col.ColumnName == colTo);
+
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp2)] = _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)];
+            }
+          }
+
+          for (let _col in splitLstParent) {
+            let _coltmp;
+            if (splitLstParent[_col] == 'Id') {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col]);
+              _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = -1;
+            }
+            else {
+
+              _coltmp = _tbParent.Columns.find(col => col.ColumnName == splitLstParent[_col])
+
+              //_row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+
+              if (this.editorFrm.controls[_coltmp.ColumnName] != undefined) {
+
+                if (this.editorFrm.controls[_coltmp.ColumnName] instanceof NumberBoxInput)
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = 0;
+                else
+                  _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+              else {
+                _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = '';
+              }
+            }
+          }
+
+        }
+
+        _tbParent.Rows.push(_row);
+
+        if (this.id > -1) {
+          let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+          _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+          let today = new Date();
+          let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = date;
+
+        }
+        else {
+          let _coltmp = _tbParent.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+          _row.CurrentItems[_tbParent.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+          _ds.Tables.push(_tbParent);
+        }
+      }
+
+      // if (this._layoutDeclare.layout.Structure.Child != undefined) {
+      let childs = this._layoutDeclare.layout.Structure.Child;
+      for (let i = 0; i < childs.length; i++) {
+        if (!childs[i].Name || !childs[i].ParentKey || !childs[i].ChildKey) {
+          continue;
+        }
+
+        let _tbChild = new TableContract(childs[i].Name);
+        if (this.gridArray[i].columns) {
+          for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+            // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
+            // nếu dòng đầu trống thì cột bị hiểu sai kiểu -> mất cả cột ngày khi lưu. Khai báo rõ để server không đoán.
+            if (this.gridArray[i].columns[j].dataType == wjcCore.DataType.Date)
+              _colContract.DataType = 'System.DateTime';
+
+            _tbChild.Columns.push(_colContract);
+          }
+        }
+        const _defaultValuesChild = childs[i].DefaultValues;
+
+        for (const key in _defaultValuesChild) {
+          let _colContract = new ColumnContract();
+          _colContract.ColumnName = key as string;
+          let _coltmp = _tbChild.Columns.find(col => col.ColumnName == key);
+          if (_coltmp == undefined)
+            _tbChild.Columns.push(_colContract);
+        }
+
+        if (this.gridArray[i]) {
+          for (let j in this.gridArray[i].itemsSource.itemsRemoved[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+          for (let j in this.gridArray[i].itemsSource.itemsEdited[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+          for (let j in this.gridArray[i].itemsSource.itemsAdded[0]) {
+            let _colContract = new ColumnContract();
+            _colContract.ColumnName = j as string;
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == j);
+            if (_coltmp == undefined)
+              _tbChild.Columns.push(_colContract);
+          }
+
+        }
+
+        if (this.paramsRoute == 'copy' && childs[i].ResetNewAsCopy != undefined) {
+          this.gridArray[i].itemsSource.itemsAdded.clear();
+
+          if (this.gridArray[i].itemsSource.items.length > 0) {
+            for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+              this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+            }
+          }
+
+          let newAsCopyLst = childs[i].ResetNewAsCopy.split(',')
+
+          for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+            for (let _col in newAsCopyLst) {
+              if (newAsCopyLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.itemsAdded[_k][newAsCopyLst[_col]] = ''
+            }
+          }
+
+          for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+            for (let _col in newAsCopyLst) {
+              if (newAsCopyLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.items[__k][newAsCopyLst[_col]] = ''
+            }
+          }
+
+          this.gridArray[i].itemsSource.itemsEdited.clear();
+          this.gridArray[i].itemsSource.itemsRemoved.clear();
+        }
+
+        if (this.paramsRoute == 'split') {
+          this.gridArray[i].itemsSource.itemsAdded.clear();
+
+          if (this.gridArray[i].itemsSource.items.length > 0) {
+            for (let k = 0; k < this.gridArray[i].itemsSource.items.length; k++) {
+              this.gridArray[i].itemsSource.itemsAdded.push(this.gridArray[i].itemsSource.items[k]);
+            }
+          }
+
+          let splitLst = childs[i].ResetWhenSplit.split(',')
+
+          for (let _k = 0; _k < this.gridArray[i].itemsSource.itemsAdded.length; _k++) {
+            for (let _col in splitLst) {
+              if (splitLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.itemsAdded[_k][splitLst[_col]] = ''
+            }
+          }
+
+          for (let __k = 0; __k < this.gridArray[i].itemsSource.items.length; __k++) {
+            for (let _col in splitLst) {
+              if (splitLst[_col] == 'Id')
+                this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = -1;
+              else
+                this.gridArray[i].itemsSource.items[__k][splitLst[_col]] = ''
+            }
+          }
+
+          this.gridArray[i].itemsSource.itemsEdited.clear();
+          this.gridArray[i].itemsSource.itemsRemoved.clear();
+        }
+
+
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsAdded.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsAdded.length; _n++) {
+            let added = this.gridArray[i].itemsSource.itemsAdded[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, added, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Added;
+
+            _tbChild.Rows.push(_row);
+          }
+        }
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsEdited.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsEdited.length; _n++) {
+            let edited = this.gridArray[i].itemsSource.itemsEdited[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, edited, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Modified;
+            _tbChild.Rows.push(_row);
+          }
+        }
+        if (this.gridArray[i].itemsSource && this.gridArray[i].itemsSource.itemsRemoved.length > 0) {
+          for (let _n = 0; _n < this.gridArray[i].itemsSource.itemsRemoved.length; _n++) {
+            let removed = this.gridArray[i].itemsSource.itemsRemoved[_n];
+            let _row = this.createRow(this.gridArray[i].itemsSource['defaultRow'], _defaultValuesChild, removed, _tbChild.Columns, _tbParent.Rows[0], _tbParent.Columns, this.gridArray[i])
+            _row.RowState = DataRowState.Deleted;
+            _tbChild.Rows.push(_row);
+          }
+        }
+
+        for (const row of _tbChild.Rows) {
+          if (this.id > -1) {
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedBy');
+
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+
+            _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'ModifiedAt');
+
+            let today = new Date();
+            let date = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = date;
+
+          }
+          else {
+            let _coltmp = _tbChild.Columns.find(col => col.ColumnName == 'CreatedBy');
+
+            row.CurrentItems[_tbChild.Columns.indexOf(_coltmp)] = Number(localStorage.getItem(SystemConstants.CURRENT_USERID));
+          }
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName == _tbParent.TableName)) {
+          _ds.Tables.push(_tbParent);
+        }
+
+        if (!_ds.Tables.find(tb => tb.TableName === _tbChild.TableName)) {
+          _ds.Tables.push(_tbChild);
+        }
+      }
+      // }
+      let data = await this._service.post({
+        Layout: this._layoutDeclare.layout.Structure,
+        EditorData: _ds
+      }).toPromise();
+
+      if (data instanceof Object) {
+      }
+      else {
+        if (data != 'Deleted row information cannot be accessed through the row.') {
+          alert(data);
+          this.isLoading = false;
+          return;
+        }
+      }
+      //2201: xử lý view thành table
+      try {
+        if (this.id == -1 || this.id == undefined) {
+          let _tbName = this._layoutDeclare.layout.Structure.Parent.Name;
+          if (_tbName.startsWith('v')) {
+            if (_tbName.indexOf('_') > - 1)
+              _tbName = _tbName.substr(1, _tbName.indexOf('_') - 1);
+            else
+              _tbName = _tbName.substr(1, _tbName.length);
+          }
+
+          let _parent = data[_tbName][0];
+
+          for (let key in _parent) {
+            this.parentData[key] = _parent[key];
+          }
+
+          this.dfpanel.updateValueForm(_parent);
+        }
+
+
+        try {
+          for (let grid of this.gridArray) {
+            for (let row of grid.itemsSource.sourceCollection) {
+              if (row['Data'] != undefined) {
+                this.filesUpload.push(row['Data']);
+              }
+            }
+          }
+        }
+        catch (e) { }
+
+        this.upLoadFiles().then(async (result) => {
+          this.showLoading = false;
+          // console.log(result);
+        });
+      }
+      catch (ex) {
+        alert("Xảy ra lỗi trong quá trình thực hiện");
+        console.log('Submit error. ' + ex);
+        this.router.navigate(['main']).then(() => {
+          this.router.navigate(navigateUrl).then(() => {
+            if (navigateUrl.length > 3)
+              navigateUrl.pop();
+          })
+        });
+      }
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện.");
+      this.showLoading = false;
+      console.log(ex);
+    }
+  }
+
   protected async submitXML(formData: FormGroup, navigateUrl: any[], isApproveSend?: boolean, func?: Promise<void>) {
     console.log('submitXML');
     if (this.paramsRoute == 'copy')
@@ -2596,6 +3038,10 @@ console.log(_col['folderId'])
         for (let j = 0; j < this.gridArray[i].columns.length; j++) {
           let _colContract = new ColumnContract();
           _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+          // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
+          // nếu dòng đầu trống thì cột bị hiểu sai kiểu -> mất cả cột ngày khi lưu. Khai báo rõ để server không đoán.
+          if (this.gridArray[i].columns[j].dataType == wjcCore.DataType.Date)
+            _colContract.DataType = 'System.DateTime';
 
           _tbChild.Columns.push(_colContract);
         }
@@ -2821,7 +3267,7 @@ console.log(_col['folderId'])
 
       this.upLoadFiles().then(async (result) => {
         // this.showLoading = true;
-   
+        console.log(result);
         if (result) {
           let IsAttachParentFail = false;
           let ListIdDetail = Array<string>();
@@ -3054,6 +3500,10 @@ console.log(_col['folderId'])
         for (let j = 0; j < this.gridArray[i].columns.length; j++) {
           let _colContract = new ColumnContract();
           _colContract.ColumnName = this.gridArray[i].columns[j].binding;
+          // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
+          // nếu dòng đầu trống thì cột bị hiểu sai kiểu -> mất cả cột ngày khi lưu. Khai báo rõ để server không đoán.
+          if (this.gridArray[i].columns[j].dataType == wjcCore.DataType.Date)
+            _colContract.DataType = 'System.DateTime';
 
           _tbChild.Columns.push(_colContract);
         }
@@ -3198,33 +3648,36 @@ console.log(_col['folderId'])
   }
 
   createRow(schemaRow: any, defaultRow: any, valueRow: any, columns: any, parentRow?: RowContract, parentColumns?: ColumnContract[], flex?: wjcGrid.FlexGrid): RowContract {
+    // this.parentData, _defaultValues, formData.value, _tbParent.Columns
 
     let _row = new RowContract();
 
     _row.CurrentItems = new Array<any>();
 
     for (let _nCol = 0; _nCol < columns.length; _nCol++) {
+
       let value = schemaRow[columns[_nCol].ColumnName];
 
       let value2 = defaultRow ? defaultRow[columns[_nCol].ColumnName] : undefined;
+
       if (parentRow && parentColumns)
         value2 = this.updateFromParent(value2, parentRow, parentColumns);
 
       let value3 = valueRow[columns[_nCol].ColumnName];
+
       if (value2 != undefined && value2 != null) {
         value = value2;
       }
+
       if (value3 != undefined && value3 != null) {
         value = value3;
       }
-      
+
       if ((value instanceof Date) || (value2 instanceof Date) || (value3 instanceof Date)) {
         if (value2 !== undefined) value = value2;
-        if (value3 !== undefined) {
-          value = value3;
-        };
+        if (value3 !== undefined) value = value3;
       }
-      
+
       if (columns[_nCol].ColumnName == 'BuiltinOrder' && flex != undefined && flex != null) {
         let index = flex.itemsSource._view.indexOf(valueRow);
         value = index + 1;
@@ -3261,29 +3714,26 @@ console.log(_col['folderId'])
         }
         value = arr.join(',');
       }
+
       if (value instanceof Date) {
         if (value <= (new Date(1900, 1, 1)))
           value = null;
         else {
           var date = value;
           value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+          // value = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
         }
       }
+
       _row.CurrentItems.push(value);
     }
 
     return _row;
   }
-  
-  
+
   upLoadFiles() {
-    // if (!this.editorFrm.controls['IdApprove'])
-   
     if (this.filesUpload.length > 0) {
-      if (!this.parentData['IdApprove'])
-        return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['Id']).toPromise();
-      else
-        return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['IdApprove']).toPromise();
+      return this._service.upLoad(this.filesUpload, this.editorFrm.controls['ProductCostId'].value.toString() + '\\' + this.folderName, this.parentData['Id']).toPromise();
     }
     else if (this.imageUpload.length > 0) {
       return this._service.upLoadImage(this.imageUpload, this.zCommandKey).toPromise();
@@ -3439,6 +3889,7 @@ console.log(_col['folderId'])
   onclickCollapsablePanel(gridtmp: wjcGrid.FlexGrid[]) {
     if (this.isVisiblePanel) {
       this.isVisiblePanel = false;
+
       for (let i in gridtmp) {
         gridtmp[i].columns.clear();
         switch (this.gridArray.indexOf(gridtmp[i])) {
@@ -3471,6 +3922,9 @@ console.log(_col['folderId'])
             break;
           case 9:
             this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns9, 0);
+            break;
+          case 10:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns10, 0);
             break;
         }
       }
@@ -3509,6 +3963,9 @@ console.log(_col['folderId'])
             break;
           case 9:
             this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns9, 0);
+            break;
+          case 10:
+            this.createColumnGroups(gridtmp[i], this._layoutDeclare.childColumns10, 0);
             break;
         }
       }
@@ -3552,11 +4009,9 @@ console.log(_col['folderId'])
   private translate_expr(expr) {
     if (!expr) { return expr; }
     let _result = expr;
- 
     let controls: string[] = [];
     for (const control in this.editorFrm.controls) {
       controls.push(control);
-      
     }
     for (const control in this.parentData) {
       if (!this.editorFrm.contains(control)) {
@@ -3567,14 +4022,14 @@ console.log(_col['folderId'])
 
     for (const control of controls) {
       let patern = '{EXPR=' + control + '}';
-      
+
       if (_result.indexOf(patern) > -1) {
-      
         let value
         if (this.editorFrm.contains(control))
           value = this.editorFrm[control].value;
         else
           value = this.parentData[control];
+
         do {
           _result = _result.replace(patern, value);
         }
@@ -3646,11 +4101,12 @@ console.log(_col['folderId'])
             //   _v = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
             //   row[col.binding] = _v;
             // }
-            if (col.dataType == wjcCore.DataType.Date && _v) {
-              var a = /^#(\d{2})\/(\d{2})\/(\d{4})$/.exec(_v);
-              if (a != null && a != undefined)
-                _v = new Date(Date.UTC(+a[3], + a[2] - 1, +a[1]));
-              row[col.binding] = _v;
+            if (col.dataType == wjcCore.DataType.Date) {
+              // Cột Date: đọc bền vững -> luôn ra Date hợp lệ hoặc null (DB cho phép NULL).
+              // Wijmo suy luận kiểu cột importGrid theo Ô ĐẦU TIÊN; nếu ô đầu trống, cột bị gán sai kiểu
+              // và các ô ngày bên dưới có thể trả về số serial Excel / chuỗi -> parser strict cũ biến thành null,
+              // gây mất cả cột. importCellToDate xử lý mọi dạng (Date / số serial / '#dd/MM/yyyy').
+              row[col.binding] = this.importCellToDate(_v);
             }
             else {
               row[col.binding] = _v
@@ -3750,6 +4206,22 @@ console.log(_col['folderId'])
     }
     gridtmp.itemsSource.refresh();
 
+  }
+
+  // Đọc giá trị ô ngày khi import về Date (UTC midnight) hoặc null, không phụ thuộc kiểu cột mà Wijmo suy luận.
+  // Xử lý cả 3 dạng có thể xảy ra: Date object, số serial Excel, và chuỗi theo quy định '#dd/MM/yyyy'.
+  importCellToDate(v: any): Date {
+    if (v == null || v === '') return null;
+    if (v instanceof Date)
+      return isNaN(v.getTime()) ? null : new Date(Date.UTC(v.getFullYear(), v.getMonth(), v.getDate()));
+    // Số serial Excel (số ngày kể từ 1899-12-30) - xảy ra khi Wijmo gán sai kiểu cột do ô đầu tiên trống.
+    if (typeof v === 'number' && !isNaN(v)) {
+      let d = new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 86400000);
+      return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    }
+    // Chuỗi theo quy định '#dd/MM/yyyy' (chấp nhận thiếu '#' / khoảng trắng để bền hơn, vẫn hiểu dd/MM/yyyy).
+    let a = /^#?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})\s*$/.exec('' + v);
+    return a ? new Date(Date.UTC(+a[3], +a[2] - 1, +a[1])) : null;
   }
 
   //boom của Khoa, chạy evalutator khi truyền tham số sang Editor
@@ -4001,7 +4473,6 @@ console.log(_col['folderId'])
       if (_html.toString().indexOf('______________________________') > -1) {
         _html = _html.replace(/______________________________/gi, this.outputPrint['@_Comment']);
       }
-
 
       _html += '</body></html>'
 
@@ -4298,6 +4769,7 @@ console.log(_col['folderId'])
 
   ///SEND MAIL EDITOR
 
+  protected completedApprove: any;
   async sendMail(data: any, docCode?: string, id?: number, isAttachFiles: boolean = false, _state?: any) {
     this.subscription = new Subscription();
 
@@ -4349,9 +4821,8 @@ console.log(_col['folderId'])
       .toPromise().then();
 
     let _commnetHtml = _data['output']['@_Comment'];
-    
     let _configMail = _data['data'];
-   
+
     if (_configMail[0]['EmailTo'] != undefined) {
       if (_configMail.length > 0) {
         this.SendMailObject.from = _configMail[0]['EmailAddress'];
@@ -4369,23 +4840,19 @@ console.log(_col['folderId'])
         this.SendMailObject.smtpOptions.password = _configMail[0]['usc'];
         this.SendMailObject.smtpOptions.requiresAuthentication = _configMail[0]['IsRequiresAuthen'];
         this.SendMailObject.mailToken = localStorage.getItem(SystemConstants.MAIL_TOKEN).replace(/"/gi, '');
-        
+
         if (isAttachFiles) {
           let file = { source: '', des: '' };
-         
           file.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + data.controls['DocNo'].value.replace(/\//gi, '-') + '.pdf';
-         
           file.source = _configMail[0]['TemplatePath'];
-       
           this.SendMailObject.files.push(file);
-         
+
           if (_configMail[0]['NumOfAttachFile'])
             for (let index = 0; index < Number(_configMail[0]['NumOfAttachFile']); index++) {
               let file1 = { source: '', des: '' };
               if (_configMail[0]['AttachFile' + index] !== '' && _configMail[0]['AttachFile' + index] !== undefined) {
                 file1.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + _configMail[0]['AttachFile' + index];
                 file1.source = '';
-                
                 this.SendMailObject.files.push(file1);
               }
             }
@@ -4766,7 +5233,6 @@ console.log(_col['folderId'])
     if (isAttachFiles) {
 
       let file = { source: '', des: '' };
-      
       file.des = data.controls['ProductCostId'].value + '/' + this.folderNameSendMail + '/' + id + '/' + data.controls['DocNo'].value.replace(/\//gi, '-') + '.pdf';
       file.source = templatePath;
 
@@ -5068,7 +5534,6 @@ console.log(_col['folderId'])
     let self = this;
 
     host.addEventListener('dblclick', () => {
-
       var sel = flex.selection;
 
       let _content = flex.getCellData(sel.row, sel.col, true);
@@ -5096,11 +5561,19 @@ console.log(_col['folderId'])
     this.linkCommandGrid.autoGenerateColumns = false;
     this.bindColumnGroups(this.linkCommandGrid, data.grid);
 
-
     await this.loadDataLinkCommand(data);
+    if (!wjcCore.isNullOrWhiteSpace(data.GroupBy))
+      this.createAggregateGroupBy(data.GroupBy, this.linkCommandGrid.itemsSource);
     this.orderSelect = 0;
   }
 
+  createAggregateGroupBy(groupBy: string, data: wjcCore.CollectionView) {
+    data.groupDescriptions.clear();
+    var groups = groupBy ? groupBy.split(',') : [];
+    for (var i = 0; i < groups.length; i++) {
+      data.groupDescriptions.push(new wjcCore.PropertyGroupDescription(groups[i]));
+    }
+  }
 
   async loadDataLinkCommand(info: any) {
 
@@ -5110,6 +5583,7 @@ console.log(_col['folderId'])
       this.parentData[control] = this.editorFrm.get(control).value;
 
     const params = this.dfpanel.fn_build_paramater(keys, this.parentData);
+
     let data = await this._service.getData(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, info.Command, params).toPromise();
 
     this.linkCommandGrid.itemsSource = new wjcCore.CollectionView(data);
@@ -5138,20 +5612,20 @@ console.log(_col['folderId'])
 
     params.push(paramXMLPopup);
 
-    if (dataLinkCommand.SendData.ParameterXmlName1) {
-      let paramXML1 = new ParameterContract();
-      paramXML1.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName1);
-      paramXML1.ParameterValue = dataLinkCommand.SendData.ParameterXmlName1;
-      params.push(paramXML1);
-    }
+    // if (dataLinkCommand.SendData.ParameterXmlName1) {
+    //   let paramXML1 = new ParameterContract();
+    //   paramXML1.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName1);
+    //   paramXML1.ParameterValue = dataLinkCommand.SendData.ParameterXmlName1;
+    //   params.push(paramXML1);
+    // }
 
-    if (dataLinkCommand.SendDataParameterXmlName2) {
-      let paramXML2 = new ParameterContract();
-      paramXML2.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName2);
-      paramXML2.ParameterValue = dataLinkCommand.SendDataParameterXmlName2;
-      params.push(paramXML2);
+    // if (dataLinkCommand.SendDataParameterXmlName2) {
+    //   let paramXML2 = new ParameterContract();
+    //   paramXML2.ParameterName = this.convertParameterName(dataLinkCommand.SendData.ParameterXmlName2);
+    //   paramXML2.ParameterValue = dataLinkCommand.SendDataParameterXmlName2;
+    //   params.push(paramXML2);
 
-    }
+    // }
 
     let XMLObjectPopup = {
       name: dataLinkCommand.SendData.ParameterXmlPopup,
@@ -5159,40 +5633,42 @@ console.log(_col['folderId'])
     }
 
     let ds;
-    let XMLObject1;
-    let XMLObject2;
+    // let XMLObject1;
+    // let XMLObject2;
 
     ds = Global.getDataSetContract(XMLObjectPopup);
 
-    if (dataLinkCommand.SendData.ParameterXmlName1) {
-      XMLObject1 = {
-        name: dataLinkCommand.SendData.ParameterXmlName1,
-        collection: this.gridArray[dataLinkCommand.SendData.TableXml1].itemsSource.items
-      }
+    // if (dataLinkCommand.SendData.ParameterXmlName1) {
+    //   XMLObject1 = {
+    //     name: dataLinkCommand.SendData.ParameterXmlName1,
+    //     collection: this.gridArray[dataLinkCommand.SendData.TableXml1].itemsSource.items
+    //   }
 
-      ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1);
-    }
+    //   ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1);
+    // }
 
-    if (dataLinkCommand.SendData.ParameterXmlName2) {
-      XMLObject2 = {
-        name: dataLinkCommand.SendData.ParameterXmlName2,
-        collection: this.gridArray[dataLinkCommand.SendData.TableXml2].itemsSource.items
-      }
-      ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1, XMLObject2);
-    }
+    // if (dataLinkCommand.SendData.ParameterXmlName2) {
+    //   XMLObject2 = {
+    //     name: dataLinkCommand.SendData.ParameterXmlName2,
+    //     collection: this.gridArray[dataLinkCommand.SendData.TableXml2].itemsSource.items
+    //   }
+    //   ds = Global.getDataSetContract(XMLObjectPopup, XMLObject1, XMLObject2);
+    // }
 
     let data = await this._service.postXML(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, dataLinkCommand.SendData.Command, params, ds).toPromise().then();
 
     if (data['data'][0].length > 0) {
       let ds: CollectionView = gridtmp.itemsSource;
 
-      var selected = [];
-      for (let i = 0; i < gridtmp.rows.length; i++) {
-        selected.push(gridtmp.rows[i].dataItem);
-      }
+      if (dataLinkCommand.SendData.OverWriteOldData || dataLinkCommand.SendData.OverWriteOldData == undefined) {
+        var selected = [];
+        for (let i = 0; i < gridtmp.rows.length; i++) {
+          selected.push(gridtmp.rows[i].dataItem); // <--> gridtmp.itemsSource.items[i]
+        }
 
-      for (let i = 0; i < selected.length; i++) {
-        ds.remove(selected[i]);
+        for (let i = 0; i < selected.length; i++) {
+          ds.remove(selected[i]);
+        }
       }
 
       for (let row of data['data'][0]) {
@@ -5214,6 +5690,21 @@ console.log(_col['folderId'])
 
     gridtmp.itemsSource.refresh();
 
+    //QUYDV: xử lý thêm trả ra Output từ Procedure 10/12/2021
+    let cols = '';
+    if (dataLinkCommand.SendData.DataMember) {
+      cols = dataLinkCommand.SendData.DataMember.split(',');
+      for (const col of cols) {
+        if (data['output']) {
+          this.parentData[col] = data['output']['@_' + col];
+          // if (this.editorFrm.controls[col] instanceof DateBoxInput)
+          //    this.editorFrm.controls[col].setValue((new Date(data['output']['@_' + col])).toISOString());
+          // else
+          this.editorFrm.controls[col].setValue(this.parentData[col]);
+        }
+      }
+    }
+
     this.linkCommandPopup.hide();
   }
 
@@ -5228,35 +5719,75 @@ console.log(_col['folderId'])
         }
       }
 
-      let _value = true;
-
-      if (row.dataItem[dataLinkCommand.SendData.ColumnCheckBox]) {
-        _value = false;
-      }
-
-      this.linkCommandGrid.setCellData(row._idx, index, _value);
-
-      if (_value)
-        this.orderSelect += 1;
-      else
-        this.orderSelect -= 1;
-
-      if (dataLinkCommand.SendData.CheckBoxOrder) {
-        let colOrder = dataLinkCommand.SendData.CheckBoxOrder;
-        let indexOrder = 0;
-        for (indexOrder = 0; indexOrder < this.linkCommandGrid.columns.length; indexOrder++) {
-          if (this.linkCommandGrid.columns[indexOrder].binding == colOrder) {
-            break;
-          }
+      if (row instanceof wjcGrid.GroupRow) {
+        for (let _i = 0; _i < row.dataItem.items.length; _i++) {
+          let _row = row.dataItem.items[_i];
+          this.updateRowSelect(dataLinkCommand, _row, row.index + _i + 1, index);
         }
-        if (_value)
-          this.linkCommandGrid.setCellData(row._idx, indexOrder, this.orderSelect);
-        else
-          this.linkCommandGrid.setCellData(row._idx, indexOrder, 0);
-
       }
+      else {
+        this.updateRowSelect(dataLinkCommand, row.dataItem, row._idx, index);
+      }
+
+      // let _value = true;
+
+      // if (row.dataItem[dataLinkCommand.SendData.ColumnCheckBox]) {
+      //   _value = false;
+      // }
+
+      // this.linkCommandGrid.setCellData(row._idx, index, _value);
+
+      // if (_value)
+      //   this.orderSelect += 1;
+      // else
+      //   this.orderSelect -= 1;
+
+      // if (dataLinkCommand.SendData.CheckBoxOrder) {
+      //   let colOrder = dataLinkCommand.SendData.CheckBoxOrder;
+      //   let indexOrder = 0;
+      //   for (indexOrder = 0; indexOrder < this.linkCommandGrid.columns.length; indexOrder++) {
+      //     if (this.linkCommandGrid.columns[indexOrder].binding == colOrder) {
+      //       break;
+      //     }
+      //   }
+      //   if (_value)
+      //     this.linkCommandGrid.setCellData(row._idx, indexOrder, this.orderSelect);
+      //   else
+      //     this.linkCommandGrid.setCellData(row._idx, indexOrder, 0);
+
+      // }
     }
 
+  }
+
+  updateRowSelect(dataLinkCommand: any, dataItem: any, rowIdx: number, columnIdx: number) {
+    let _value = true;
+
+    if (dataItem[dataLinkCommand.SendData.ColumnCheckBox]) {
+      _value = false;
+    }
+
+    this.linkCommandGrid.setCellData(rowIdx, columnIdx, _value);
+
+    if (_value)
+      this.orderSelect += 1;
+    else
+      this.orderSelect -= 1;
+
+    if (dataLinkCommand.SendData.CheckBoxOrder) {
+      let colOrder = dataLinkCommand.SendData.CheckBoxOrder;
+      let indexOrder = 0;
+      for (indexOrder = 0; indexOrder < this.linkCommandGrid.columns.length; indexOrder++) {
+        if (this.linkCommandGrid.columns[indexOrder].binding == colOrder) {
+          break;
+        }
+      }
+      if (_value)
+        this.linkCommandGrid.setCellData(rowIdx, indexOrder, this.orderSelect);
+      else
+        this.linkCommandGrid.setCellData(rowIdx, indexOrder, 0);
+
+    }
   }
 
   openbravoDropdown() {
@@ -5281,12 +5812,9 @@ console.log(_col['folderId'])
 
       for (let i = 0; i < _arr.length; i++) {
         for (let j = i + 1; j < _arr.length; j++) {
-        
           if (_arr[i][field] == _arr[j][field]) {
-            console.log(_arr[i][field])
             this._errorUnique = true;
             this._valueDuplicate = _arr[i][field];
-            
             break;
           }
         }
@@ -5313,6 +5841,188 @@ console.log(_col['folderId'])
         if (this._errorUnique == true) break;
       }
     }
+  }
+
+  checkUniqueField(
+    flex: wjcGrid.FlexGrid,
+    checkField: string | string[],
+    labelField: string,
+    excludeField: string
+  ): { isDuplicate: boolean, errors: { duplicateValue: any, duplicateLabels: any[] }[] } {
+
+    const items: any[] = flex.itemsSource.items || [];
+
+    // Cho phép kiểm trùng theo 1 field hoặc theo khóa ghép nhiều field
+    const fields: string[] = Array.isArray(checkField) ? checkField : [checkField];
+
+    // Dùng Map để lưu: { Khóa_gom_nhóm => { Giá_trị_hiển_thị, Mảng_các_labelField } }
+    const valueTracker = new Map<string, { display: any, labels: any[] }>();
+
+    // Bước 1: Quét toàn bộ lưới và gom nhóm dữ liệu
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+
+      if (!item) continue;
+      if (excludeField && item[excludeField] == true) continue;
+
+      // Lấy giá trị của tất cả các field tạo nên khóa, bỏ qua dòng nếu có phần nào bỏ trắng
+      const parts = fields.map(f => item[f]);
+      if (parts.some(v => v === null || v === undefined || v === '')) continue;
+
+      // Khóa gom nhóm: ép chuỗi và nối bằng ký tự phân tách hiếm để tránh nhầm lẫn
+      const key = parts.map(v => String(v).trim()).join('');
+
+      // Giá trị hiển thị: giữ nguyên giá trị gốc khi chỉ kiểm 1 field
+      const display = fields.length > 1 ? parts.join(' - ') : parts[0];
+
+      // Lấy nhãn, nếu không truyền labelField thì lấy số thứ tự dòng làm nhãn phụ
+      const label = labelField ? item[labelField] : `Dòng ${i + 1}`;
+
+      // Nếu Map đã có khóa này, đẩy thêm label mới vào mảng
+      if (valueTracker.has(key)) {
+        valueTracker.get(key).labels.push(label);
+      }
+      // Nếu chưa có, tạo mới với một mảng chứa label đầu tiên
+      else {
+        valueTracker.set(key, { display: display, labels: [label] });
+      }
+    }
+
+    // Bước 2: Lọc ra các nhóm có từ 2 label trở lên (tức là bị trùng)
+    const duplicateErrors: { duplicateValue: any, duplicateLabels: any[] }[] = [];
+
+    valueTracker.forEach(entry => {
+      if (entry.labels.length > 1) {
+        duplicateErrors.push({
+          duplicateValue: entry.display,
+          duplicateLabels: entry.labels
+        });
+      }
+    });
+
+    // Bước 3: Trả về kết quả tổng hợp
+    return {
+      isDuplicate: duplicateErrors.length > 0,
+      errors: duplicateErrors
+    };
+  }
+
+  // ===== Phân cấp theo STT (ItemNo dạng '1', '1.1', '1.1.1', ...) =====
+
+  // Lấy ItemNo của dòng cha (bỏ đoạn cuối sau dấu '.'). Ví dụ '1.1.1' -> '1.1', '1' -> ''
+  protected getParentItemNo(no: string): string {
+    const idx = no.lastIndexOf('.');
+    return idx > 0 ? no.substring(0, idx) : '';
+  }
+
+  // Độ sâu của ItemNo = số dấu '.' (cấp 0 = '1', cấp 1 = '1.1', ...)
+  protected itemNoDepth(no: string): number {
+    return (no.match(/\./g) || []).length;
+  }
+
+  /**
+   * Tính SubTotal: gom giá trị các dòng con lên dòng cha theo phân cấp ItemNo.
+   * Dòng cha (có ít nhất 1 dòng con) bị reset về 0 rồi cộng dồn từ cấp sâu nhất lên,
+   * nên dòng cha trung gian đã gom đủ con trước khi cộng tiếp lên ông.
+   * @param grids       Danh sách lưới áp dụng.
+   * @param sumFields   Các cột cần tính tổng (vd ['QtyCDT','QtyBCH','Qty01',...]) — tham số hóa, không cố định.
+   * @param itemNoField Cột chứa STT phân cấp (mặc định 'ItemNo').
+   */
+  computeSubTotals(grids: wjcGrid.FlexGrid[], sumFields: string[], itemNoField: string = 'ItemNo'): void {
+    if (!grids || !sumFields || sumFields.length == 0) { return; }
+
+    for (let grid of grids) {
+      if (!grid || !grid.itemsSource) { continue; }
+      const items: any[] = grid.itemsSource.items;
+
+      // Lập bản đồ ItemNo -> dòng dữ liệu
+      const byNo = new Map<string, any>();
+      for (let it of items) {
+        const no = (it[itemNoField] == null ? '' : String(it[itemNoField]).trim());
+        if (no !== '') { byNo.set(no, it); }
+      }
+
+      // Xác định các dòng cha (có ít nhất 1 dòng con)
+      const parentNos = new Set<string>();
+      byNo.forEach((_row, no) => {
+        const parentNo = this.getParentItemNo(no);
+        if (parentNo && byNo.has(parentNo)) { parentNos.add(parentNo); }
+      });
+
+      // Tính tổng vào accumulator riêng (CHƯA ghi vào dòng) — tránh mutate dòng trong lúc cộng dồn
+      const sums: { [no: string]: { [field: string]: number } } = {};
+      parentNos.forEach(no => {
+        sums[no] = {};
+        for (let f of sumFields) { sums[no][f] = 0; }
+      });
+
+      // Cộng dồn từ cấp sâu nhất lên. Giá trị mỗi node đóng góp cho cha:
+      //  - node là cha -> dùng tổng đã tính của chính nó (sums[no]) (đã đủ vì xử lý sâu trước)
+      //  - node là lá  -> dùng giá trị thực trên dòng
+      const sortedNos = Array.from(byNo.keys()).sort((a, b) => this.itemNoDepth(b) - this.itemNoDepth(a));
+      for (let no of sortedNos) {
+        const parentNo = this.getParentItemNo(no);
+        if (!parentNo || !byNo.has(parentNo)) { continue; }
+        const isParent = parentNos.has(no);
+        for (let f of sumFields) {
+          const v = isParent ? sums[no][f] : parseFloat(byNo.get(no)[f]);
+          if (!isNaN(v)) { sums[parentNo][f] = (sums[parentNo][f] || 0) + v; }
+        }
+      }
+
+      // Ghi giá trị vào dòng cha QUA edit-transaction của CollectionView,
+      // để Wijmo đăng ký dòng vào itemsEdited -> mới được gửi lên server khi lưu.
+      // Dùng chính itemsSource vì submit() đọc itemsSource.itemsEdited để dựng payload.
+      const cv: any = grid.itemsSource;
+      parentNos.forEach(no => {
+        const row = byNo.get(no);
+        if (cv && cv.editItem) { cv.editItem(row); }
+        for (let f of sumFields) { row[f] = sums[no][f]; }
+        if (cv && cv.commitEdit) { cv.commitEdit(); }
+      });
+
+      if (cv && cv.refresh) { cv.refresh(); }
+    }
+  }
+
+  /**
+   * Kiểm tra tính đúng đắn của ItemNo trên một lưới:
+   *  - Định dạng: các số nguyên dương ngăn cách bằng dấu '.', vd '1', '1.1', '2.10.3'.
+   *  - Phân cấp: mỗi dòng con phải có dòng cha tồn tại (vd có '1.1.1.1' thì phải có '1.1.1').
+   * @returns Danh sách thông báo lỗi (rỗng nếu hợp lệ).
+   */
+  validateItemNoHierarchy(flex: wjcGrid.FlexGrid, itemNoField: string = 'ItemNo'): string[] {
+    const errors: string[] = [];
+    if (!flex || !flex.itemsSource) { return errors; }
+    const items: any[] = flex.itemsSource.items;
+
+    const formatRegex = /^\d+(\.\d+)*$/;
+    const allNos = new Set<string>();
+
+    // Lượt 1: kiểm tra định dạng + gom tập ItemNo
+    for (let it of items) {
+      const raw = it[itemNoField];
+      const no = (raw == null ? '' : String(raw).trim());
+      if (no === '') {
+        errors.push('Có dòng bị bỏ trống STT.');
+        continue;
+      }
+      if (!formatRegex.test(no)) {
+        errors.push('STT "' + no + '" không hợp lệ: chỉ gồm các số ngăn cách bằng dấu chấm.');
+        continue;
+      }
+      allNos.add(no);
+    }
+
+    // Lượt 2: kiểm tra dòng cha tồn tại (đúng phân cấp, không nhảy cấp)
+    allNos.forEach(no => {
+      const parentNo = this.getParentItemNo(no);
+      if (parentNo && !allNos.has(parentNo)) {
+        errors.push('STT "' + no + '" thiếu dòng cha "' + parentNo + '" (sai phân cấp).');
+      }
+    });
+
+    return errors;
   }
 
   //Quydv
@@ -5375,7 +6085,31 @@ console.log(_col['folderId'])
       this.subscription.add(sub);
     }
   }
-  
+
+  isValidEmail(email: string): boolean {
+    // Biểu thức chính quy kiểm tra email
+    // const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const regex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    return regex.test(email);
+  }
+
+  protected get lastSaveTimeKey(): string {
+    return `lastSaveTime_${this.id || 'new'}`;
+  }
+
+  protected getLastSaveTime(): Date | null {
+    const saved = localStorage.getItem(this.lastSaveTimeKey);
+    return saved ? new Date(saved) : null;
+  }
+
+  protected setLastSaveTime(date: Date): void {
+    localStorage.setItem(this.lastSaveTimeKey, date.toISOString());
+  }
+
+  protected clearLastSaveTime(): void {
+    localStorage.removeItem(this.lastSaveTimeKey);
+  }
+
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }

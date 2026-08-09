@@ -194,6 +194,12 @@
                             Quy trình HS quyết toán CĐT
                         </a>
                     </li>
+                     <li>
+                        <a [routerLink]="['projectvaluetable','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_projectvaluetable)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng giá trị dự án
+                        </a>
+                    </li>
                     <li>
                         <a [routerLink]="['setlementstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_setlementstatus)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -279,12 +285,12 @@
                             BCTC công trường
                         </a>
                     </li>
-                    <li>
+                    <!-- <li>
                         <a [routerLink]="['planpayment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planpayment)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Kế hoạch doanh thu
                         </a>
-                    </li>
+                    </li> -->
                     <li>
                         <a [routerLink]="['financialreport','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_financialreport)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -300,10 +306,15 @@
                     <li>
                         <a [routerLink]="['planquantity','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planquantity)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Kế hoạch quản lý khối lượng
+                            Quản lý khối lượng - Kết cấu
                         </a>
                     </li>
-                  
+                  <li>
+                        <a [routerLink]="['planquantity2','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planquantity2)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quản lý khối lượng - Hoàn thiện
+                        </a>
+                    </li>
                     <li>
                         <a [routerLink]="['planequipcost','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planequipcost)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -331,7 +342,7 @@
                      <li>
                         <a [routerLink]="['paymentextraproposal','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_paymentextraproposal)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Đề xuất thanh toán bổ sung
+                            Đề xuất thanh toán vượt hạn mức
                         </a>
                     </li>
                     <li>
@@ -408,12 +419,19 @@
                             Đề xuất thu - chi quý
                         </a>
                     </li>
-                    <li>
-                        <a [routerLink]="['plancashflowsite','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancashflowsite)" (click)="clickItem($event)">
+                     <li>
+                        <a [routerLink]="['planrevenueadjust','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planrevenueadjust)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Kế hoạch Doanh thu - Dòng tiền
+                            Kế hoạch Doanh thu
                         </a>
                     </li>
+                     <li>
+                        <a [routerLink]="['plancashflowsite','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancashflowsite)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch Dòng tiền
+                        </a>
+                    </li>
+                   
                     <!-- <li>
                         <a [routerLink]="['spendingplan','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_spendingplan)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -628,13 +646,25 @@
                 </a>
                 <ul class="treeview-menu">
                     <li>
+                        <a [routerLink]="['plansetlement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plansetlement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Kế hoạch QT NTP/NCC
+                        </a>
+                    </li>
+                    <li>
                         <a [routerLink]="['settlement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_settlement)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Quyết toán hợp đồng
                         </a>
                     </li>
-                   
+                     <li>
+                        <a [routerLink]="['allocsettlement','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_allocsettlement)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Quyết toán hợp đồng phân bổ
+                        </a>
+                    </li>
                 </ul>
+            
             </li>
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandtckt)">
                 <a href="#" style="color: #055096;font-weight: bold;">
@@ -760,6 +790,20 @@
                             *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterclaimmoinhat)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             B/c Claim thời điểm
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporterplanrevenue','view','REP07_KHDT_KLCDT']"
+                            *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterplanrevenue)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c Khối lượng CĐT
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['reporteradjustplanrevenue','view','REP07_KHDT_DC']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            B/c Kế hoạch Doanh thu
                         </a>
                     </li>
                     <!-- <li>
@@ -952,7 +996,13 @@
                             <li>
                                 <a [routerLink]="['purchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchaseotherbudget)" (click)="clickItem($event)">
                                     <i class="fa fa-circle-o"></i>
-                                    Kế hoạch mua hàng vật tư chính
+                                    KH mua vật tư chính - XD
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['purchasemeotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_purchasemeotherbudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    KH mua vật tư chính - ME
                                 </a>
                             </li>
                             <li>
@@ -1157,6 +1207,24 @@
                                 <a [routerLink]="['reporterpx','view','REP03_ReporterPx']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reporterpx)" (click)="clickItem($event)">
                                     <i class="fa fa-circle-o"></i>
                                     Báo cáo xuất kho
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['rep05_reportinventory','view','REP01_REPORTINVENTORY']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_reportinventory)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo sổ kho VTPHU
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['rep05_reportinventory_detail','view','REP01_REPORTINVENTORY_DT']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_reportinventory_detail)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo chi tiết sổ kho
+                                </a>
+                            </li>
+                             <li>
+                                <a [routerLink]="['rep05_reportexitem','view','REP01_REPORTEXINVENTORY']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_reportexitem)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Báo cáo khấu trừ kho
                                 </a>
                             </li>
                         </ul>
@@ -1419,6 +1487,13 @@
                             (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Phân bổ chi phí nhân sự
+                        </a>
+                    </li> 
+                    <li>
+                        <a [routerLink]="['reporterprojectvaluetable','view','REP03_ProjectValueTable']"
+                            (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Bảng ước tính giá trị dự án
                         </a>
                     </li> 
                     <!-- <li>

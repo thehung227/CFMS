@@ -23,7 +23,7 @@ export class LayoutPurchaseOtherBudgetExplorer implements IExplorerFormulaDeclar
         Structure: {
             Parent: {
                 Name: 'vB30Budget',
-                FilterKey: "(ProductCostId = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode='H7' AND BudgetTypeCode = '6' AND IsActive=1",// AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))",
+                FilterKey: "TypeXDME = 'XD' AND (ProductCostId = '{VAR=Filter.ProductCostId}') AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode='H7' AND BudgetTypeCode = '6' AND IsActive=1",// AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))",
                 OrderBy: 'BudgetDate DESC, DocNo DESC',
                 RowPage: 50
             },
@@ -265,6 +265,7 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
                     BudgetStyleCode: '1',
                     CurrencyCode: 'VND',
                     DocCode: 'H7',
+                    TypeXDME: 'XD',
                     Id: -1,
                     IsWebData: true,
                     DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate())),
@@ -487,8 +488,9 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
 
     serverUpdated = [
         'Evaluator_ServerUpdated_BuiltinOrder',
-        'Evaluator_ServerUpdated_CreateFormula',
+      
         'Evaluator_ServerUpdated_BudgetDetail_UpdateFromParent',
+          'Evaluator_ServerUpdated_CreateFormula',
         'Evaluator_UpdateInfo_WhenApproveSend'
         
     ];
@@ -609,7 +611,7 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
                     key: 'TypeXDME',
                     label: 'Loại hình',
                     lookupKey: 'Class',
-          
+                    isReadOnly: 'true',
                     lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='INCURRED' AND Code IN ('XD','ME')",
                     hideValueMember: false,
                     validators: [Validators.required],

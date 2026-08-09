@@ -31,6 +31,8 @@
               </a>
             </li>
           </ul>
+          <button class="btn btn-success" type="button" (click)=saveData(editorFrm,1) *ngIf="parentData?.IsCHT==true"
+            [disabled]="!editorFrm.valid">Duyệt hóa đơn</button>
           <!-- <button class="btn btn-warning" type="button" (click)="showPrintVoucher(parentData?.Id)" [disabled]="parentData?.Id == -1"
             *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">Mẫu in</button> -->
           <!-- <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button> -->
@@ -61,7 +63,11 @@
           (click)=onclickCollapsablePanel([grid,grid1])>
           <span style="font-size:12pt;"></span>
         </button>
-
+      <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
+        style="margin-bottom:10px;" (click)="onClick_2()">
+        <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tải hóa đơn</span>
+      
+      </button>
         <div class="form-row" style="border:1px solid #ddd;">
 
           <!-- <div class="nav-tabs-custom">
@@ -221,7 +227,46 @@
 
 <div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
 <!--/.Loading-->
+<wj-popup #dataPopup [modal]="true" [hideTrigger]="'None'" class="popup-custom">
+  <div class="wj-dialog-header">
+    <strong>Kết quả xử lý</strong>
+  </div>
 
+  <div class="wj-dialog-body">
+    <table class="table table-bordered table-striped" *ngIf="dataPopupContent && dataPopupContent.length">
+      <thead>
+        <tr>
+          <th>STT</th>
+          <th>Mã chứng từ</th>
+          <th>Series</th>
+          <th>Ngày phát hành</th>
+          <!-- <th>Thành tiền</th> -->
+          <th>Số phiếu kế toán</th>
+          <th>Thông báo</th>
+          
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of dataPopupContent; let i = index" [style.color]="item.Color == 'red' ? 'red' : 'inherit'">
+          <td>{{ i + 1 }}</td>
+           <td>{{ item.InvoiceNumber }}</td>
+          <td>{{ item.InvoiceSeries }}</td>
+          <td>{{ item.IssuedDate | date: 'dd/MM/yyyy' }}</td>
+          <!-- <td class="text-right">{{ item.TotalAmountWithVat | number:'1.0-0' }}</td> -->
+          <td>{{ item.AccountNo }}</td>
+          <td>{{ item.Message }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div *ngIf="!dataPopupContent || !dataPopupContent.length" class="text-center">
+      <em>Không có dữ liệu hiển thị</em>
+    </div>
+  </div>
+
+  <div class="wj-dialog-footer">
+    <button class="btn btn-primary" (click)="closePopup()">Đóng</button>
+  </div>
+</wj-popup>
 
 <!-- Thêm dialog -->
 <app-dialog [(visible)]="showDialog" #dialogFrm>

@@ -292,7 +292,9 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
                 DefaultValues: {
                     Id: -1,
                     DocCode: 'Y6',
-                    DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate()))
+                    DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate())),
+                    BranchCode: '{VAR=Branch.Ma_Dvcs}',
+                    DocStatus: '4',
                 }
             },
             Child: [
@@ -302,7 +304,7 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',
                     DefaultValues: {
-                        ParentId: 'Parent.BizDocId',
+                        BizDocId: 'Parent.BizDocId',
                         BuiltinOrder: '1'
                     }
                 },
@@ -312,20 +314,8 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
                     ChildKey: 'BizDocId',
                     Sort: 'BuiltinOrder',
                     DefaultValues: {
-                        ParentId: 'Parent.BizDocId',
-                        BuiltinOrder: '1'
-                    }
-                },
-              
-                {
-                    Name: 'vB30BizDocApprove_EditHSQT',
-                    ParentKey: 'BizDocId',
-                    ChildKey: 'BizDocId',
-                    DefaultValues: {
                         BizDocId: 'Parent.BizDocId',
-                        BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate',
-                        BranchCode: '{VAR=Branch.Ma_Dvcs}',
+                        BuiltinOrder: '1'
                     }
                 },
                 {
@@ -423,14 +413,9 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
             EvaluatorName: 'EvaluatorQueryLoadChild',
             ConstraintKey: 'DocDate,ProcessCode,{VAR=Branch.Ma_Dvcs},ProductCostId,{VAR=EmptyField_ParentBizDocId}',
             Command: 'usp_B30BizDocApprove_GetData',
-            OutputTable: 3
+            OutputTable: 2
         },
-        'Evaluator_ServerConstraint_Detail2_GetData': {
-            EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'BizDocId,ProductCostId',
-            Command: 'usp_B30HSQT_LoadData',
-            OutputTable: 1
-        },
+       
         'Evaluator_ServerConstraint_DefaultDocNo': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'ProductCostId,DocCode,Id,DocDate',
@@ -440,40 +425,47 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
         },
         'Evaluator_ServerConstraint_Detail_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'ProductCostId,BizDocId',
-            Command: 'usp_B30HSQTDetail_LoadPrevious',
+            ConstraintKey: 'ProductCostId',
+            Command: 'usp_Kct_GiaTriTonKhoUocTinhTaiThoiDiem',
             OutputTable: 0
         },
-        'Evaluator_ServerConstraint_Detail3_GetData': {
+        'Evaluator_ServerConstraint_Detail1_GetData': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'Id',
-            Command: 'usp_B30HSQT_LoadKeHoachChiTiet',
-            OutputTable: 2
+            ConstraintKey: 'ProductCostId',
+            Command: 'usp_Kct_GiaTriTonKhoUocTinhTaiThoiDiem_TC',
+            OutputTable: 1
         },
-        'Evaluator_ServerConstraint_Detail3_GetData_ButtonLoadChild': {
-            EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'Id,ProductCostId',
-            Command: 'usp_B30HSQT_LoadKeHoachChiTiet_LoadChild',
-            OutputTable: 2
+       'Evaluator_ServerConstraint_GetAmountDoanhThu': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'ProductCostId,DocDate',
+            Command: 'usp_B30BizDocVB_GetAmountDoanhThu',
+            zExpr: "ProductCostId != ''",
+            DataMember: 'Amount_DoanhThu,TotalAmountBCTC'
         },
-     
         'Evaluator_UpdateInfo_WhenSave': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'Id',
-            Command: 'usp_B30HSQT_UpdateWhenSave'
+            Command: 'usp_BangUocTinhGiaTri_UpdateWhenSave'
         },
          'Evaluator_UpdateInfo_WhenApproveSend': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: '{VAR=User.EmployeeCode},BizDocId,{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode',
             Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend',
             zExpr: 'ApproveSend == true'
-        }
+        },
+         'Evaluator_Detail2_Amount2': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: "Amount2",
+            Value: "Rate1*Amount1",
+            Tables: 1
+        },
        
     };
 
     serverConstraint = [
         'Evaluator_ServerConstraint_Approve_GetData',
-        'Evaluator_ServerConstraint_DefaultDocNo'
+        'Evaluator_ServerConstraint_DefaultDocNo',
+        'Evaluator_ServerConstraint_GetAmountDoanhThu'
     ];
 
     serverUpdating = [
@@ -487,8 +479,9 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
 
     buttonLoadChild = [
         'Evaluator_ServerConstraint_Detail_LoadPrevious',
+        'Evaluator_ServerConstraint_Detail1_GetData',
+        'Evaluator_ServerConstraint_GetAmountDoanhThu',
         'Evaluator_ServerConstraint_Approve_GetData',
-       'Evaluator_ServerConstraint_Detail2_GetData'
     ];
 
     buttonCommand: string[] = [
@@ -504,16 +497,27 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
     };
 
     columnChangedChild = [
+        {
+            Tables: 1,
+            columnChanged: {
+                Rate1: {
+                    Evaluators: [
+                        'Evaluator_Detail2_Amount2'
+                    ]
+                },
+              
+            }
+        }
     ];
 
     columnsReadOnly = [];
 
     linkReporter = {
         'btnBaoCao': {
-            directory: 'reporterhsqtgiatri',
+            directory: 'reporterprojectvaluetable',
             type: 'view',
-            key: 'REP04_QTHSQT_GIA_TRI',
-            parameter: { 'Commandkey': 'REP04_QTHSQT_GIA_TRI', 'Id': '{EXPR=Id}', 'ProductCostId': '{EXPR=ProductCostId}'}
+            key: 'REP03_ProjectValueTable',
+            parameter: { 'Commandkey': 'REP03_ProjectValueTable', 'ProductCostId': '{EXPR=ProductCostId}'}
         }
     }
 
@@ -564,7 +568,63 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
                     isNewRow: true,
                     col: 12
                 }),
-                
+                 new NumberBoxInput({
+                    key: 'TotalAmountBCTC',
+                    label: 'Doanh thu BCTC',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'Amount_DoanhThu',
+                    label: 'Doanh thu hiện tại',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                new NumberBoxInput({
+                    key: 'TotalAmount',
+                    label: 'Tổng Giá trị thực hiện ước tính',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'NumberCol1',
+                    label: '% thực hiện so với BCTC',
+                    col: 6,
+                    isDisabled: 'true',
+                    format: 'p2'
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'AmountNhom1',
+                    label: 'Nhóm 1: Đặt hàng và thì công',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'AmountNhom2',
+                    label: 'Nhóm 2: NCC/NCTP khác',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'AmountNhom3',
+                    label: 'Nhóm 3: Prelim, BCH, TB',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                 new NumberBoxInput({
+                    key: 'AmountNhom4',
+                    label: 'Nhóm 4: NSC',
+                    col: 6,
+                    isDisabled: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
                 new CheckBoxInput({
                     key: 'ApproveSend',
                     label: 'Đã gửi duyệt',
@@ -579,7 +639,12 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
                     type: 'boolean',
                     col: 6,
                     isDisabled: 'true'
-                })
+                }),
+                new ButtonInput({
+                    key: 'btnBaoCao',
+                    label: 'Bảng ước tính giá trị thực hiện dự án',
+                    col: 6
+                }),
             ]
         })
     ];
@@ -589,54 +654,61 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
             header: 'STT',
             binding: 'ItemNo',
             width: 60,
-             
+             isReadOnly: 'true'
         },
         {
             header: 'Nội dung',
             binding: 'Description',
-            width: 150,
+            width: 250,
             wordWrap: 'true',
+            isReadOnly: 'true'
         },
         {
             header: 'Nhóm công tác',
             binding: 'CodeKHC',
             width: 100,
             wordWrap: 'true',
+            isReadOnly: 'true'
         },
        {
             header: 'Dự trù BCTC',
             binding: 'Amount1',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
          {
             header: 'Giá trị thực tế',
             binding: 'Amount2',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị đã làm bill',
             binding: 'Amount3',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị hóa đơn',
             binding: 'Amount4',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị thực hiện',
             binding: 'Amount5',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
          {
             header: 'Dòng tiêu đề',
@@ -652,26 +724,29 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
             header: 'STT',
             binding: 'ItemNo',
             width: 60,
-             
+             isReadOnly: 'true'
         },
         {
             header: 'Nội dung',
             binding: 'Description',
-            width: 150,
+            width: 250,
             wordWrap: 'true',
+            isReadOnly: 'true'
         },
         {
             header: 'Nhóm công tác',
             binding: 'CodeKHC',
             width: 100,
             wordWrap: 'true',
+            isReadOnly: 'true'
         },
        {
             header: 'Dự trù BCTC',
             binding: 'Amount1',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
          {
             header: '% thi công',
@@ -686,28 +761,32 @@ export class LayoutProjectValueTableEditor implements IEditorFormulaDeclaration 
             binding: 'Amount2',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị đã làm bill',
             binding: 'Amount3',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị hóa đơn',
             binding: 'Amount4',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
         {
             header: 'Giá trị thực hiện',
             binding: 'Amount5',
             dataType: 'Number',
             isRequired: true,
-            width: 60,
+            width: 120,
+            isReadOnly: 'true'
         },
          {
             header: 'Dòng tiêu đề',

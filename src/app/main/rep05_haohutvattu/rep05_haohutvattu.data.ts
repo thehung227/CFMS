@@ -59,7 +59,15 @@ export class LayoutData {
                     hideValueMember: false,
 
                 },
-              
+               {
+                    className: 'LookupBoxInput',
+                    key: 'ItemGroupCode',
+                    lookupKey: 'Item',
+                    label: 'Nhóm hàng',
+                    lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (3205) AND Code<>'BETONG'",
+                    hideValueMember: false,
+
+                },
                 {
                     className: 'LookupBoxInput',
                     key: 'TypeXDME',

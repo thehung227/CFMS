@@ -279,7 +279,7 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
           if (i == _idrowdel) {
             let data = flex.rows[i].dataItem;
             // Không xóa những dòng là tiêu đề
-            if (data && (data['IsTitleRow'] == true || data['IsTitleRow'] == 1 || data['isTitleRows'] == 1)) {
+             if (data && (data['IsTitleRow'] == true || data['IsTitleRow'] == 1 || data['isTitleRows'] == 1 || data['IsLink'] == true || data['IsLink'] == 1)) {
               continue;
             }
             selected.push(data);

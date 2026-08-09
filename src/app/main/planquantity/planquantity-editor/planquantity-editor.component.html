@@ -4,7 +4,7 @@
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Kế hoạch quản lý khối lượng</h3>
+        <h3 class="box-title" id="titleName">Quản lý khối lượng - Kết cấu</h3>
         <div class="box-tools pull-right">
           <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
                         <i class="fa fa-minus"></i>
@@ -84,8 +84,8 @@
         <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
           <button class="btn btn-info" type="button" id="importBtn" [disabled]="!editorFrm.valid"
             *ngIf="parentData?.CountImport == false" style="height: 29px;" (click)="openDialog()">Import Excel</button>
-          <a (click)="downloadFile('2.ImportForm','16.MAU_KeHoach_QuanLyKhoiLuong.xlsx')" style="color: blue;"
-            *ngIf="parentData?.CountImport == false">Tải mẫu Excel</a>
+          <a (click)="downloadFile('2.ImportForm','16.MAU_KeHoach_QuanLyKhoiLuong.xlsx')"
+            style="color: blue; cursor: pointer;" *ngIf="parentData?.CountImport == false">Tải mẫu Excel</a>
           <wj-popup #importPopup hideTrigger="None" style="width: 60%;">
             <div class="box" id="box-content">
               <div class="box-header with-border">
@@ -125,29 +125,23 @@
           </wj-popup>
         </div>
 
+        <button class="btn btn-success fa fa-file-excel-o" type="button" style="margin-bottom:10px;"
+          (click)="exportGridToExcel()">
+          <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif"> Xuất Excel</span>
+        </button>
+
         <div class="form-row" style="border:1px solid #ddd;">
-          <!-- <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs" >
-              <li class="active">
-                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)" style="background-color:#ffe3e3;">
-                  <b>Chi tiết</b>
-                </a>
-              </li>
-              <li>
-                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)" style="background-color:#c7ffc7;">
-                  <b>Bước duyệt kế hoạch</b>
-                </a>
-              </li>
-            </ul>
-          </div> -->
           <div id='cssmenu'>
             <ul>
               <li class='active'>
                 <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">Chi tiết khối lượng</a>
               </li>
               <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">Liên kết đối tác</a>
+              </li>
+              <li>
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Đính kèm</a>
-              </li>              
+              </li>
               <li>
                 <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">Bước duyệt</a>
               </li>
@@ -159,8 +153,7 @@
           <div class="tab-content">
             <div class="tab-pane active" id="tab1">
               <section id="new">
-                <!-- [ngStyle]="setHeightGrid()" -->
-                <wj-flex-grid class="grid" #grid [ngStyle]="setHeightGrid()">
+                <wj-flex-grid class="grid" #grid style="height:280px;" [ngStyle]="setHeightGrid()">
                   <ng-template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </ng-template>
@@ -180,19 +173,18 @@
             </div>
             <div class="tab-pane" id="tab2">
               <section id="new">
-                  <wj-flex-grid class="grid1" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
-                      <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                          {{cell.row.index + 1}}
-                      </template>
-                      <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
-                          <button type="button" class="btn" style="margin:auto;width:100%;"
-                              (click)=deleteSelectedRows(gri1)>
-                              <a class="fa fa-trash-o" style="color:red;"></a>
-                          </button>
-                      </template>
-                  </wj-flex-grid>
+                <wj-flex-grid class="grid1" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <button type="button" class="btn" style="margin:auto;width:100%;" (click)=deleteSelectedRows(grid1)>
+                      <a class="fa fa-trash-o" style="color:red;"></a>
+                    </button>
+                  </template>
+                </wj-flex-grid>
               </section>
-            </div>            
+            </div>
             <div class="tab-pane" id="tab3">
               <section id="new">
                 <wj-flex-grid class="grid2" #grid2 [ngStyle]="setHeightGrid()">
@@ -221,10 +213,18 @@
                 </wj-flex-grid>
               </section>
             </div>
-            <!-- <div class="tab-pane active" id="glyphicons">
-                            <section id="new">
-                            </section>
-                        </div> -->
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    <label>{{cell.row.index + 1}}</label>
+                  </template>
+                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                    <!-- <button class="btn fa fa-trash" (click)=deleteSelectedRows(grid1)></button>               -->
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
           </div>
         </div>
       </div>

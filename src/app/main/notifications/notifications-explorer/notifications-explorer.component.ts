@@ -145,7 +145,7 @@ export class NotificationsExplorerComponent {
     });
 
   const jsonData = JSON.stringify(filteredData);
-console.log(jsonData)
+
     let paramJson = new ParameterContract();
     paramJson.ParameterName = '@_JsonData';
     paramJson.ParameterValue = jsonData;
@@ -184,7 +184,7 @@ console.log(jsonData)
             });
           }
           else
-          if (data['DayOfDelay'] <= 0) {
+          if (data['DayOfDelay'] < 0) {
             wjcCore.setCss(e.cell, {
               color: 'red',
               //fontWeight: 'Bold',

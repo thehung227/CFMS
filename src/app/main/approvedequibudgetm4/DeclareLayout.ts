@@ -349,7 +349,7 @@ childColumns = [
             // allowView: true,
             // allowDownLoad: true,
             // allowUpload: false,
-            folderId: '{EXPR=IdBizDocCCMLink}'
+            folderId: '{EXPR=IdCCMBudget}'
         }
     ];
 

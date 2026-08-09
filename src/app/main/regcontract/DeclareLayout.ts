@@ -838,7 +838,7 @@ export class LayoutRegContractEditor implements IEditorFormulaDeclaration {
                         TaxCode: 'TaxCode'
                     },
                     lookupKey: 'ContractType',
-                    lookupfilter: "IsGroup=0 AND IsActive=1 AND Code NOT IN ('HD-18','HD-17','BP.HD-01','BP.HD-02','BP.HD-03','BP.HD-04')",
+                    lookupfilter: "IsGroup=0 AND IsActive=1 AND Code NOT IN ('HD-18','HD-17','BP.HD-01','BP.HD-02','BP.HD-03','BP.HD-04','BP.HD-05')",
                     style: 'background-color:#F8F0D7',
                     hideValueMember: false,
                     col: 6

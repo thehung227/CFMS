@@ -74,6 +74,7 @@ export class ApprovedConcreteLossEditorComponent extends BaseEditorComponent imp
     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+          let column = s.columns[e.col].binding;
           let data = s.rows[e.row].dataItem;
 
           if (e.panel.cellType == wjcGrid.CellType.Cell) {
@@ -83,7 +84,17 @@ export class ApprovedConcreteLossEditorComponent extends BaseEditorComponent imp
                       fontWeight: 'bold',
                       backgroundColor: '#f8f1e6'
                   });
-              } else  {
+              }
+              else
+              if (column == 'Quantity2') {
+                  // Tô vàng ô 'Khối lượng tính toán' khi giá trị khác với giá trị trước điều chỉnh
+                  wjcCore.setCss(e.cell, {
+                      color: '',
+                      fontWeight: '',
+                      backgroundColor: this.isQuantity2Changed(data) ? '#ffff00' : ''
+                  });
+              }
+              else  {
                   wjcCore.setCss(e.cell, {
                       color: '',
                       fontWeight: '',
@@ -93,6 +104,17 @@ export class ApprovedConcreteLossEditorComponent extends BaseEditorComponent imp
           }
       }
   });
+  }
+
+  // Quantity2 (khối lượng tính toán) khác RequestQuantity (khối lượng tính toán trước điều chỉnh)
+  private isQuantity2Changed(data: any): boolean {
+    if (data == undefined) return false;
+
+    let _quantity2 = Number(data['Quantity2']) || 0;
+    let _requestQuantity = Number(data['RequestQuantity']) || 0;
+
+    // Cột hiển thị format 'n3' nên so sánh theo 3 số lẻ để tránh sai lệch dấu chấm động
+    return Math.round(_quantity2 * 1000) != Math.round(_requestQuantity * 1000);
   }
 
   ngOnDestroy() {

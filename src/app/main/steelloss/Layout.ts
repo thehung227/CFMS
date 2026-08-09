@@ -729,7 +729,7 @@ export class LayoutSteelLossEditor implements IEditorFormulaDeclaration {
             dataType: 'Number',
             width: 100,
             format: 'n3',
-            exprReadOnly: "{EXPR=ItemNo} == '1.1' || {EXPR=ItemNo} == '1.2'"
+            exprReadOnly: "{EXPR=ItemNo} == '1.1' || {EXPR=ItemNo} == '1.2' || {EXPR=ItemNo} == '1.3'"
         },
         {
             header: 'Dòng tiêu đề',

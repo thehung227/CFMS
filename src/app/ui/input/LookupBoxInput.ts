@@ -27,7 +27,7 @@ export class LookupBoxInput extends InputBase<any> {
     public data?: {}
   ) {
     super(options);
-    this.maxRow = options['maxRow'] || 10;
+    this.maxRow = options['maxRow'] || 30;
     this.lookupKey = options['lookupKey'] || '';
     this.lookupfilter = options['lookupfilter'] || '';
     this.hideValueMember = options['hideValueMember'] || false;

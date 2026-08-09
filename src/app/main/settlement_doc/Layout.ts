@@ -467,7 +467,14 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
             ConstraintKey: '{VAR=User.EmployeeCode},BizDocId,{VAR=EmptyField_CCMBudgetId},{VAR=Branch.Ma_Dvcs},DocCode',
             Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend',
             zExpr: 'ApproveSend == true'
-        }
+        },
+         'Evaluator_ServerConstraint_Load_InvoiceBizzi': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,CustomerCode,BizDocId',
+            Command: 'usp_CFMS_InvoiceBizzi_LoadData',
+            DataMember: '',
+            OutputTable: 3
+        },
     }
 
     serverConstraint = [
@@ -490,6 +497,11 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
         // 'Evaluator_UpdateInfo_WhenApproveSend'
     ]
 
+    buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi',
+       
+    ];
+    
     buttonLoadChild: string[] = [
         'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo',
         'Evaluator_ServerConstraint_Check_QuyetToan_KhongLapMoiKhiChuaDuyetCu',
@@ -1194,25 +1206,57 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
 
     childColumns3 = [
         {
+            header: 'Chọn hóa đơn',
+            binding: 'IsSelected',
+            dataType: 'Boolean',
+            width: 80
+        },
+           {
+            header: 'Ngày nhận hóa đơn',
+            binding: 'ReceivedAt',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+         {
             header: 'Ngày hóa đơn',
             binding: 'AtchDocDate',
             width: 150,
             dataType: 'Date',
+            isReadOnly: 'true',
             format: 'dd/MM/yyyy'
         },
-        {
+          {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
-            allowEditing: true,
             width: 150,
-            validators: "{EXPR=AtchDocNo} == ''",
-            validatorMessage: 'Không được bỏ trắng giá trị',
+            dataType: 'Array',
+            isReadOnly: 'true',
+            lookupKey: 'InvoiceBizzi',
+             bindingList: {
+                IssuedDate: 'AtchDocDate',
+                InvoiceId: 'InvoiceId',
+                InvoiceSeries: 'AtchFormNo',
+                TotalAmountWithoutVat: 'AmountBeforeTax',
+                TotalAmountWithVat: 'Amount'
+            },
+            lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
         },
+        // {
+        //     header: 'Số hóa đơn',
+        //     binding: 'AtchDocNo',
+        //     allowEditing: true,
+        //     width: 150,
+        //     validators: "{EXPR=AtchDocNo} == ''",
+        //     validatorMessage: 'Không được bỏ trắng giá trị',
+        // },
         {
             header: 'Ký hiệu',
             binding: 'AtchFormNo',
             allowEditing: true,
             width: 150,
+            isReadOnly: 'true',
             validators: "{EXPR=AtchDocNo} == ''",
             validatorMessage: 'Không được bỏ trắng giá trị',
         },
@@ -1220,20 +1264,39 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
             header: 'Giá trị trước thuế',
             binding: 'AmountBeforeTax',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
         {
             header: 'Giá trị sau thuế',
             binding: 'Amount',
             width: 150,
+            isReadOnly: 'true',
             dataType: 'Number'
         },
+         {
+            header: 'Nội dung hóa đơn',
+            binding: 'InvoiceItemsFirst',
+            allowEditing: true,
+            width: 250,
+            isReadOnly: 'true',
+          
+        },
         {
-            header: 'Ngày nhận đủ hồ sơ',
-            binding: 'DateReceive',
-            width: 150,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy'
+            header: 'Link',
+            binding: 'HrefLink',
+            allowEditing: false,
+            isReadOnly: 'true',
+            width: 200
+
+        },
+        {
+            header: 'Hóa đơn Bizzi',
+            binding: 'InvoiceId',
+            allowEditing: true,
+            width: 0,
+            isReadOnly: 'true',
+            validatorMessage: 'Không được bỏ trắng giá trị',
         },
     ]
 }

@@ -706,7 +706,14 @@ export class LayoutBillPaySuppEditEditor implements IEditorFormulaDeclaration {
             MessageText: 'Không phát sinh kế hoạch doanh thu trong 30 ngày. Vui lòng cập nhật kế hoạch dòng tiền !!!',
             IgnoreError: 0,
             zExpr: 'ApproveSend == true'
-        }
+        },
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,CustomerCode,BizDocId',
+            Command: 'usp_CFMS_InvoiceBizzi_LoadData',
+            DataMember: '',
+            OutputTable: 5
+        },
     }
 
     serverConstraint = [
@@ -766,6 +773,11 @@ export class LayoutBillPaySuppEditEditor implements IEditorFormulaDeclaration {
         // //
         // 'Evaluator_ServerConstraint_Approve_GetData',
         // 'Evaluator_ServerConstraint_DocumentDetail_GetData'
+    ];
+
+    buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_Load_InvoiceBizzi',
+       
     ];
 
     buttonCommand: string[] = [
@@ -1415,6 +1427,22 @@ export class LayoutBillPaySuppEditEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
+           {
+            header: 'Ngày nhận hóa đơn',
+            binding: 'ReceivedAt',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
+         {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 150,
+            dataType: 'Date',
+            isReadOnly: 'true',
+            format: 'dd/MM/yyyy'
+        },
           {
             header: 'Số hóa đơn',
             binding: 'AtchDocNo',
@@ -1430,14 +1458,6 @@ export class LayoutBillPaySuppEditEditor implements IEditorFormulaDeclaration {
                 TotalAmountWithVat: 'Amount'
             },
             lookupfilter: "ProductCostId = '{EXPR=ProductCostId}' AND ApprovalStatus = 'PENDING' AND SellerTaxCode = '{EXPR=TaxRegNo}'"
-        },
-        {
-            header: 'Ngày hóa đơn',
-            binding: 'AtchDocDate',
-            width: 150,
-            dataType: 'Date',
-            isReadOnly: 'true',
-            format: 'dd/MM/yyyy'
         },
         // {
         //     header: 'Số hóa đơn',
@@ -1470,13 +1490,21 @@ export class LayoutBillPaySuppEditEditor implements IEditorFormulaDeclaration {
             isReadOnly: 'true',
             dataType: 'Number'
         },
+         {
+            header: 'Nội dung hóa đơn',
+            binding: 'InvoiceItemsFirst',
+            allowEditing: true,
+            width: 250,
+            isReadOnly: 'true',
+          
+        },
         {
-            header: 'Ngày nhận đủ hồ sơ',
-            binding: 'DateReceive',
-            width: 150,
-            dataType: 'Date',
+            header: 'Link',
+            binding: 'HrefLink',
+            allowEditing: false,
+            isReadOnly: 'true',
+            width: 200
 
-            format: 'dd/MM/yyyy'
         },
         {
             header: 'Hóa đơn Bizzi',

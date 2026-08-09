@@ -485,6 +485,21 @@ export class LayoutApprovedPurchaseOtherBudgetEditor implements IEditorFormulaDe
             width: 150,
              format: 'n2'
         },
+            {
+            header: '% hao hụt cho phép',
+            binding: 'ConcerlossRate',
+            dataType: 'Number',
+            width: 150,
+             format: 'p2'
+        },
+         {
+            header: 'Khối lượng kế hoạch (gồm Hao hụt)',
+            binding: 'ConcerlossQuantity',
+            dataType: 'Number',
+            width: 150,
+             format: 'n2',
+            isReadOnly: 'true'
+        },
         {
             header: 'Đơn giá NCC',
             binding: 'OriginalPrice',

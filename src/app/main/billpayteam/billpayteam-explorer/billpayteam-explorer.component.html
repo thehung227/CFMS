@@ -53,7 +53,7 @@
     <section class="content">
         <div class="box" id="box-content">
             <div class="box-header with-border">
-                <h3 class="box-title" id="titleName">Thanh toán đội nhóm</h3>
+                <h3 class="box-title" id="titleName">Thanh toán chi phí BCH/PB</h3>
                 <!-- <button type="button" class="btn btn-box-tool btn-filter" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()"> 
                     <i class="fa fa-filter fa-lg" aria-hidden="true"></i>
                 </button> -->
@@ -81,13 +81,13 @@
                                 </button>
                                 <button type="button" class="btn bg-purple" title="Xóa" (click)="confirmDialog(grid, 'DocNo')" *ngIf="isSysAdmin=='true' || isPermisionExAll_isDelete">
                                     <i class="fa fa-trash-o" aria-hidden="true"></i>
-                                </button>  
+                                </button>
                                 <!-- <button type="button" class="btn btn-warning" title="In" (click)="showPrintVoucher(grid)" *ngIf="isSysAdmin=='true' || isPermisionExAll_isPrint">
                                     <i class="fa fa-print" aria-hidden="true"></i>
                                 </button> -->
                                 <!-- <button type="button" class="btn" style="color: green;background-color:white;border:solid 1px green;" title="Kết xuất" (click)="export()">
                                     <i class="fa fa-file-excel-o" aria-hidden="true"></i>
-                                </button> -->    
+                                </button> -->  
                                 <button class="btn btn-warning dropdown-toggle" title="In, kết xuất" type="button" data-toggle="dropdown" style="width: 40px;" *ngIf="isSysAdmin=='true' || isPermisionExAll_isPrint">
                                     <i class="fa fa-print" aria-hidden="true"></i>
                                     <span class="caret"></span>
@@ -101,12 +101,12 @@
                                             <button class="btn " type="button" (click)="exportHtml(grid,layout.WordName,layout.FileName, layout.FolderPath)" style="color:white;float: right;margin-right:5px;background-color:orange;height: 100%;">
                                                 <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                                             </button>                                            
-                                            <button class="btn " type="button" (click)="exportWord(grid,layout.WordName,layout.FileName, layout.FolderPath)" style="color:white;float: right;margin-right:5px;background-color:rgb(7, 104, 201);height: 100%;" *ngIf="layout.WordName == ''">
+                                            <button class="btn " type="button" (click)="exportWord(grid,layout.WordName,layout.FileName, layout.FolderPath)" style="color:white;float: right;margin-right:5px;background-color:rgb(7, 104, 201);height: 100%;" *ngIf="layout.WordName != 'WorkFlow_TT.docx' && layout.WordName != '7.TBTT_CP_BCH_0.docx'">
                                                 <i class="fa fa-file-word-o" aria-hidden="true"></i>
                                             </button>
                                         </a>
                                     </li>
-                                </ul>                                                             
+                                </ul>                                                  
                                 <button type="button" class="btn btn-danger" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()">
                                     <i class="fa fa-filter fa-lg" aria-hidden="true"></i>
                                 </button>
@@ -119,12 +119,6 @@
                                 <button type="button" class="btn" title="Mở nhóm" (click)="grid.collapseGroupsToLevel(grid.rows.maxGroupLevel + 1)">
                                     <i class="fa fa-angle-double-down fa-md" aria-hidden="true"></i>
                                 </button>
-                                <wj-menu [(value)]="groupBy" [header]="'Nhóm'">
-                                    <wj-menu-item [value]="''">(không nhóm)</wj-menu-item>
-                                    <wj-menu-item [value]="'ProductName'">Gói thầu</wj-menu-item>
-                                    <wj-menu-item [value]="'CustomerName'">Đối tượng</wj-menu-item>
-                                    <wj-menu-item [value]="'ProductName,CustomerName'">Gói thầu, Đối tượng</wj-menu-item>
-                                </wj-menu>
                             </div>
                         </ul>
                     </div>
@@ -166,12 +160,12 @@
                     </ng-template>
                     <!-- end lưới cháu -->
                 </wj-flex-grid>
+                
+                <!-- lưới hỗ trợ in detail -->
+                <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                </wj-flex-grid>
             </div>
             <div class="box-footer">
-                <div class="ccb-group">
-
-                </div>
-
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" (click)="movePage(1)">
                         <span class="glyphicon glyphicon-fast-backward"></span>
@@ -212,10 +206,10 @@
 </app-dialog>
 
 <!--Loading-->
-<div *ngIf="showLoading == true" class="bravo-wait">
+<div *ngIf="showLoading" class="bravo-wait">
     <img src="/assets/img/gears.svg" style="width:50%">
     <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
 </div>
 
-<div *ngIf="showLoading == true" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
 <!--/.Loading-->

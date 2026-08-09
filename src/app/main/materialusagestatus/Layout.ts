@@ -497,8 +497,9 @@ export class LayoutMaterialUsageStatusEditor implements IEditorFormulaDeclaratio
 
     serverUpdated = [
         'Evaluator_ServerUpdated_BuiltinOrder',
-        'Evaluator_ServerUpdated_CreateFormula',
+        
         'Evaluator_ServerUpdated_BudgetDetail_UpdateFromParent',
+        'Evaluator_ServerUpdated_CreateFormula',
         'Evaluator_UpdateInfo_WhenApproveSend'
         
     ];

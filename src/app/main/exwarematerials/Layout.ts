@@ -23,7 +23,7 @@ export class LayoutExWareMaterialsExplorer implements IExplorerFormulaDeclaratio
         Structure: {
             Parent: {
                 Name: 'vB30AccDocEquip_ExploreInventory',
-                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'X3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP','BETONG')",
+                FilterKey: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'X3' AND IsActive=1 AND ProductCostId='{VAR=Filter.ProductCostId}' AND ItemGroupCode NOT IN ('THEP','BETONG','VTPHU')",
                 OrderBy: 'DocDate DESC,DocNo DESC',
                 RowPage: 50
             },
@@ -300,7 +300,7 @@ export class LayoutExWareMaterialsEditor implements IEditorFormulaDeclaration {
                 SendData: {
                     ConstraintKey: "CustomerCode,Stt,DocDate",
                     ParameterXmlPopup: "B30BizDocDetail",
-                    Command: "usp_Web_SendN3FromH7",
+                    Command: "usp_Web_SendX3FromH7",
                     OutputTable: 0,
                     CheckBoxOrder: "Rank1",
                     ColumnCheckBox: "IsTransfer",
@@ -340,6 +340,11 @@ export class LayoutExWareMaterialsEditor implements IEditorFormulaDeclaration {
                     {
                         header: "Tên hàng",
                         binding: "Description0",
+                        width: 200
+                    },
+                    {
+                        header: "Tên hàng (NCC)",
+                        binding: "TenHangNCC",
                         width: 200
                     },
                     {
@@ -758,7 +763,14 @@ export class LayoutExWareMaterialsEditor implements IEditorFormulaDeclaration {
         },
         {
             header: 'Tên mặt hàng',
-            binding: 'Description0',
+            binding: 'ItemName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tên mặt hàng (NCC)',
+            binding: 'Description',
             dataType: 'String',
             width: 200,
             isReadOnly: 'true'

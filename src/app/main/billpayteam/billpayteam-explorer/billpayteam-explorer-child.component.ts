@@ -145,9 +145,9 @@ export class BillPayTeamExplorerChildComponent implements OnInit, OnDestroy {
     let host = grid.hostElement;
     let self = this;
 
-    if (grid.selectedRows[0].dataItem['EmployeeCode'] == localStorage.getItem(SystemConstants.CURRENT_EMPLOYEE).replace(/"/gi, '') ||
-      localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN) == 'true' ||
-      grid.selectedRows[0].dataItem['PositionCode'] == localStorage.getItem(SystemConstants.POSITION_EMPLOYEE).replace(/"/gi, '')) {
+    if (grid.selectedRows[0].dataItem['EmployeeCode'] == localStorage.getItem(SystemConstants.CURRENT_EMPLOYEE).replace(/"/gi, '') || 
+         localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN) == 'true' ||
+         grid.selectedRows[0].dataItem['PositionCode'] == localStorage.getItem(SystemConstants.POSITION_EMPLOYEE).replace(/"/gi, '')) {
       let i = grid.selectedRows[0]._idx;
       if (grid.rows[i + 1] != undefined && grid.rows[i + 1].dataItem['ApproveStatus'] == 1 && localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN) == 'false') {
         alert('Hồ sơ đã được duyệt ở cấp bậc trên, không thể duyệt lại!');

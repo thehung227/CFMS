@@ -40,13 +40,11 @@ export class ProjectValueTableEditorComponent
   @ViewChild("grid1") grid1: wjcGrid.FlexGrid;
   @ViewChild("grid2") grid2: wjcGrid.FlexGrid;
   @ViewChild("grid3") grid3: wjcGrid.FlexGrid;
-  @ViewChild("grid4") grid4: wjcGrid.FlexGrid;
-  @ViewChild("grid5") grid5: wjcGrid.FlexGrid;
 
   @ViewChild("dfpanel") _dfpanel: DynamicFormPanelComponent;
   indexPage = ["/main", "projectvaluetable", "index"];
   indexPage_Editor = ["/main", "projectvaluetable", "detail"];
-  folderName = "Ho_So_Quyet_Toan";
+  folderName = "Bang_Gia_Tri_Du_An";
 
   constructor(
     service: BaseEditorService,
@@ -75,39 +73,11 @@ export class ProjectValueTableEditorComponent
       this.grid,
       this.grid1,
       this.grid2,
-      this.grid3,
-      this.grid4,
-      this.grid5,
+      this.grid3
     ];
-    this.init().then(async () => {
-
-      let _value;
-      const params = new Array<ParameterContract>();
-      const param1 = new ParameterContract();
-
-      _value = localStorage.getItem(SystemConstants.PRODUCTCOSTID).replace(/"/gi, '');
-
-      param1.ParameterName = Global.convertParameterName('ProductCostId');
-      param1.ParameterValue = _value;
-      params.push(param1);
-
-      let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_HSQT_CheckVersion', params).toPromise().then();
-      this.output1 = <Array<Object>>(_data['output']);
-      this._errItemSets1 = this.output1['@_Error'];
-
-      if (this._errItemSets1  == true) {
-        this.grid.allowAddNew = false;
-        this.grid.isReadOnly = true;
-      }
-      else {
-        this.grid.allowAddNew = true;
-        this.grid.isReadOnly = false;
-      }
-
-    });
+    this.init();
     this.grid2.allowAddNew = false;
     this.grid3.allowAddNew = false;
-    this.grid4.allowAddNew = false;
   }
 
     output: any;
@@ -117,73 +87,55 @@ export class ProjectValueTableEditorComponent
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel;
     this.afterViewInit();
+     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+            let column = e.panel.columns[e.col].binding;
+            let data = s.rows[e.row].dataItem;
+    
+           
+            if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          
+              if (data["IsTitleRow"] == true) {
+                wjcCore.setCss(e.cell, {
+                  color: "blue",
+                  fontWeight: "bold",
+                });
+              } else {
+                  wjcCore.setCss(e.cell, {
+                    color: "",
+                    fontWeight: "",
+                    // fontWeight: '',
+                    // backgroundColor: ''
+                  });
+                }
+              }
+            }
+        });
 
-    // Apply group by 'Gói thầu' for subtotals on grid2
-    this.grid2.itemsSourceChanged.addHandler(() => {
-      this.applyGroupGrid2();
-    });
-
-    this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
-      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
-        let column = e.panel.columns[e.col].binding;
-        let data = s.rows[e.row].dataItem;
-
-        // if (e.panel.cellType == wjcGrid.CellType.Cell) {
-        //           if (data["IsTitleRow"] == true) {
-        //             wjcCore.setCss(e.cell, {
-        //               color: "red",
-        //               fontWeight: "",
-        //               backgroundColor: "",
-        //             });
-        //           } else {
-        //             wjcCore.setCss(e.cell, {
-        //               color: "",
-        //               fontWeight: "",
-        //               backgroundColor: "",
-        //             });
-        //           }
-        //         }
-
-        if (e.panel.cellType == wjcGrid.CellType.Cell) {
-          if (column == "TongGiaTriDuKienQT_ChuaVAT") {
-            wjcCore.setCss(e.cell, {
-              color: "blue",
-              fontWeight: "bold",
-              backgroundColor: "",
-            });
-          } else if (column == "TongDoanhThuDaXacNhan_ChuaVAT") {
-            wjcCore.setCss(e.cell, {
-              color: "blue",
-              fontWeight: "bold",
-              backgroundColor: "",
-            });
-          } else if (
-            column == "DoanhThuConLai_TrucTiep_ChuaVAT" ||
-            column == "DoanhThuConLai_NSC_ChuaVAT" ||
-            column == "PhaiThuConLai_TrucTiep_ChuaVAT" ||
-            column == "PhaiThuConLai_NSC_ChuaVAT" ||
-            column == "TongGiaTriDuKienQT_GomVAT" ||
-            column == "CDTThanhToan_GomVAT" ||
-            column == "PhaiThuConLai_TrucTiep_GomVAT" ||
-            column == "PhaiThuConLai_NSC_GomVAT" ||
-            column == "TongDoanhThuConLai_ChuaVAT" ||
-            column == "PhaiThuConLai_GomVAT"
-          ) {
-            wjcCore.setCss(e.cell, {
-              color: "blue",
-              fontWeight: "bold",
-              backgroundColor: "",
-            });
-          } else {
-            wjcCore.setCss(e.cell, {
-              color: "",
-              fontWeight: "",
-              backgroundColor: "",
-            });
-          }
-        }
-      }
-    });
+      this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+          if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+            let column = e.panel.columns[e.col].binding;
+            let data = s.rows[e.row].dataItem;
+    
+           
+            if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          
+              if (data["IsTitleRow"] == true) {
+                wjcCore.setCss(e.cell, {
+                  color: "blue",
+                  fontWeight: "bold",
+                });
+              } else {
+                  wjcCore.setCss(e.cell, {
+                    color: "",
+                    fontWeight: "",
+                    // fontWeight: '',
+                    // backgroundColor: ''
+                  });
+                }
+              }
+            }
+        });
   }
 
   applyGroupGrid2() {
@@ -215,7 +167,7 @@ export class ProjectValueTableEditorComponent
             if (this._errItemSets == false) {
           this.submit(formData, this.indexPage, isApproveSend).then(() => {
             if (this.allowSendMail) {
-              this.sendMail(formData, 'S1', this.id, false, '1');
+              this.sendMail(formData, 'Y6', this.id, false, '1');
             }
           });
            }
@@ -268,27 +220,6 @@ export class ProjectValueTableEditorComponent
     this._errMess = this.output["@_ErrorMessage"];
   }
 
-  async onClick_2(state?: any) {
-    try {
-      this.showDialog = false; //Thêm dialog
-
-      if (this.editorFrm.valid) {
-        this.showLoading = true;
-        this.taidulieu = true;
-      }
-
-      for (let command of this._layoutDeclare.buttonLoadChild2) {
-        if (this.editorFrm.valid)
-          await this.dfpanel.runConstraint(command).then();
-      }
-
-      this.showLoading = false;
-    } catch (ex) {
-      alert("Xảy ra lỗi trong quá trình thực hiện");
-      console.log(ex);
-      this.showLoading = false;
-    }
-  }
   showDocumentInNewTab(id: any) {
     //exportHtml(layoutPrint.WordName,layoutPrint.FileName, layoutPrint.FolderPath, parentData?.Id_TT)
     let _command = this._layoutDeclare.layout.PrintDocument.Command;

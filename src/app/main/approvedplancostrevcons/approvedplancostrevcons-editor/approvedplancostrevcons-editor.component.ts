@@ -97,6 +97,7 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
       const param2 = new ParameterContract();
       const param3 = new ParameterContract();
       const param4 = new ParameterContract();
+      const param5 = new ParameterContract();
   
       param1.ParameterName = Global.convertParameterName('ProductCostId');
       param1.ParameterValue = this.editorFrm.controls['ProductCostId'].value.toString();
@@ -113,7 +114,11 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
       param4.ParameterName = Global.convertParameterName('UserId');
       param4.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_USERID).replace(/"/gi, '');
       params.push(param4);
-  
+      
+      param5.ParameterName = Global.convertParameterName('State');
+      param5.ParameterValue = state.toString();
+      params.push(param5);
+
       let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CTC_CheckHopDongKhongDuTruBCTC_Approved', params)
         .toPromise().then();
   

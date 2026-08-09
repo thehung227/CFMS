@@ -334,7 +334,8 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
-                    }
+                    },
+                    frozenColumns: 5
                 },
                 {
                     Name: 'vB30BizDocDocument',
@@ -361,11 +362,15 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
                 {
                     Name: 'vB30BizDocApproveLog_Edit',
                     ParentKey: 'CCMBudgetId',
-                    ChildKey: 'BizDocId',
+                    ChildKey: 'BizDocId'
+                },
+                {
+                    Name: 'vB30CCMBudgetMapSupp_Edit',
+                    ParentKey: 'CCMBudgetId',
+                    ChildKey: 'CCMBudgetId',
+                    Sort: 'BuiltinOrder',
                     DefaultValues: {
-                        BizDocId: 'Parent.CCMBudgetId',
-                        DocDate: 'Parent.DocDate',
-                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                        BuiltinOrder: '1'
                     }
                 }
             ]
@@ -491,8 +496,9 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: '{VAR=Branch.Ma_Dvcs},ProductCostId,DocCode,DocDate',
             Command: 'ufn_B30CCMBudget_DefaultDocNo',
-            zExpr: "ProductCostId != ''",
-            DataMember: 'DocNo'
+            zExpr: "ProductCostId != '' && DocNo == ''",
+            DataMember: 'DocNo',
+          
         },
         // 'Evaluator_ServerConstraint_Create_DocNo2': {
         //     EvaluatorName: 'EvaluatorQuery',
@@ -527,8 +533,8 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
         // },        
         'Evaluator_ServerConstraint_Check_ChuaHoanThienDuyetVerTruoc_KhongTaoVerTiep': {
             EvaluatorName: 'EvaluatorValidate',
-            ConstraintKey: 'ProductCostId,CustomerCode,DocCode,{VAR=Branch.Ma_Dvcs},TransType',
-            Command: 'ufn_Coteccons_CheckVer0_ChuaDuyetXong_K8',
+            ConstraintKey: 'ProductCostId,CustomerCode,CategoryCode,DocCode,Id,{VAR=Branch.Ma_Dvcs}',
+            Command: 'ufn_Coteccons_CheckVer0_ChuaDuyetXong_KhoiLuong',
             MessageText: 'Không thể lập mới khi chưa hoàn thiện duyệt phiên bản trước',
             IgnoreError: 0,
             zExpr: 'Id < 0'
@@ -562,10 +568,17 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
         },
         'Evaluator_ServerConstraint_K1_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'ProductCostId,CustomerCode,DocCode,CCMBudgetId,{VAR=Branch.Ma_Dvcs},TransType',
+            ConstraintKey: 'ProductCostId,CustomerCode,DocCode,CCMBudgetId,{VAR=Branch.Ma_Dvcs}',
             Command: 'usp_Coteccons_B30CCMBudgetK1_LoadPrevious',
             zExpr: "ProductCostId != ''",
             OutputTable: 0
+        },
+        'Evaluator_ServerConstraint_MapSupp_GetData': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId,DocCode,CCMBudgetId,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_B30CCMBudgetMapSupp_GetData',
+            zExpr: "ProductCostId != ''",
+            OutputTable: 4
         },
         // không đổi tên 
         'Evaluator_ServerConstraint_LoadDataImport': {
@@ -574,6 +587,14 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             Command: 'usp_Coteccons_CCMBudgetDetail_ImportForWeb',
             OutputTable: 0
         },
+
+        'Evaluator_ServerConstraint_LoadAttact': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ProductCostId',
+            Command: 'usp_PlanQuantity_LoadAttact',
+            OutputTable: 1
+        },
+
         'Evaluator_ServerConstraint_DeleteDataImport': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'ProductCostId,{VAR=Branch.Ma_Dvcs},{VAR=User.UserName}',
@@ -598,14 +619,14 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
         },
         'Evaluator_UpdateInfo_WhenApproveSend': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: '{VAR=User.EmployeeCode},{VAR=EmptyField_BizDocId},CCMBudgetId,{VAR=Branch.Ma_Dvcs},DocCode',
+            ConstraintKey: '{VAR=User.EmployeeCode},{VAR=EmptyField_BizDocId},CCMBudgetId,{VAR=Branch.Ma_Dvcs},ProductCostId,DocCode',
             Command: 'usp_Coteccons_UpdateInfo_WhenApproveSend',
             zExpr: 'ApproveSend == true'
         },
         'Evaluator_ServerUpdated_CCMBudgetDetail_UpdateFromParent': {
             EvaluatorName: 'EvaluatorQuery',
-            ConstraintKey: 'CCMBudgetId',
-            Command: 'usp_Coteccons_CCMBudgetDetail_UpdateFromParentWEB'
+            ConstraintKey: 'CCMBudgetId,DocCode',
+            Command: 'usp_Coteccons_CCMBudgetDetail_UpdateFromParentWEB_Khoiluong'
         },
         'Evaluator_ServerUpdated_CreateFormula': {
             EvaluatorName: 'EvaluatorQuery',
@@ -616,6 +637,7 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
 
     serverConstraint = [
         'Evaluator_ServerConstraint_DefaultDocNo',
+        'Evaluator_ServerConstraint_Check_ImportedExcel'
     ];
 
     serverUpdating = [
@@ -637,7 +659,9 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Check_ChuaHoanThienDuyetVerTruoc_KhongTaoVerTiep',
         //getdataforchild
         'Evaluator_ServerConstraint_Approve_GetData',
-        'Evaluator_ServerConstraint_K1_LoadPrevious'
+        'Evaluator_ServerConstraint_LoadAttact',
+        'Evaluator_ServerConstraint_K1_LoadPrevious',
+        'Evaluator_ServerConstraint_MapSupp_GetData'
     ];
 
     buttonCommand: string[] = [
@@ -722,18 +746,6 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
                 new LookupBoxInput({
-                    key: 'TransType',
-                    label: 'Loại',
-                    lookupKey: 'Class',
-                    // binding: {
-                    //     InvestorCode: 'CustomerCode'
-                    // },
-                    lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode = 'INCURRED'",
-                    validators: [Validators.required],
-                    hideValueMember: true,
-                    col: 6,
-                }, this.srv, this.parentData),
-                new LookupBoxInput({
                     key: 'ProductCostId',
                     label: 'Gói thầu',
                     lookupKey: 'ProductCost',
@@ -745,12 +757,6 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
                     hideValueMember: true,
                     col: 12,
                 }, this.srv, this.parentData),
-                new TextBoxInput({
-                    key: 'Description',
-                    label: 'Nội dung',
-                    type: 'text',
-                    col: 12
-                }),
                 new LookupBoxInput({
                     key: 'ProcessCode',
                     label: 'Quy trình duyệt',
@@ -798,30 +804,22 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
         {
             header: 'Hạng mục',
             binding: 'ActivityCode',
-            width: 150,
+            width: 200,
             validators: "{EXPR=ActivityCode} == ''",
             validatorMessage: 'Mã hạng mục, không được bỏ trắng giá trị',
             ignoreError: 1
         },
-        // {
-        //     header: 'Mã QSum',
-        //     binding: 'QSumCode',
-        //     width: 150,
-        //     // validators: "{EXPR=QSumCode} == ''",
-        //     // validatorMessage: 'Mã hạng mục, không được bỏ trắng giá trị',
-            
-        // },
         {
             header: 'Mã khối lượng',
             binding: 'JobCode',
             dataType: 'Array',
-            lookupKey: 'DmQLKL',
-            bindingList: {
-                Name: 'JobName'
-            },
+            lookupKey: 'DmQLKL', //từ: vB20DmQLKL
+            // bindingList: {
+            //     Name: 'JobName'
+            // },
             // multiSelection: true,
             lookupfilter: 'IsGroup=0 AND IsActive=1',
-            width: 150,
+            width: 100,
             validators: "{EXPR=JobCode} == ''",
             validatorMessage: 'Mã khối lượng, không được bỏ trắng giá trị',
             ignoreError: 1
@@ -838,26 +836,161 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             width: 100
         },
         {
-            header: 'KH Khối lượng (CĐT)',
+            header: 'KH Khối lượng (BoQ)',
             binding: 'OriginalAmount',
             dataType: 'Number',
             isRequired: true,
-            width: 200
+            width: 110,
+            format: 'n2',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
             binding: 'PaymentAmount',
             dataType: 'Number',
             isRequired: true,
-            width: 200
+            width: 110,
+            format: 'n2',
         },
         {
-            header: 'KL Claim được duyệt',
-            binding: 'QuantityClaim',
-            dataType: 'Number',
-            isRequired: true,
-            width: 200
+            header: 'NTP 01',
+            binding: 'Month01',
+            width: 110,
+            format: 'n2',
+            dataType: 'Number'
         },
+        {
+            header: 'NTP 02',
+            binding: 'Month02',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 03',
+            binding: 'Month03',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 04',
+            binding: 'Month04',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 05',
+            binding: 'Month05',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 06',
+            binding: 'Month06',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 07',
+            binding: 'Month07',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 08',
+            binding: 'Month08',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 09',
+            binding: 'Month09',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 10',
+            binding: 'Month10',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        // {
+        //     header: 'NTP 11',
+        //     binding: 'Month11',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 12',
+        //     binding: 'Month12',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 13',
+        //     binding: 'Dt13',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 14',
+        //     binding: 'Dt14',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 15',
+        //     binding: 'Dt15',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 16',
+        //     binding: 'Dt16',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 17',
+        //     binding: 'Dt17',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 18',
+        //     binding: 'Dt18',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 19',
+        //     binding: 'Dt19',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
+        // {
+        //     header: 'NTP 20',
+        //     binding: 'Dt20',
+        //     width: 120,
+        //     format: 'n2',
+        //     dataType: 'Number'
+        // },
         {
             header: 'Dòng tiêu đề',
             binding: 'IsTitleRow',
@@ -865,27 +998,35 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             width: 50,
             isReadOnly: 'true'
         },
-        {
-            header: 'Bậc',
-            binding: 'Level',
-            dataType: 'Number',
-            width: 50,
-            format: 'n0',
-            isReadOnly: 'true'
-        },
-        {
-            header: 'Công thức',
-            binding: 'Formula',
-            width: 250,
-            isReadOnly: 'true'
-        }        
+        // {
+        //     header: 'Bậc',
+        //     binding: 'Level',
+        //     dataType: 'Number',
+        //     width: 50,
+        //     format: 'n0',
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Công thức',
+        //     binding: 'Formula',
+        //     width: 250,
+        //     isReadOnly: 'true'
+        // }
     ];
 
     childColumns1 = [
         {
             header: 'Tên tài liệu',
             binding: 'Description',
-            width: 250
+            width: 250,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Yêu cầu đính kèm',
+            binding: 'Attached',
+            dataType: 'Boolean',
+            width: 60,
+            isReadOnly: 'true'
         },
         {
             header: 'File đính kèm',
@@ -947,7 +1088,7 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             width: 100,
             dataType: 'Array',
             lookupKey: 'Employee',
-            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM B20ProductHuman WHERE IsActive = 1 AND ProductCostId='{EXPR=ProductCostId}' AND PositionCode = '{EXPR=PositionCode}')",
+            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM dbo.ufn_B30BizDocApprove_GetEmployee('{EXPR=ProductCostId}','{EXPR=ProductCostId}','{EXPR=PositionCode}'))",
             validators: "{EXPR=EmployeeCode} == ''",
             validatorMessage: 'Không được bỏ trống giá trị',
             ignoreError: 1
@@ -963,7 +1104,7 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             binding: 'EmployeeCodeReal',
             dataType: 'Array',
             lookupKey: 'Employee',
-            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM B20ProductHuman WHERE IsActive = 1 AND ProductCostId='{EXPR=ProductCostId}' AND PositionCode = '{EXPR=PositionCode}')",
+            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM dbo.ufn_B30BizDocApprove_GetEmployee('{EXPR=ProductCostId}','{EXPR=ProductCostId}','{EXPR=PositionCode}'))",
             width: 120,
             validators: "{EXPR=EmployeeCode} != '' && {EXPR=EmployeeCode}.toString().indexOf(',') > 0 && {EXPR=EmployeeCodeReal} == ''",
             validatorMessage: 'Không được bỏ trống giá trị',
@@ -1035,5 +1176,51 @@ export class LayoutPlanQuantityEditor implements IEditorFormulaDeclaration {
             format: 'dd/MM/yyyy HH:mm',
             width: 150
         }
-    ]
+    ];
+
+    childColumns4 = [
+        {
+            header: 'Code NTP',
+            binding: 'Title',
+            width: 100,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Mã đối tượng',
+            binding: 'CustomerCode',
+            width: 150,
+            dataType: 'Array',
+            lookupKey: 'Customer',
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            bindingList: {
+                Name: "CustomerName"
+            },
+            validators: "{EXPR=CustomerCode} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        },
+        {
+            header: 'Tên đối tượng',
+            binding: 'CustomerName',
+            width: 400,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 150,
+            dataType: 'Array',
+            lookupKey: 'BizDoc_CTC',
+            bindingList: {
+                DocInfo: 'DocInfo'
+            },
+            lookupfilter: "BizDocId IN (SELECT BizDocId FROM dbo.ufn_SOL_FilterContactOnCostReve('{EXPR=ProductCostId}','{EXPR=CustomerCode}'))"
+        },
+        {
+            header: 'Nội dung hợp đồng',
+            binding: 'DocInfo',
+            width: 600,
+            isReadOnly: 'true'
+        },
+    ];
 }

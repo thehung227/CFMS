@@ -165,12 +165,7 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
                     Name: 'vB30BizDocApproveLog_Edit',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
-                    Sort: 'BuiltinOrder',
-                    DefaultValues: {
-                        BizDocId: '',
-                        BuiltinOrder: '1',
-                        DocDate: 'Parent.DocDate'
-                    }
+                    Sort: 'BuiltinOrder'
                 },
                 {
                     Name: 'vB30BizDocApprove_AEditBudget',
@@ -191,6 +186,15 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
                         BizDocId: 'Parent.CCMBudgetId',
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate',
+                    }
+                },
+                {
+                    Name: 'vB30CCMBudgetMapSupp_Edit',
+                    ParentKey: 'CCMBudgetId',
+                    ChildKey: 'CCMBudgetId',
+                    Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        BuiltinOrder: '1'
                     }
                 }
             ]
@@ -255,7 +259,10 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
                     key: 'Description',
                     label: 'Nội dung',
                     type: 'text',
-                    col: 12
+                    // validators: [Validators.required],
+                    col: 12,
+                    isReadOnly: 'true',
+                    style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
                 new LookupBoxInput({
                     key: 'ProcessCode',
@@ -360,21 +367,16 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
         {
             header: 'Hạng mục',
             binding: 'ActivityCode',
-            width: 150
-        },
-        {
-            header: 'Mã QSum',
-            binding: 'QSumCode',
             width: 150,
-            // validators: "{EXPR=QSumCode} == ''",
-            // validatorMessage: 'Mã hạng mục, không được bỏ trắng giá trị',
-            
+            validators: "{EXPR=ActivityCode} == ''",
+            validatorMessage: 'Mã hạng mục, không được bỏ trắng giá trị',
+            ignoreError: 1
         },
         {
             header: 'Mã khối lượng',
             binding: 'JobCode',
             dataType: 'Array',
-            lookupKey: 'DmQLKL',
+            lookupKey: 'DmQLKL', //từ: vB20DmQLKL
             bindingList: {
                 Name: 'JobName'
             },
@@ -397,26 +399,217 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
             width: 100
         },
         {
-            header: 'KH Khối lượng (CĐT)',
+            header: 'KH Khối lượng (BoQ)',
             binding: 'OriginalAmount',
             dataType: 'Number',
             isRequired: true,
-            width: 200
+            width: 110,
+            format: 'n2',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
             binding: 'PaymentAmount',
             dataType: 'Number',
             isRequired: true,
-            width: 200
+            width: 110,
+            format: 'n2',
         },
         {
-            header: 'KL Claim được duyệt',
-            binding: 'QuantityClaim',
-            dataType: 'Number',
-            isRequired: true,
-            width: 200
+            header: 'NTP 01',
+            binding: 'Month01',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
         },
+        {
+            header: 'NTP 02',
+            binding: 'Month02',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 03',
+            binding: 'Month03',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 04',
+            binding: 'Month04',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 05',
+            binding: 'Month05',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 06',
+            binding: 'Month06',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 07',
+            binding: 'Month07',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 08',
+            binding: 'Month08',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 09',
+            binding: 'Month09',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 10',
+            binding: 'Month10',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 11',
+            binding: 'Month11',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 12',
+            binding: 'Month12',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 13',
+            binding: 'Dt13',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 14',
+            binding: 'Dt14',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 15',
+            binding: 'Dt15',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 16',
+            binding: 'Dt16',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 17',
+            binding: 'Dt17',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 18',
+            binding: 'Dt18',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 19',
+            binding: 'Dt19',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 20',
+            binding: 'Dt20',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 21',
+            binding: 'Dt21',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 22',
+            binding: 'Dt22',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 23',
+            binding: 'Dt23',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 24',
+            binding: 'Dt24',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 25',
+            binding: 'Dt25',
+            width: 120,
+            format: 'n2',
+            dataType: 'Number'
+        },
+        {
+            header: 'Dòng tiêu đề',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            width: 50,
+            isReadOnly: 'true'
+        },
+        // {
+        //     header: 'Bậc',
+        //     binding: 'Level',
+        //     dataType: 'Number',
+        //     width: 50,
+        //     format: 'n0',
+        //     isReadOnly: 'true'
+        // },
+        // {
+        //     header: 'Công thức',
+        //     binding: 'Formula',
+        //     width: 250,
+        //     isReadOnly: 'true'
+        // }
     ];
 
     childColumns1 = [
@@ -512,7 +705,7 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
             width: 100,
             dataType: 'Array',
             lookupKey: 'Employee',
-            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM B20ProductHuman WHERE IsActive = 1 AND ProductCostId='{EXPR=ProductCostId}' AND PositionCode = '{EXPR=PositionCode}')",
+            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM dbo.ufn_B30BizDocApprove_GetEmployee('{EXPR=ProductCostId}','{EXPR=ProductCostId}','{EXPR=PositionCode}'))",
             validators: "{EXPR=EmployeeCode} == ''",
             validatorMessage: 'Không được bỏ trống giá trị',
             ignoreError: 1
@@ -528,7 +721,7 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
             binding: 'EmployeeCodeReal',
             dataType: 'Array',
             lookupKey: 'Employee',
-            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM B20ProductHuman WHERE IsActive = 1 AND ProductCostId='{EXPR=ProductCostId}' AND PositionCode = '{EXPR=PositionCode}')",
+            lookupfilter: "IsActive=1 AND Code IN (SELECT EmployeeCode FROM dbo.ufn_B30BizDocApprove_GetEmployee('{EXPR=ProductCostId}','{EXPR=ProductCostId}','{EXPR=PositionCode}'))",
             width: 120,
             validators: "{EXPR=EmployeeCode} != '' && {EXPR=EmployeeCode}.toString().indexOf(',') > 0 && {EXPR=EmployeeCodeReal} == ''",
             validatorMessage: 'Không được bỏ trống giá trị',
@@ -554,7 +747,7 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
             dataType: 'Date',
             format: 'dd/MM/yyyy HH:mm',
             width: 150
-        },        
+        },
         {
             header: 'Được trả hồ sơ',
             binding: 'ApproveReturn',
@@ -587,5 +780,51 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
             allowUpload: false,
             folderId: '{EXPR=IdCCMBudget}'
         }
+    ];
+
+    childColumns4 = [
+        {
+            header: 'Code NTP',
+            binding: 'Title',
+            width: 100,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Mã đối tượng',
+            binding: 'CustomerCode',
+            width: 150,
+            dataType: 'Array',
+            lookupKey: 'Customer',
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            bindingList: {
+                Name: "CustomerName"
+            },
+            validators: "{EXPR=CustomerCode} == ''",
+            validatorMessage: 'Không được bỏ trắng giá trị',
+            ignoreError: 1
+        },
+        {
+            header: 'Tên đối tượng',
+            binding: 'CustomerName',
+            width: 400,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 150,
+            dataType: 'Array',
+            lookupKey: 'BizDoc_CTC',
+            bindingList: {
+                DocInfo: 'DocInfo'
+            },
+            lookupfilter: "BizDocId IN (SELECT BizDocId FROM dbo.ufn_SOL_FilterContactOnCostReve('{EXPR=ProductCostId}','{EXPR=CustomerCode}'))"
+        },
+        {
+            header: 'Nội dung hợp đồng',
+            binding: 'DocInfo',
+            width: 600,
+            isReadOnly: 'true'
+        },
     ];
 }

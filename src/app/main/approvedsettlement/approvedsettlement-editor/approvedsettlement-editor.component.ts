@@ -35,7 +35,7 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
     @ViewChild('dataPopup') dataPopup: Popup;
   
-
+  indexPage_Editor = ['/main', 'approvedsettlement', 'detail'];
   indexPage = ['/main', 'settlement', 'index'];
   folderName = '04.Quyet_Toan_Hop_Dong';
 
@@ -71,7 +71,22 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+      // Render cột HrefLink thành nút bấm mở link trên tab mới
+          this.grid4.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+            if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+            let col = s.columns[e.col];
+            if (!col || col.binding != 'HrefLink') return;
+      
+            let url = (s.getCellData(e.row, e.col, false) || '').toString().trim();
+            if (url) {
+              e.cell.innerHTML = '<button type="button" class="btn btn-link" '
+                + 'style="padding:0;color:#1565c0;text-decoration:underline;cursor:pointer;" '
+                + 'onclick="event.stopPropagation();window.open(\'' + url.replace(/'/g, "\\'") + '\',\'_blank\')">'
+                + 'Link</button>';
+            } else {
+              e.cell.innerHTML = '';
+            }
+          });
     //this.wordWrapGrid();
   }
 
@@ -79,8 +94,8 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
     this.destroy();
   }
 
-  onSubmit(formData: any) {
-    this.submit(formData, this.indexPage);
+onSubmit(formData: any) {
+    this.submit(formData, this.indexPage_Editor);
   }
 
   backClick() {
@@ -185,6 +200,29 @@ async saveData(formData: any,state: any) {
     location.reload();         // Reload lại trang
   }
 
+  async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+         console.log(ex);
+      alert("Load dữ liệu thành công");
+   
+      this.showLoading = false;
+    }
+  }
 
   doubleClickGrid(grid: wjcGrid.FlexGrid) {
     let navigateUrl: any[] = [];

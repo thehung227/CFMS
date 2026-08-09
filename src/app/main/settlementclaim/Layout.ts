@@ -729,7 +729,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     label: 'Giá trị HĐ (trước VAT)',
                     type: 'number',
                     col: 6,
-                    isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
                 // new NumberBoxInput({
@@ -746,7 +745,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     type: 'number',
                     col: 6,
                     isNewRow: true,
-                    isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                     
                 }),
@@ -794,7 +792,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     type: 'number',
                     col: 6,
                     isNewRow: true,
-                    isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
                 // new CheckBoxInput({
@@ -811,7 +808,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     // isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;',
-                    isDisabled: "{EXPR=IsAdjusted} != 1",
                     // style: 'background-color:#F1EDED;border-radius:8px;',
                 }),
                 new NumberBoxInput({
@@ -820,7 +816,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     type: 'number',
                     col: 6,
                     style: 'background-color:#F1EDED;border-radius:8px;',
-                    isReadOnly: 'true',
                     // style: 'background-color:#F1EDED;border-radius:8px;',
                 }),
                 new NumberBoxInput({
@@ -858,7 +853,6 @@ export class LayoutSettlementClaimEditor implements IEditorFormulaDeclaration {
                     type: 'number',
                     col: 6,
                     isNewRow: true,
-                    isReadOnly: 'true'
                     // style: 'background-color:#F8F0D7;border-radius:8px;'
                 }),
                 new DateBoxInput({

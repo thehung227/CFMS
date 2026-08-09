@@ -30,6 +30,7 @@ export class PaymentExtraProposalEditorComponent extends BaseEditorComponent imp
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
 
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
@@ -58,13 +59,14 @@ export class PaymentExtraProposalEditorComponent extends BaseEditorComponent imp
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     //this.grid1.isReadOnly = true;
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
     this.grid2.isReadOnly = true;
     this.grid3.isReadOnly = true;
+    this.grid4.allowAddNew = false;
    
     // this.grid5.allowAddNew = false;
 

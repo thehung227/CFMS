@@ -67,7 +67,22 @@ export class SettlementEditorComponent extends BaseEditorComponent implements On
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+    // Render cột HrefLink thành nút bấm mở link trên tab mới
+        this.grid3.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+          if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+          let col = s.columns[e.col];
+          if (!col || col.binding != 'HrefLink') return;
+    
+          let url = (s.getCellData(e.row, e.col, false) || '').toString().trim();
+          if (url) {
+            e.cell.innerHTML = '<button type="button" class="btn btn-link" '
+              + 'style="padding:0;color:#1565c0;text-decoration:underline;cursor:pointer;" '
+              + 'onclick="event.stopPropagation();window.open(\'' + url.replace(/'/g, "\\'") + '\',\'_blank\')">'
+              + 'Link</button>';
+          } else {
+            e.cell.innerHTML = '';
+          }
+        });
   }
 
   ngOnDestroy() {

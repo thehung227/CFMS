@@ -63,6 +63,12 @@ export class LayoutData {
                         width: 300,
                         
                     },
+                     {
+                        header: 'Tên vật tư (NCC)',
+                        binding: 'Description',
+                        width: 300,
+                        
+                    },
                     {
                         header: 'Thương hiệu',
                         binding: 'TradeMark',

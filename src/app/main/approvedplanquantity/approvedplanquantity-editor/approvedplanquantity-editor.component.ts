@@ -28,6 +28,7 @@ export class ApprovedPlanQuantityEditorComponent extends BaseEditorComponent imp
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'plansigncon', 'index'];
@@ -50,13 +51,14 @@ export class ApprovedPlanQuantityEditorComponent extends BaseEditorComponent imp
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     this.grid.allowAddNew = false;
     this.grid1.isReadOnly = true;
     this.grid2.isReadOnly = true;
     this.grid3.allowAddNew = false;
     this.grid.allowSorting = true;
+    this.grid4.isReadOnly = true;
 
     this.dbClickCellContent(this.grid1);
   }
@@ -65,6 +67,28 @@ export class ApprovedPlanQuantityEditorComponent extends BaseEditorComponent imp
     this.dfpanel = this._dfpanel;
     this.afterViewInit();
     //this.wordWrapGrid();
+    this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+
+      if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
+        let data = s.rows[e.row].dataItem;
+
+        if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          if (data['IsTitleRow'] == true) {
+            wjcCore.setCss(e.cell, {
+              color: 'blue',
+              fontWeight: 'bold'
+            });
+          }
+          else {
+            wjcCore.setCss(e.cell, {
+              color: '',
+              fontWeight: '',
+              // backgroundColor: ''
+            });
+          }
+        }
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -101,7 +125,7 @@ export class ApprovedPlanQuantityEditorComponent extends BaseEditorComponent imp
       // });
 
       this.dfpanel.runConstraintVer2('Evaluator_ServerUpdating_UpdateStatusByApproveStatus').then(() => {
-        this.sendMail(this.editorFrm, 'K8', this.parentData['IdCCMBudget'], false, state).then(() => {
+        this.sendMail(this.editorFrm, this.parentData['DocCode'], this.parentData['IdCCMBudget'], false, state).then(() => {
           this.router.navigate(['/main', 'notifications', 'index']);
         });
       });

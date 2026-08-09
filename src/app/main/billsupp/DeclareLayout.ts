@@ -760,7 +760,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
        
         ////'Evaluator_ServerConstraint_Check_GiaTriThiCong',
       
-        // 'Evaluator_ServerConstraint_Amount_TamUng_Compare_Amount_HoanTra',
+        'Evaluator_ServerConstraint_Amount_TamUng_Compare_Amount_HoanTra',
         // 'Evaluator_ServerConstraint_Check_UserModified'
     ]
 
@@ -1155,7 +1155,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     key: 'Percent_Th',
                     label: '% thanh toán',
                     type: 'number',
-                    // isReadOnly: 'true',
+                    isReadOnly: 'true',
                     format: 'p3',
                     min: 0,
                     max: 1,
@@ -1415,8 +1415,8 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             header: 'Mã Quản lý KL',
             binding: 'PartNo',
             dataType: 'Array',
-            lookupKey: 'DmQLKL',
-            lookupfilter: 'IsActive=1',
+            lookupKey: 'PlanQuantityHM',
+            lookupfilter: "Code='{EXPR=Ma_QLKL}'",
             width: 100
         },
           {
@@ -1939,6 +1939,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
             lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{VAR=Filter.ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
         },
+        
         {
             header: 'Nhóm khoán',
             binding: 'ContractGroup',
@@ -2072,17 +2073,18 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             width: 80
         },
          {
-            header: 'Dòng kế thừa PL',
-            binding: 'InheritanceRowIdPL',
-            width: 0,
-            isReadOnly: 'true'
-        },
-        {
             header: 'Dòng kế thừa',
             binding: 'InheritanceRowId',
             width: 0,
             isReadOnly: 'true'
         },
+         {
+            header: 'Dòng kế thừa PL',
+            binding: 'InheritanceRowIdPL',
+            width: 0,
+            isReadOnly: 'true'
+        },
+       
         {
             header: 'Key',
             binding: 'RowId',
@@ -2188,6 +2190,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
           
         },
+       
         {
             header: 'Nhóm khoán',
             binding: 'ContractGroup',
@@ -2320,18 +2323,19 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
+           {
+            header: 'Dòng kế thừa',
+            binding: 'InheritanceRowId',
+            width: 0,
+            isReadOnly: 'true'
+        },
         {
             header: 'Dòng kế thừa PL',
             binding: 'InheritanceRowIdPL',
             width: 0,
             isReadOnly: 'true'
         },
-        {
-            header: 'Dòng kế thừa',
-            binding: 'InheritanceRowId',
-            width: 0,
-            isReadOnly: 'true'
-        },
+      
         {
             header: 'Key',
             binding: 'RowId',

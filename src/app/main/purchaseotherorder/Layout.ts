@@ -456,6 +456,11 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
                         width: 120
                     },
                     {
+                        header: "STT",
+                        binding: "ItemNo",
+                        width: 120
+                    },
+                    {
                         header: "Mã hàng",
                         binding: "ItemCode",
                         width: 100
@@ -626,6 +631,12 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
             IgnoreError: 0,
             zExpr: 'Id < 0'
         },
+         'Evaluator_ServerConstraint_Detail_LoadPrevious': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'DocDate,ProductCostId,BizDocId,ItemGroupCode,CustomerCode,ClassCode1',
+            Command: 'usp_Newtecons_Budget_GetData',
+            OutputTable: 0
+        },
     };
 
     serverConstraint = [
@@ -635,7 +646,7 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
     serverUpdating = [
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',
         'Evaluator_ServerConstraint_Check_UserModified',
-        'Evaluator_ServerConstraint_Check_PurchasePlan',
+        // 'Evaluator_ServerConstraint_Check_PurchasePlan',
         'Evaluator_ServerConstraint_Check_ChuaHoanThienDuyetVerTruoc_KhongTaoVerTiep'
         // 'Evaluator_ServerConstraint_Check_BCTC'
     ]
@@ -647,7 +658,8 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
     ];
 
     buttonLoadChild: string[] = [
-        'Evaluator_ServerConstraint_Approve_GetData'
+        'Evaluator_ServerConstraint_Approve_GetData',
+        'Evaluator_ServerConstraint_Detail_LoadPrevious'
     ]
 
     buttonCommand: string[] = [
@@ -953,6 +965,13 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
     ];
 
     childColumns = [
+         {
+            header: 'STT kế hoạch',
+            binding: 'ItemNo',
+            dataType: 'String',
+            width: 100,
+            isReadOnly: 'true'
+        },
         {
             header: 'Mã hàng',
             binding: 'ItemCode',

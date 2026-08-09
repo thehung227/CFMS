@@ -13,6 +13,9 @@ import { PanelControlService } from "../../../ui/panel/PanelControlService";
 import { LayoutPurchaseOrderEditor } from "../Layout";
 import { Title } from "@angular/platform-browser";
 import { Location } from "@angular/common";
+import { ParameterContract } from "../../../contracts/parameter.contract";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { Global } from "../../../shared/global";
 
 @Component({
   selector: 'app-purchaseorder-editor-form',
@@ -32,7 +35,9 @@ export class PurchaseOrderEditorComponent extends BaseEditorComponent implements
   indexPage_Editor = ['/main', 'purchaseorder', 'detail'];
   folderName = 'Don_Hang_Mua';
   folderNameSendMail = 'Don_Hang_Mua'
-
+  output: Array<Object>;
+  _errBCTC: boolean = false;
+  _errMess: string;
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
     pcs: PanelControlService,
@@ -121,4 +126,6 @@ export class PurchaseOrderEditorComponent extends BaseEditorComponent implements
     else
       this.submit(formData, this.indexPage_Editor);
   }
+
+ 
 }

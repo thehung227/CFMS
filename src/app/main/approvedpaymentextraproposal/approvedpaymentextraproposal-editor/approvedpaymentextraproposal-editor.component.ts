@@ -33,7 +33,7 @@ export class ApprovedPaymentExtraProposalEditorComponent extends BaseEditorCompo
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
-
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('filter') filter: wjcGridFilter.FlexGridFilter;
 
@@ -67,12 +67,14 @@ export class ApprovedPaymentExtraProposalEditorComponent extends BaseEditorCompo
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
     this.grid2.allowAddNew = false;
-   
+    this.grid3.allowAddNew = false;
+    this.grid4.allowAddNew = false;
+
     // .then(() => {
     //   if (this.parentData['PositionCode'] == 'CB-006') {
     //     this.grid.isReadOnly = false;

@@ -86,6 +86,15 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
         //         }
 
         if (e.panel.cellType == wjcGrid.CellType.Cell) {
+          if (column == 'Quantity2') {
+            // Tô vàng ô 'Khối lượng tính toán' khi giá trị khác với giá trị trước điều chỉnh
+            wjcCore.setCss(e.cell, {
+              color: '',
+              fontWeight: '',
+              backgroundColor: this.isQuantity2Changed(data) ? '#ffff00' : ''
+            });
+          }
+          else
           if (column == 'QuantityTTCDT') {
             wjcCore.setCss(e.cell, {
               color: 'red',
@@ -120,6 +129,24 @@ export class ConcreteLossEditorComponent extends BaseEditorComponent implements 
       }
     });
 
+    // Vẽ lại grid sau khi sửa 'Quantity2' để cập nhật màu tô ngay
+    this.grid.cellEditEnded.addHandler((s, e: wjcGrid.CellRangeEventArgs) => {
+      if (s.columns[e.col] != undefined && s.columns[e.col].binding == 'Quantity2') {
+        s.invalidate();
+      }
+    });
+
+  }
+
+  // Quantity2 (khối lượng tính toán) khác RequestQuantity (khối lượng tính toán trước điều chỉnh)
+  private isQuantity2Changed(data: any): boolean {
+    if (data == undefined) return false;
+
+    let _quantity2 = Number(data['Quantity2']) || 0;
+    let _requestQuantity = Number(data['RequestQuantity']) || 0;
+
+    // Cột hiển thị format 'n3' nên so sánh theo 3 số lẻ để tránh sai lệch dấu chấm động
+    return Math.round(_quantity2 * 1000) != Math.round(_requestQuantity * 1000);
   }
 
   backClick() {

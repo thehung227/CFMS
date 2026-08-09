@@ -61,7 +61,10 @@
           (click)=onclickCollapsablePanel([grid,grid1])>
           <span style="font-size:12pt;"></span>
         </button>
-
+      <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
+        style="margin-bottom:10px;" (click)="onClick_2()">
+        <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tải hóa đơn</span>
+        </button>
         <div class="form-row" style="border:1px solid #ddd;">
 
           <!-- <div class="nav-tabs-custom">
@@ -93,6 +96,11 @@
               <li class="active">
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
                   Tài liệu đính kèm
+                </a>
+              </li>
+               <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
+                  Hóa đơn
                 </a>
               </li>
               <li>
@@ -160,6 +168,15 @@
                 </wj-flex-grid>
                  <!-- lưới hỗ trợ in detail -->
                  <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                </wj-flex-grid>
+              </section>
+            </div>
+             <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
                 </wj-flex-grid>
               </section>
             </div>

@@ -62,7 +62,21 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+     this.grid3.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+              if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+              let col = s.columns[e.col];
+              if (!col || col.binding != 'HrefLink') return;
+        
+              let url = (s.getCellData(e.row, e.col, false) || '').toString().trim();
+              if (url) {
+                e.cell.innerHTML = '<button type="button" class="btn btn-link" '
+                  + 'style="padding:0;color:#1565c0;text-decoration:underline;cursor:pointer;" '
+                  + 'onclick="event.stopPropagation();window.open(\'' + url.replace(/'/g, "\\'") + '\',\'_blank\')">'
+                  + 'Link</button>';
+              } else {
+                e.cell.innerHTML = '';
+              }
+            });
   }
 
   ngOnDestroy() {
@@ -127,6 +141,29 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
   //     alert('Dữ liệu STT duyệt đang bị trùng, giá trị trùng: ' + this._valueDuplicate);
   // }
 
+async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
+  }
+  
   showPrintVoucher_WorklFlow(input: any, gridForm?: wjcGrid.FlexGrid, extInput?: string) {
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
     let html = this.printVoucher_WordFlow(input, 'MAU1', gridForm, extInput, 'DocCode');

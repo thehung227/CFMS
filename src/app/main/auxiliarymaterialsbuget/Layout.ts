@@ -307,10 +307,10 @@ export class LayoutAuxiliaryMaterialsBugetEditor implements IEditorFormulaDeclar
                 },
                  {
                     Name: 'vB30BizDocDocument',
-                    ParentKey: 'BizDocId',
+                    ParentKey: 'Stt',
                     ChildKey: 'BizDocId',
                     DefaultValues: {
-                        BizDocId: 'Parent.BizDocId',
+                        BizDocId: 'Parent.Stt',
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate',
                     }

@@ -16,8 +16,9 @@ import { UploadImage } from "../../ui/input/UploadImage";
 import { getElement } from "wijmo/wijmo";
 import { RichTextBoxInput } from "../../ui/input/RichTextBoxInput";
 import { Global } from "../../shared/global";
+import { build$ } from "protractor/built/element";
 
-// Phê duyệt thanh toán đội nhóm
+// Phê duyệt thanh toán ban chỉ huy/ phòng ban
 export class LayoutApprovedBillPayTeamExplorer implements IExplorerFormulaDeclaration {
     layout = {
         Structure: {
@@ -98,12 +99,21 @@ export class LayoutApprovedBillPayTeamExplorer implements IExplorerFormulaDeclar
 }
 
 export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaration {
-
     buttonLoadChild: string[];
+    linkReporter = {
+        'btnBaoCao': {
+            directory: 'reporterbillpayteam',
+            type: 'view',
+            key: 'REP01_CCM_BILLBCH',
+            parameter: { 'Commandkey': 'REP01_CCM_BILLBCH', 'BizDocId': '{EXPR=BizDocId}'}
+        }
+    }
     serverUpdated: string[];
     buttonCommand: string[];
     constructor(private srv?: any,
         private parentData?: any) { }
+
+    approveGrid = 0;
 
     evaluators = {
         'Evaluator_ServerUpdating_UpdateStatusByApproveStatus': {
@@ -113,13 +123,10 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
         }
     };
 
-    approveGrid = 0;
-
     serverConstraint = [
     ]
 
     serverUpdating = [
-
     ]
 
     columnChanged = {
@@ -146,6 +153,12 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
                     Sort: 'ApproveGroup'
                 },
                 {
+                    Name: 'vB30BizDocCCMDetail_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    Sort: 'BuiltinOrder'
+                },
+                {
                     Name: 'vB30BizDocDocument',
                     ParentKey: 'BizDocId',
                     ChildKey: 'BizDocId',
@@ -159,23 +172,23 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
                         BizDocId: 'Parent.BizDocId',
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate',
-                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     }
                 }
             ]
         },
         PrintDocument: {
             Key: 'BizDocCCMViewer',
-            Text: 'Bảng KLTT ĐTC- {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}',
+            Text: 'TBTT BCH/PB - {VAR=TenGoiThau} - {VAR=DocNo}',
             Command: 'usp_B30BizDocCCM_VoucherForm',
             Command_WorkFlow: 'usp_Coteccons_WorkFlow_GetPrintData',
             LayoutPrint: [
                 {
                     Layout: "MAU1",
-                    Name: "Bảng KLTT đội thi công",
-                    FileName: "Bảng KTLL ĐTC - {EXPR=ProductName} - {EXPR=CustomerName} - {EXPR=Amount_DeNghiTT_Str}",
-                    WordName: "3.Bang_KLTT_DTC.docx",
-                    ExcelName: "3.Bang_KLTT_DTC.xlsx",
+                    Name: "TBTT CP_BCH",
+                    FileName: "TBTT CP_BCH - {EXPR=ProductName} - {EXPR=TotalOriginalAmount_Str}",
+                    WordName: "7.TBTT_CP_BCH.docx",
+                    ExcelName: "",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 }
             ],
@@ -183,20 +196,6 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
             ]
         }
     };
-
-    linkReporter = {
-        'btnPhuLucA': {
-            directory: 'billteam_view',
-            type: 'detail',
-            key: 'Id_TT'
-        },
-        'btnHdPl': {
-            directory: 'regcontract_viewCT',
-            type: 'detail',
-            command: "{EXPR=DocCode_HdPl} == 'C3' ? 'detailc3' : {EXPR=DocCode_HdPl} == 'C4' ? 'detailc4' : ''",
-            key: 'Id_HdPl'
-        }
-    }
 
     panels: PanelBase[] = [
         new TablePanel({
@@ -215,7 +214,6 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
                 new TextBoxInput({
                     key: 'DocNo',
                     label: 'Số thanh toán',
-                    dataType: 'text',
                     col: 6,
                     validators: [Validators.required],
                     isReadOnly: 'true',
@@ -231,50 +229,45 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
                 new LookupBoxInput({
+                    key: 'PayTeamType',
+                    label: 'Loại thanh toán',
+                    lookupKey: 'Class',
+                    lookupfilter: "ParentCode='PayTeamType' AND Code IN ('00','01','06')",
+                    hideValueMember: false,
+                    
+                    col: 6,
+                    style: 'background-color:#F8F0D7;border-radius:8px;'
+                }, this.srv, this.parentData),
+                new LookupBoxInput({
                     key: 'ProductCostId',
                     label: 'Gói thầu/ PB',
                     lookupKey: 'ProductCost',
-                    validators: [Validators.required],
                     lookupfilter: '',
                     //lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductType IN (1,3) AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ('{VAR=User.IsAdmin}'='True' OR (RowId = '{VAR=Filter.ProductCostId}' AND RowId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}'))))",
-                    hideValueMember: true,
-                    col: 12,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
-                }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'ParentBizDocId',
-                    label: 'Hợp đồng',
-                    lookupKey: 'BizDoc_CTC',
-                    binding: {
-                        CustomerCode: 'CustomerCode',
-                        JobCode: 'JobCode',
-                        ContractType: 'ContractType',
-                        Id: 'Id_HdPl',
-                        DocCode: 'DocCode_HdPl'
-                    },
-                    lookupfilter: "(((DocCode = 'C3' OR (DocCode = 'C4' AND IsSubContractPay = 1)) AND ProductCostId='{EXPR=ProductCostId}') OR (DocCode = 'C3' AND IsSubContractPay = 1)) AND Closed = 0 AND CompletedApprove=1 AND DocDate <= '{EXPR=DocDate}' AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ContractTypeFilter='B2'",
-                    hideValueMember: true,
-                    col: 12,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
-                }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'CustomerCode',
-                    label: 'Đội nhóm',
-                    lookupKey: 'Customer_CCM2',
-                    binding: {
-                        Name: 'Person',
-                        Address: 'Address',
-                        Person: 'ContactPerson'
-                    },
                     validators: [Validators.required],
-                    lookupfilter: "",
-                    hideValueMember: false,
+                    hideValueMember: true,
                     col: 12,
                     isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }, this.srv, this.parentData),
+                new LookupBoxInput({
+                    key: 'ProcessCode',
+                    label: 'Quy trình duyệt',
+                    lookupKey: 'Approve',
+                    lookupfilter: "IsActive=1 AND IsGroup=0",
+                    hideValueMember: false,
+                    validators: [Validators.required],
+                    col: 12,
+                    isReadOnly: 'true',
+                    style: 'background-color:#F1EDED;border-radius:8px;'
+                }, this.srv, this.parentData),
+                new TextBoxInput({
+                    key: 'Description',
+                    label: 'Ghi chú',
+                    col: 12,
+                    isReadOnly: 'true',
+                    style: 'background-color:#F1EDED;border-radius:8px;'
+                }),
                 new TextBoxInput({
                     key: 'PayRequireNum',
                     label: 'Yêu cầu thanh toán số',
@@ -283,184 +276,90 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
                     isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
-                new MultiSelectInput({
-                    key: 'JobCode',
-                    label: 'Công việc',
-                    lookupKey: 'Job',
-                    hideValueMember: false,
-                    col: 6,
-                    isDisabled: 'true'
-                }, this.srv),
-                new LookupBoxInput({
-                    key: 'PayTeamType',
-                    label: 'Loại thanh toán',
-                    lookupKey: 'Class',
-                    lookupfilter: "ParentCode='PayTeamType' AND Code IN ('00','01','03','04')",
-                    hideValueMember: false,
-                    validators: [Validators.required],
-                    col: 6,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F8F0D7;border-radius:8px;'
-                }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'ContractType',
-                    label: 'Loại hợp đồng',
-                    lookupKey: 'ContractType',
-                    hideValueMember: false,
-                    col: 6,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
-                }, this.srv, this.parentData),
-                //
-                new NumberBoxInput({
-                    key: 'ContractValue',
-                    label: 'GTHĐ ban đầu (gồm VAT)',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
-                new NumberBoxInput({
-                    key: 'SubContractValue',
-                    label: 'Điều chỉnh HĐ (gồm VAT)',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
-                new NumberBoxInput({
-                    key: 'Amount_HDPL',
-                    label: 'GTHĐ đ.chỉnh (gồm VAT)',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
-                // new ButtonInput({
-                //     key: 'btnPhuLucA',
-                //     label: 'Bảng khối lượng thanh toán',
-                //     col: 6,
-                //     isDisabled: "'{EXPR=PayTeamType}' != '01'"
-                // }),
-                new ButtonInput({
-                    key: 'btnHdPl',
-                    label: 'Xem hợp đồng',
-                    style: 'background-color:#9cc09c;',
-                    col: 6
-                }),
-                new NumberBoxInput({
-                    key: 'Amount_KHKK',
-                    label: 'Giá trị KHKK (chưa VAT)',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
-                new LookupBoxInput({
-                    key: 'BizDocId_TT',
-                    label: 'Bảng KL thanh toán',
-                    lookupKey: 'BizDocCCM',
-                    hideValueMember: true,
-                    binding: {
-                        DocNo: 'DocNo',
-                        Id: 'Id_TT'
-                    },
-                    lookupfilter: "DocCode IN ('B2') AND DocDate <= '{EXPR=DocDate}' AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ProductCostId='{EXPR=ProductCostId}' AND ParentBizDocId='{EXPR=ParentBizDocId}' AND CustomerCode='{EXPR=CustomerCode}' AND BizDocId NOT IN (SELECT BizDocId_TT FROM B30BizDocCCM WHERE DocCode='P2' AND IsActive=1 AND BizDocId_TT <> '' AND BizDocId <> '{EXPR=BizDocId}' AND ProductCostId='{EXPR=ProductCostId}' AND ParentBizDocId='{EXPR=ParentBizDocId}')",
-                    col: 6,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
-                }, this.srv, this.parentData),
-                new NumberBoxInput({
-                    key: 'Amount_BCTC',
-                    label: 'Giá trị BCTC (chưa VAT)',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
-                new NumberBoxInput({
-                    key: 'Amount_ThiCong',
-                    label: 'Tổng GT khoán thi công',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
                 new NumberBoxInput({
                     key: 'Amount_TamUng',
                     label: 'Giá trị tạm ứng',
                     col: 6,
-                    isDisabled: 'true'
+                    
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
                 }),
-                new NumberBoxInput({
-                    key: 'Amount_THDenKyNay',
-                    label: 'GT thực hiện đến kỳ này',
-                    col: 6,
-                    isDisabled: 'true'
-                }),
+                // new NumberBoxInput({
+                //     key: 'Amount_HoanTra',
+                //     label: 'Giá trị hoàn trả tạm ứng',
+                //     col: 6,
+                //     isNewRow: 'true',
+                //     //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                // }),
                 new NumberBoxInput({
                     key: 'Amount_HoanTra',
-                    label: 'Giá trị hoàn trả tạm ứng',
+                    label: 'Giá trị hoàn trả tạm ứng đến kỳ trước',
                     col: 6,
-                    isDisabled: 'true'
+                    isDisabled: 'true',
+                    isNewRow: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
                 }),
                 new NumberBoxInput({
-                    key: 'Amount_TongTTDenKyNay',
-                    label: 'Tổng GTTT đến kỳ này',
+                    key: 'Amount_GiuLai',
+                    label: 'Giá trị hoàn trả tạm ứng kỳ này',
                     col: 6,
-                    isDisabled: 'true'
+                    isNewRow: 'true',
+                    //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
                 }),
                 new NumberBoxInput({
-                    key: 'Amount_TTKyTruoc',
+                    key: 'Amount_TTKyTruoc',//'PaymentAmount_KyTruoc',
                     label: 'Tổng GTTT đến kỳ trước',
                     col: 6,
                     isDisabled: 'true'
                 }),
                 new NumberBoxInput({
-                    key: 'Amount_DeNghiTT',
-                    label: 'Giá trị đề nghị thanh toán',
-                    col: 6,
-                    isDisabled: 'true'
+                    key: 'Amount_DeNghiTT',//'TotalOriginalAmount',
+                    label: 'GTTT kỳ này (gồm VAT)',
+                    isDisabled: 'true',
+                    col: 6
                 }),
-                new LookupBoxInput({
-                    key: 'ProcessCode',
-                    label: 'Quy trình duyệt',
-                    lookupKey: 'Approve',
-                    lookupfilter: "IsGroup=0 AND IsActive=1",
-                    hideValueMember: false,
-                    col: 12,
-                    validators: [Validators.required],
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
-                }, this.srv, this.parentData),
-                new TextBoxInput({
-                    key: 'Description',
-                    label: 'Ghi chú',
-                    dataType: 'text',
-                    col: 12,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
+                new NumberBoxInput({
+                    key: 'Amount_TongTTDenKyNay',//'PaymentAmount_KyNay',
+                    label: 'Tổng GTTT đến kỳ này',
+                    isDisabled: 'true',
+                    col: 6
                 }),
                 new NumberBoxInput({
                     key: 'NumberOfDays',
                     label: 'Số ngày thực hiện',
-                    // type: 'number',
-                    // dataType: 'n0',
-                    col: 6,
-                    isDisabled: 'true'
+                    type: 'number',
+                    dataType: 'n0',
+                    isDisabled: 'true',
+                    col: 6
                 }),
                 new LookupBoxInput({
                     key: 'DeptCode',
                     label: 'Bộ phận',
                     lookupKey: 'Dept',
                     hideValueMember: false,
-                    col: 6,
-                    isDisabled: 'true'
+                    isDisabled: 'true',
+                    col: 6
                 }, this.srv, this.parentData),
                 new LookupBoxInput({
                     key: 'PositionCode',
                     label: 'Cấp bậc duyệt',
                     lookupKey: 'Position',
                     hideValueMember: false,
-                    col: 6,
-                    isDisabled: 'true'
+                    isDisabled: 'true',
+                    col: 6
                 }, this.srv, this.parentData),
                 new LookupBoxInput({
                     key: 'EmployeeCode',
                     label: 'Người duyệt',
                     lookupKey: 'Employee',
                     hideValueMember: false,
-                    col: 6,
-                    isDisabled: 'true'
+                    isDisabled: 'true',
+                    col: 6
                 }, this.srv, this.parentData),
+                new ButtonInput({
+                    key: 'btnBaoCao',
+                    label: 'Báo cáo bill thanh toán BCH/PB',
+                    col: 6
+                }),
                 new RichTextBoxInput({
                     key: 'Comment',
                     label: 'Ý kiến',
@@ -523,7 +422,132 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
         }
     ];
 
-    childColumns1 = [
+      childColumns1 = [
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            width: 50
+        },
+      
+      
+        {
+            header: 'Diễn giải',
+            binding: 'Description',
+            width: 250
+        },
+        {
+            header: 'Số hóa đơn',
+            binding: 'AtchDocNo',
+            width: 100
+        },
+   
+       
+         {
+            header: 'Ngày hóa đơn',
+            binding: 'AtchDocDate',
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
+        },
+      
+        // {
+        //     header: 'Đối tượng VAT',
+        //     binding: 'TaxRegName',
+        //     width: 200
+        // },
+        {
+            header: 'MST NCC',
+            binding: 'TaxRegNo',
+            allowEditing: true,
+            width: 100
+        },
+         {
+            header: 'Người nhận tiền',
+            binding: 'DesignerEmployeeCode',
+            width: 100,
+            dataType: 'Array',
+             bindingList: {
+                Name: 'EmployeeName'
+            },
+            lookupKey: 'Customer',
+            lookupfilter: "IsActive=1 AND IsGroup=0 AND Code LIKE 'E-%'"
+            // lookupfilter: "IsGroup=0 AND IsParentAccount=0 AND LEFT(Code,3) IN (SELECT Val FROM dbo.ufn_sys_SplitString((SELECT ListAccount FROM dbo.B20ExpenseCatg WHERE Code = '{EXPR=ExpenseCatgCode}'), ','))"
+        },
+         
+          {
+            header: 'Giá trị thanh toán',
+            binding: 'OriginalAmount',
+            dataType: 'Number',
+            width: 100
+        },
+         {
+            header: 'Người nhận tiền',
+            binding: 'EmployeeName',
+            isReadOnly: 'true',
+            width: 200
+        },
+          {
+            header: 'Số seri',
+            binding: 'AtchSerialNo',
+            width: 100
+        },
+        {
+            header: 'Giá trị hóa đơn (chưa VAT)',
+            binding: 'Amount_ThNotVAT',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+       
+        {
+            header: 'VAT',
+            binding: 'Amount3_Th',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+         {
+            header: 'Giá trị hóa đơn (gồm VAT)',
+            binding: 'Amount_Th',
+            dataType: 'Number',
+            isReadOnly: 'true',
+            width: 120
+        },
+      
+       
+       
+        
+        {
+            header: 'Dòng tiêu đề',
+            binding: 'IsTitleRow',
+            dataType: 'Boolean',
+            isReadOnly: 'true',
+            width: 50
+        },
+        {
+            header: 'Bậc',
+            binding: 'Level',
+            dataType: 'Number',
+            width: 50,
+            isReadOnly: 'true',
+            format: 'n0'
+        },
+        {
+            header: 'Công thức',
+            binding: 'Formula',
+            width: 200,
+            isReadOnly: 'true'
+        },
+
+         {
+            header: 'Invoice',
+            binding: 'InvoiceId',
+            width: 200,
+            isReadOnly: 'true'
+        }
+    ];
+
+    childColumns2 = [
         {
             header: 'Mã tài liệu',
             binding: 'DocumentCode',
@@ -562,7 +586,7 @@ export class LayoutApprovedBillPayTeamEditor implements IEditorFormulaDeclaratio
         }
     ];
 
-    childColumns2 = [
+    childColumns3 = [
         {
             header: 'STT duyệt',
             binding: 'ApproveGroup',

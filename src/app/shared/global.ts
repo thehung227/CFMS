@@ -135,6 +135,27 @@ export class Global {
       Name: 'TableNames',
       Value: 'B30CCMBudgetDetail'
     },
+    '{VAR=TableNames_B30CCMBudgetDetailKL1}': {
+      Name: 'TableNames',
+      Value: 'B30CCMBudgetDetailKL1'
+    },
+    '{VAR=TableNames_B30CCMBudgetDetailKL2}': {
+      Name: 'TableNames',
+      Value: 'B30CCMBudgetDetailKL2'
+    },
+    '{VAR=TableNames_B30CCMBudgetDetailKL3}': {
+      Name: 'TableNames',
+      Value: 'B30CCMBudgetDetailKL3'
+    },
+    '{VAR=TableNames_B30CCMBudgetDetailKL4}': {
+      Name: 'TableNames',
+      Value: 'B30CCMBudgetDetailKL4'
+    },
+    '{VAR=TableNames_B30CCMBudgetDetailKL5}': {
+      Name: 'TableNames',
+      Value: 'B30CCMBudgetDetailKL5'
+    },
+   
     '{VAR=Keys_B30CCMBudgetDetail}': {
       Name: 'Keys',
       Value: 'CCMBudgetId'

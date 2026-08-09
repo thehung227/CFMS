@@ -63,6 +63,11 @@
                   BPMH đề xuất
                 </a>
               </li>
+               <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
+                  Công nợ phải thu
+                </a>
+              </li>
               <li>
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">
                   WorkFlow
@@ -116,6 +121,17 @@
             <div class="tab-pane" id="tab4">
               <section id="new">
                 <wj-flex-grid class="grid3" #grid3 [ngStyle]="setHeightGrid()">
+                  
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                  <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+                </wj-flex-grid>
+              </section>
+            </div>
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 [ngStyle]="setHeightGrid()">
                   
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}

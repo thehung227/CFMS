@@ -60,7 +60,7 @@ export class LayoutApprovedPlanCashFlowSiteEditor implements IEditorFormulaDecla
     layout = {
         Structure: {
             Parent: {
-                Name: 'vB30BizDocApprove_CCMBudgetEdit',
+                Name: 'vB30BizDocApprove_CCMBudgetEditK6',
                 DefaultValues: {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     DocCode: 'K3',
