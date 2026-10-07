@@ -263,6 +263,17 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                         TaxCode: 'Parent.TaxCode'
                     }
                 },
+                {
+                    // Thanh toán 3 bên (grid5)
+                    Name: 'vB30BizDocCCMTripartite_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1',
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}'
+                    }
+                },
               
             ]
         },
@@ -383,6 +394,19 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
     }
 
     evaluators = {
+        // Thanh toán 3 bên trên đầu phiếu (không lưu):
+        //   Tổng = tổng "Thanh toán kỳ này" của tab 3 bên (grid5); Còn lại = Giá trị đề nghị thanh toán - Tổng
+        'Evaluator_Amount_TT3Ben_Calculate': {
+            EvaluatorName: 'EvaluatorSumChild',
+            DataMember: "Amount_TT3Ben",
+            Value: "PayAmount",
+            Tables: 5
+        },
+        'Evaluator_Amount_ConLaiTT3Ben_Calculate': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: "Amount_ConLaiTT3Ben",
+            Value: "Amount_DeNghiTT - Amount_TT3Ben"
+        },
         'Evaluator_Amount_ThiCong_Calculate': {
             EvaluatorName: 'EvaluatorSumChild',
             DataMember: "Amount_ThiCongNotVAT",
@@ -572,6 +596,13 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             Command: 'usp_Coteccons_BillThanhToan_LoadPLA04',
             OutputTable: 4
         },
+        // Nạp tab "Thanh toán 3 bên" từ tab thanh toán 3 bên của hợp đồng (giữ lại % đã lưu)
+        'Evaluator_ServerConstraint_Load_TT3Ben': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'ParentBizDocId,BizDocId,ProductCostId,CustomerCode,DocDate,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_Newtecons_BillThanhToan_LoadTT3Ben',
+            OutputTable: 5
+        },
         'Evaluator_ServerConstraint_Amount_TTKyTruoc': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId,ProductCostId,ParentBizDocId,{VAR=Branch.Ma_Dvcs},DocCode,DocDate,CustomerCode',
@@ -738,6 +769,12 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId',
             Command: 'usp_Newtecons_BizDocCCM_UpdateAmountFromChild_B4'
+        },
+        // Thanh toán 3 bên: B4 giữ "Thanh toán kỳ này" người dùng nhập, tính lại lũy kế kỳ trước + tổng cộng; chạy sau RoundAmount
+        'Evaluator_ServerUpdated_TT3Ben_Amount': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'BizDocId',
+            Command: 'usp_Newtecons_BizDocCCMTripartite_UpdateAmount'
         }
     }
 
@@ -777,7 +814,8 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerUpdated_CreateFormula_BizDocCCMDetail04',
         'Evaluator_ServerUpdated_BizDocCCMDetail_UpdateFromParent',
         'Evaluator_ServerUpdated_Amount_KHKK_BCTC',
-        'Evaluator_ServerUpdated_BizDocCCM_RoundAmount'
+        'Evaluator_ServerUpdated_BizDocCCM_RoundAmount',
+        'Evaluator_ServerUpdated_TT3Ben_Amount'
     ]
 
     buttonLoadChild = [
@@ -796,12 +834,15 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Load_PL01',
         'Evaluator_ServerConstraint_Load_PL02',
         'Evaluator_ServerConstraint_Load_PL03',
-        'Evaluator_ServerConstraint_Load_PL04'
+        'Evaluator_ServerConstraint_Load_PL04',
+        'Evaluator_ServerConstraint_Load_TT3Ben'
     ]
 
     buttonCommand: string[] = [
         'Evaluator_Amount_ThiCong_Calculate',
-        'Evaluator_Amount_THDenKyNay_Calculate'
+        'Evaluator_Amount_THDenKyNay_Calculate',
+        'Evaluator_Amount_TT3Ben_Calculate',
+        'Evaluator_Amount_ConLaiTT3Ben_Calculate'
     ]
 
     importCommand: string[] = [
@@ -866,6 +907,16 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
         Amount_TongTTDenKyNay: {
             Evaluators: [
                 'Evaluator_Amount_DeNghiTT_Calculate'
+            ]
+        },
+        Amount_DeNghiTT: {
+            Evaluators: [
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
+            ]
+        },
+        Amount_TT3Ben: {
+            Evaluators: [
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
             ]
         },
         Amount_TTKyTruoc: {
@@ -1381,6 +1432,23 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                     labelCol: 6,
                     //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
                 }),
+                // Thanh toán 3 bên: không lưu, tính từ tab "Thanh toán 3 bên"
+                new NumberBoxInput({
+                    key: 'Amount_TT3Ben',
+                    label: 'Tổng giá trị thanh toán 3 bên (gồm VAT)',
+                    type: 'number',
+                    col: 6,
+                    isDisabled: 'true',
+                    labelCol: 6
+                }),
+                new NumberBoxInput({
+                    key: 'Amount_ConLaiTT3Ben',
+                    label: 'Số tiền còn lại (gồm VAT)',
+                    type: 'number',
+                    col: 6,
+                    isDisabled: 'true',
+                    labelCol: 6
+                }),
                 new LookupBoxInput({
                     key: 'CurrencyCode',
                     label: 'Mã tiền tệ',
@@ -1393,6 +1461,63 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
                 }, this.srv, this.parentData)
             ]
         })
+    ];
+
+    // Tab "Thanh toán 3 bên" (grid5): chỉ cột "Thanh toán kỳ này" được nhập, khoá ở component (beginningEdit/pastingCell)
+    childColumns5 = [
+        {
+            header: 'STT',
+            binding: 'BuiltinOrder',
+            dataType: 'Number',
+            width: 60,
+            format: 'n0',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Mã đối tượng',
+            binding: 'CustomerCode',
+            width: 120,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tên đối tượng',
+            binding: 'CustomerName',
+            width: 300,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 160,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nội dung hợp đồng',
+            binding: 'ContractDescription',
+            width: 350,
+            isReadOnly: 'true'
+        },
+       {
+            header: 'Thanh toán kỳ này',
+            binding: 'PayAmount',
+            dataType: 'Number',
+            width: 150
+        },
+        {
+            header: 'Thanh toán đến kỳ trước',
+            binding: 'PayAmountPrev',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        
+        {
+            header: 'Tổng cộng',
+            binding: 'PayAmountTotal',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        }
     ];
 
     childColumns = [
@@ -1939,7 +2064,11 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
             lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{VAR=Filter.ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
         },
-        
+          {
+            header: 'Dòng kế thừa',
+            binding: 'InheritanceRowId',
+            width: 150
+        },
         {
             header: 'Nhóm khoán',
             binding: 'ContractGroup',
@@ -2072,12 +2201,7 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             dataType: 'Boolean',
             width: 80
         },
-         {
-            header: 'Dòng kế thừa',
-            binding: 'InheritanceRowId',
-            width: 0,
-            isReadOnly: 'true'
-        },
+       
          {
             header: 'Dòng kế thừa PL',
             binding: 'InheritanceRowIdPL',
@@ -2190,7 +2314,11 @@ export class LayoutBillSuppEditor implements IEditorFormulaDeclaration {
             // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
           
         },
-       
+         {
+            header: 'Dòng kế thừa',
+            binding: 'InheritanceRowId',
+            width: 150
+        },
         {
             header: 'Nhóm khoán',
             binding: 'ContractGroup',

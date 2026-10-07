@@ -31,6 +31,7 @@ export class ApprovedBillPaySuppEditorComponent extends BaseEditorComponent impl
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('dataPopup') dataPopup: Popup;
   indexPage_Editor = ['/main', 'approvedbillpaysupp', 'detail'];
@@ -55,12 +56,16 @@ export class ApprovedBillPaySuppEditorComponent extends BaseEditorComponent impl
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
-    this.init();
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
+    this.init().then(() => this.refreshTongThanhToan3Ben());
     this.grid.isReadOnly = true;
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
     this.grid2.isReadOnly = true;
+    // Thanh toán 3 bên của Bảng KL thanh toán liên kết: chỉ xem
+    this.grid4.isReadOnly = true;
+    this.grid4.allowAddNew = false;
+    this.grid4.allowDelete = false;
 
     this.dbClickCellContent(this.grid);
   }
@@ -85,6 +90,12 @@ export class ApprovedBillPaySuppEditorComponent extends BaseEditorComponent impl
         }
       });
     }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên của Bảng KL thanh toán liên kết và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint('Evaluator_ServerConstraint_Amount_TT3Ben');
+    await this.dfpanel.runConstraint('Evaluator_Amount_ConLaiTT3Ben_Calculate');
+  }
 
   ngOnDestroy() {
     this.destroy();

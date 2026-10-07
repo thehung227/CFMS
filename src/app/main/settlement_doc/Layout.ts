@@ -339,6 +339,19 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
     }
 
     evaluators = {
+        // Thanh toán 3 bên của Bill quyết toán liên kết (không lưu):
+        //   Tổng lấy từ tab 3 bên của Bill (BizDocId_PL); Còn lại = Số tiền phải TT đợt này - Tổng
+        'Evaluator_ServerConstraint_Amount_TT3Ben': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'BizDocId_PL',
+            Command: 'usp_Newtecons_TT3Ben_GetAmount',
+            DataMember: 'Amount_TT3Ben'
+        },
+        'Evaluator_Amount_ConLaiTT3Ben_Calculate': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: 'Amount_ConLaiTT3Ben',
+            Value: 'ValueOfPayPeriod - Amount_TT3Ben'
+        },
         'Evaluator_AriseValue_Calculator': {
             EvaluatorName: 'EvaluatorCaculate',
             DataMember: 'AriseValue',
@@ -518,6 +531,17 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
     ];
 
     columnChanged = {
+        BizDocId_PL: {
+            Evaluators: [
+                'Evaluator_ServerConstraint_Amount_TT3Ben',
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
+            ]
+        },
+        ValueOfPayPeriod: {
+            Evaluators: [
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
+            ]
+        },
         ValueOfWork: {
             Evaluators: [
                 'Evaluator_ValueOfWorkAddVAT_Calculator',
@@ -888,6 +912,21 @@ export class LayoutSettlement_DocEditor implements IEditorFormulaDeclaration {
                 new NumberBoxInput({
                     key: 'ValueOfPayPeriod',
                     label: 'Số tiền phải TT đợt này',
+                    type: 'number',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                // Thanh toán 3 bên: không lưu, lấy từ tab "Thanh toán 3 bên" của Bảng KLQT
+                new NumberBoxInput({
+                    key: 'Amount_TT3Ben',
+                    label: 'Tổng giá trị thanh toán 3 bên',
+                    type: 'number',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'Amount_ConLaiTT3Ben',
+                    label: 'Số tiền còn lại',
                     type: 'number',
                     isDisabled: 'true',
                     col: 6

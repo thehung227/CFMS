@@ -96,7 +96,7 @@ export class PlanSignStatusExplorerComponent extends BaseExplorerComponent imple
 
   }
 
-  private _groupBy = 'TypeXDME';
+  private _groupBy = 'ProductName';
   get groupBy(): string {
     return this._groupBy;
   }

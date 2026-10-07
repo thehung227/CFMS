@@ -77,7 +77,10 @@
                             </li>  
                             <li>
                                 <a href="#tab7" data-toggle="tab" (click)="onTabClick(grid6)">Điều khoản chiết khấu</a>
-                            </li>                   
+                            </li>    
+                            <li>
+                                <a href="#tab8" data-toggle="tab" (click)="onTabClick(grid7)">Thanh toán 3 bên</a>
+                            </li>                 
                         </ul>
                     </div>
                     <div class="tab-content">
@@ -179,6 +182,20 @@
                                 </wj-flex-grid>
                             </section>
                         </div>   
+                        <div class="tab-pane" id="tab8">
+                            <section id="new">
+                                <wj-flex-grid class="grid7" #grid7 style="height:280px;" [ngStyle]="setHeightGrid()">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid7)>
+                                            <a class="fa fa-trash-o" style="color:red;"></a>
+                                        </button>
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div> 
                     </div>
                 </div>
             </div>

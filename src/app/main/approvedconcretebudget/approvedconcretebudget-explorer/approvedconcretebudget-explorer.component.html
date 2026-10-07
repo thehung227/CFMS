@@ -86,7 +86,10 @@
                                 <button type="button" class="btn btn-warning" title="In" onclick="alert('Chờ thực hiện.....')">
                                         <i class="fa fa-print" aria-hidden="true"></i>
                                     </button>
-                                <button type="button" class="btn btn-info" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()"> 
+                                <button type="button" class="btn bg-teal" title="Báo cáo nhanh sản lượng bê tông" (click)="openQuickConcreteReport(grid)">
+                                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-info" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()">
                                         <i class="fa fa-filter fa-lg" aria-hidden="true"></i>
                                     </button>
                                 <button type="button" class="btn" title="Thu nhóm" (click)="grid.collapseGroupsToLevel(0)">

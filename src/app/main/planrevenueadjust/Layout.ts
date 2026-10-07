@@ -667,7 +667,8 @@ export class LayoutPlanRevenueAdjustEditor implements IEditorFormulaDeclaration 
             header: 'Kỳ trước',
             binding: 'Amount_ThiCong',
             dataType: 'Number',
-            width: 200
+            width: 200,
+            isReadOnly: 'true'
         },
         {
             header: 'Kỳ này',

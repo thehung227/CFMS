@@ -1,0 +1,77 @@
+<div class="newt-page">
+<section class="content">
+    <div class="box" id="box-content">
+        <div class="box-header with-border cps-header">
+            <h3 class="box-title cps-title" id="titleName">
+                <span class="cps-title-icon"><i class="fa fa-check-square-o" aria-hidden="true"></i></span>
+                Hồ sơ đã duyệt
+            </h3>
+            <div class="cps-meta">
+                <span class="nx-summary">
+                    Các hồ sơ bạn đã duyệt. Nhấp đúp (hoặc bấm <b>Xem hồ sơ</b>) để xem nội dung - chế độ chỉ xem, không có nút Duyệt / Trả lại.
+                </span>
+            </div>
+        </div>
+
+        <div class="box-body">
+            <form class="nx-toolbar" role="search" (ngSubmit)="load()">
+                <label class="nx-field">
+                    Duyệt từ
+                    <input type="date" name="fromDate" [(ngModel)]="fromDate" required>
+                </label>
+                <label class="nx-field">
+                    đến
+                    <input type="date" name="toDate" [(ngModel)]="toDate" required>
+                </label>
+                <label class="nx-field" title="Chỉ lấy hồ sơ của gói thầu đang chọn trên thanh tiêu đề">
+                    <input type="checkbox" name="onlyCurrentProduct" [(ngModel)]="onlyCurrentProduct">
+                    Gói thầu đang chọn
+                </label>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa" [ngClass]="showLoading ? 'fa-spinner fa-spin' : 'fa-search'" aria-hidden="true"></i>Tải danh sách
+                </button>
+                <span class="nx-sep"></span>
+                <label class="nx-field">
+                    <i class="fa fa-filter" aria-hidden="true"></i>
+                    <input type="search" name="keyword" [(ngModel)]="keyword" (ngModelChange)="onKeywordChange()"
+                        placeholder="Tìm số hồ sơ, gói thầu, đối tượng..." aria-label="Tìm trong danh sách">
+                </label>
+                <span class="nx-spacer"></span>
+                <button type="button" class="btn btn-success" (click)="openSelected()">
+                    <i class="fa fa-eye" aria-hidden="true"></i>Xem hồ sơ
+                </button>
+                <button type="button" class="btn btn-default nx-icon" title="Thu nhóm" aria-label="Thu nhóm" (click)="collapseGroups(0)">
+                    <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-default nx-icon" title="Mở nhóm" aria-label="Mở nhóm" (click)="collapseGroups(1)">
+                    <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+                </button>
+            </form>
+
+            <wj-flex-grid #grid class="cps-grid" style="height: calc(100vh - 330px); min-height: 420px;">
+                <wj-flex-grid-filter></wj-flex-grid-filter>
+            </wj-flex-grid>
+
+            <div class="nx-empty" *ngIf="!showLoading && totalCount == 0">
+                <i class="fa fa-inbox" aria-hidden="true"></i>
+                Không có hồ sơ nào bạn đã duyệt trong khoảng thời gian này.
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <span class="nx-summary">
+                Hiển thị <b>{{visibleCount | number}}</b> / {{totalCount | number}} bước duyệt.
+                Ngày duyệt màu cam: duyệt sau ngày đến hạn.
+            </span>
+        </div>
+    </div>
+</section>
+</div>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+    <img src="/assets/img/gears.svg" style="width:50%">
+    <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

@@ -1,0 +1,382 @@
+<!-- Main content -->
+<section class="content">
+    <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+        <div class="box" id="box-content">
+
+            <!-- ============================ HEADER ============================ -->
+            <div class="box-header with-border">
+                <h3 class="box-title cps-title" id="titleName">
+                    <span class="cps-title-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                    TÌNH TRẠNG GIẤY PHÉP XÂY DỰNG
+                </h3>
+
+                <div class="box-tools pull-right">
+                    <button class="btn btn-warning dropdown-toggle" type="button" data-toggle="dropdown"
+                        [disabled]="parentData?.Id == -1"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">
+                        <i class="fa fa-print" aria-hidden="true"></i> Mẫu in <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu cps-print-menu"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isPrint">
+                        <li *ngFor="let layout of listLayoutPrint">
+                            <a class="dropdown-item">
+                                {{layout.Name}}
+                                <button class="btn cps-btn-mini cps-btn-pdf" type="button"
+                                    (click)="exportHtml(layout.WordName, layout.FileName, layout.FolderPath)">
+                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                </button>
+                                <button class="btn cps-btn-mini cps-btn-word" type="button"
+                                    (click)="exportWord(layout.WordName, layout.FileName, layout.FolderPath)">
+                                    <i class="fa fa-file-word-o" aria-hidden="true"></i>
+                                </button>
+                            </a>
+                        </li>
+                        <li *ngIf="!listLayoutPrint || listLayoutPrint.length == 0">
+                            <a class="dropdown-item cps-dropdown-empty">Chưa khai báo mẫu in</a>
+                        </li>
+                    </ul>
+
+                    <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm, true)"
+                        [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">
+                        <i class="fa fa-paper-plane-o" aria-hidden="true"></i> Gửi duyệt
+                    </button>
+
+                    <button class="btn btn-success" type="submit"
+                        [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true"
+                        *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">
+                        <i class="fa fa-floppy-o" aria-hidden="true"></i> Lưu
+                    </button>
+
+                    <a class="btn btn-default" [routerLink]="['/main','conspermitstatus','index']">
+                        <i class="fa fa-times" aria-hidden="true"></i> Thoát
+                    </a>
+                </div>
+            </div>
+
+            <!-- ================= THÔNG TIN CHUNG + TỔNG QUAN ================== -->
+            <div class="box-body">
+                <div *ngIf="editorFrm.errors" class="alert alert-danger">
+                    <strong>{{editorFrm.errors['error']}}</strong>
+                </div>
+
+                <div class="row" [ngStyle]="setDisplayPanel()">
+                    <div class="col-md-8 col-xs-12">
+                        <div class="cps-card">
+                            <div class="cps-card-head">
+                                <span class="cps-card-icon cps-icon-blue"><i class="fa fa-file-o" aria-hidden="true"></i></span>
+                                Thông tin chung
+                            </div>
+                            <div *ngFor="let panel of _layoutDeclare.panels" class="form-row">
+                                <df-panel [panel]="panel" #dfpanel [form]="editorFrm"
+                                    (valueChanged)="onValueChanged($event)">
+                                </df-panel>
+                                <div style="clear:both"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 col-xs-12">
+                        <div class="cps-card">
+                            <div class="cps-card-head">
+                                <span class="cps-card-icon cps-icon-indigo"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                                TỔNG QUAN HỒ SƠ
+                            </div>
+                            <div class="row cps-kpi-row">
+                                <div class="col-xs-6">
+                                    <div class="cps-kpi cps-kpi-blue">
+                                        <span class="cps-kpi-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                                        <span class="cps-kpi-body">
+                                            <b>{{summary.total}}</b>
+                                            <small>Tổng số hồ sơ</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="cps-kpi cps-kpi-green">
+                                        <span class="cps-kpi-icon"><i class="fa fa-check-circle" aria-hidden="true"></i></span>
+                                        <span class="cps-kpi-body">
+                                            <b>{{summary.hasPermit}}</b>
+                                            <small>Đã có GPXD</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="cps-kpi cps-kpi-amber">
+                                        <span class="cps-kpi-icon"><i class="fa fa-clock-o" aria-hidden="true"></i></span>
+                                        <span class="cps-kpi-body">
+                                            <b>{{summary.noPermit}}</b>
+                                            <small>Chưa có GPXD</small>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-xs-6">
+                                    <div class="cps-kpi cps-kpi-red">
+                                        <span class="cps-kpi-icon"><i class="fa fa-exclamation-triangle" aria-hidden="true"></i></span>
+                                        <span class="cps-kpi-body">
+                                            <b>{{summary.dueSoon}}</b>
+                                            <small>Sắp đến hạn</small>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="clear:both"></div>
+            </div>
+            <!-- /.box-body -->
+
+            <!-- ============================== TABS ============================= -->
+            <div class="box-footer">
+
+                <div class="form-row cps-tab-box">
+                    <ul class="cps-tabs">
+                        <li [class.active]="activeTab=='detail' || activeTab=='document'">
+                            <a (click)="selectTab('detail')"><i class="fa fa-list-ul" aria-hidden="true"></i> Chi tiết</a>
+                        </li>
+                        <li [class.active]="activeTab=='document'">
+                            <a (click)="selectTab('document')"><i class="fa fa-paperclip" aria-hidden="true"></i> Đính kèm</a>
+                        </li>
+                        <li [class.active]="activeTab=='approve'">
+                            <a (click)="selectTab('approve')"><i class="fa fa-user-plus" aria-hidden="true"></i> Bước duyệt</a>
+                        </li>
+                        <li [class.active]="activeTab=='workflow'">
+                            <a (click)="selectTab('workflow')"><i class="fa fa-sitemap" aria-hidden="true"></i> Workflow</a>
+                        </li>
+                    </ul>
+
+                    <div class="cps-tab-content">
+
+                        <!-- ---------------------- Tab: Chi tiết ---------------------- -->
+                        <div [hidden]="activeTab!='detail' && activeTab!='document'">
+                            <div class="cps-section-title">
+                                <span class="cps-card-icon cps-icon-blue"><i class="fa fa-refresh" aria-hidden="true"></i></span>
+                                Danh sách tình trạng giấy phép xây dựng
+                            </div>
+
+                            <div class="cps-toolbar">
+                                <div class="cps-toolbar-left">
+                                    <button type="button" class="btn cps-btn cps-btn-add" (click)="addDetailRow()"
+                                        [disabled]="isFormLocked()">
+                                        <i class="fa fa-plus" aria-hidden="true"></i> Thêm dòng
+                                    </button>
+                                    <button type="button" class="btn cps-btn cps-btn-danger-outline"
+                                        (click)="deleteDetailRows()" [disabled]="isFormLocked()">
+                                        <i class="fa fa-trash-o" aria-hidden="true"></i> Xóa dòng
+                                    </button>
+                                    <button type="button" class="btn cps-btn cps-btn-ghost"
+                                        (click)="duplicateDetailRow()" [disabled]="isFormLocked()">
+                                        <i class="fa fa-clone" aria-hidden="true"></i> Nhân bản
+                                    </button>
+                                    <button type="button" class="btn cps-btn cps-btn-ghost" (click)="confirmDialog()"
+                                        [disabled]="!editorFrm.valid || isFormLocked()">
+                                        <i class="fa fa-download" aria-hidden="true"></i> Tải dữ liệu
+                                    </button>
+                                    <button type="button" class="btn cps-btn cps-btn-ghost" title="Ẩn/ Hiện đầu phiếu"
+                                        (click)="onclickCollapsablePanel([grid,grid1,grid2,grid3])">
+                                        <i class="fa fa-arrows-v" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+
+                                <div class="cps-toolbar-right">
+                                    <span class="cps-search">
+                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                        <input type="text" [(ngModel)]="searchText" [ngModelOptions]="{standalone: true}"
+                                            (keyup)="applySearch()"
+                                            placeholder="Tìm theo giai đoạn, số GPXD, ghi chú..." />
+                                        <i class="fa fa-times cps-search-clear" *ngIf="searchText"
+                                            (click)="clearSearch()" aria-hidden="true"></i>
+                                    </span>
+                                    <span class="cps-dropdown">
+                                        <button type="button" class="btn cps-btn cps-btn-ghost dropdown-toggle"
+                                            data-toggle="dropdown" [class.cps-btn-filter-on]="statusFilter">
+                                            <i class="fa fa-filter" aria-hidden="true"></i> Lọc
+                                            <span class="cps-filter-tag" *ngIf="statusFilter">1</span>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-right cps-filter-menu">
+                                            <li><a (click)="setStatusFilter('')" [class.cps-filter-active]="statusFilter==''">Tất cả</a></li>
+                                            <li><a (click)="setStatusFilter('has')" [class.cps-filter-active]="statusFilter=='has'">Đã có GPXD</a></li>
+                                            <li><a (click)="setStatusFilter('none')" [class.cps-filter-active]="statusFilter=='none'">Chưa có GPXD</a></li>
+                                            <li><a (click)="setStatusFilter('due')" [class.cps-filter-active]="statusFilter=='due'">Sắp đến hạn</a></li>
+                                        </ul>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <section id="new">
+                                <wj-flex-grid class="grid cps-grid" #grid style="height:280px;"
+                                    (contextmenu)="openRowContextMenu($event, grid)">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <button type="button" class="btn cps-grid-corner-btn" (click)="deleteDetailRows()">
+                                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                                        </button>
+                                    </template>
+                                </wj-flex-grid>
+
+                                <!-- lưới hỗ trợ in detail -->
+                                <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+
+                        <!-- ---------------------- Tab: Bước duyệt -------------------- -->
+                        <div [hidden]="activeTab!='approve'">
+                            <div class="cps-section-title">
+                                <span class="cps-card-icon cps-icon-indigo"><i class="fa fa-user-plus" aria-hidden="true"></i></span>
+                                Bước duyệt hồ sơ
+                            </div>
+                            <div class="cps-toolbar">
+                                <div class="cps-toolbar-left">
+                                    <button type="button" class="btn cps-btn cps-btn-ghost" (click)="confirmDialog()"
+                                        [disabled]="!editorFrm.valid || isFormLocked()">
+                                        <i class="fa fa-download" aria-hidden="true"></i> Tải dữ liệu
+                                    </button>
+                                </div>
+                            </div>
+                            <section id="new">
+                                <wj-flex-grid class="grid cps-grid" #grid2 style="height:280px;">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+
+                        <!-- ---------------------- Tab: Workflow ---------------------- -->
+                        <div [hidden]="activeTab!='workflow'">
+                            <div class="cps-section-title">
+                                <span class="cps-card-icon cps-icon-indigo"><i class="fa fa-sitemap" aria-hidden="true"></i></span>
+                                Workflow
+                            </div>
+                            <section id="new">
+                                <wj-flex-grid class="grid cps-grid" #grid3 style="height:280px;">
+                                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                        {{cell.row.index + 1}}
+                                    </template>
+                                    <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                                        <button type="button" class="btn cps-grid-corner-btn" title="In workflow"
+                                            (click)="exportHtmlWorkFlow(parentData?.Id, parentData?.DocCode)">
+                                            <i class="fa fa-print" aria-hidden="true"></i>
+                                        </button>
+                                    </template>
+                                </wj-flex-grid>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- =============== DANH SÁCH TÀI LIỆU ĐÍNH KÈM =================== -->
+                <div class="form-row cps-tab-box" #documentCard [class.cps-card-focus]="activeTab=='document'">
+                    <div class="cps-tab-content">
+                        <div class="cps-section-title cps-section-title-inline">
+                            <span class="cps-title-text">
+                                <span class="cps-card-icon cps-icon-blue"><i class="fa fa-paperclip" aria-hidden="true"></i></span>
+                                Danh sách tài liệu đính kèm
+                            </span>
+                            <span class="cps-title-actions">
+                                <button type="button" class="btn cps-btn cps-btn-add" (click)="addDocumentRow()"
+                                    [disabled]="isFormLocked()">
+                                    <i class="fa fa-plus" aria-hidden="true"></i> Thêm tài liệu
+                                </button>
+                                <button type="button" class="btn cps-btn cps-btn-ghost" (click)="deleteDocumentRows()"
+                                    [disabled]="isFormLocked()">
+                                    <i class="fa fa-trash-o" aria-hidden="true"></i> Xóa
+                                </button>
+                            </span>
+                        </div>
+
+                        <section id="new">
+                            <wj-flex-grid class="grid cps-grid" #grid1 style="height:220px;">
+                                <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                                    {{cell.row.index + 1}}
+                                </template>
+                            </wj-flex-grid>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- ========================== CHÚ THÍCH =========================== -->
+                <div class="row cps-notes">
+                    <div class="col-md-6 col-xs-12">
+                        <div class="cps-note cps-note-info">
+                            <i class="fa fa-info-circle" aria-hidden="true"></i>
+                            <span><b>Hướng dẫn:</b> Chọn tình trạng GPXD theo từng giai đoạn. Với các hạng mục chưa có
+                                giấy phép, vui lòng cập nhật ngày dự kiến có GPXD và đính kèm hồ sơ liên quan.</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12">
+                        <div class="cps-note cps-note-warning">
+                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                            <span><b>Lưu ý:</b> Các hạng mục chưa có giấy phép có thể ảnh hưởng đến tiến độ dự án.
+                                Vui lòng theo dõi và cập nhật thường xuyên.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-footer -->
+        </div>
+    </form>
+</section>
+<!-- /.content -->
+
+<!-- Menu chuột phải trên lưới chi tiết -->
+<div class="cps-row-menu" *ngIf="rowMenuVisible" [ngStyle]="rowMenuStyle">
+    <button type="button" (click)="onInsertRowAtCursor()">
+        <i class="fa fa-level-up" aria-hidden="true"></i> Chèn dòng phía trên
+    </button>
+    <button type="button" (click)="onInsertRowBelowCursor()">
+        <i class="fa fa-level-down" aria-hidden="true"></i> Chèn dòng phía dưới
+    </button>
+    <button type="button" class="cps-row-menu-danger" (click)="onDeleteRowAtCursor()">
+        <i class="fa fa-trash-o" aria-hidden="true"></i> Xóa dòng này
+    </button>
+</div>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+    <img src="/assets/img/gears.svg" style="width:50%">
+    <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+
+<!-- Xác nhận "Tải dữ liệu" -->
+<app-dialog [(visible)]="showDialog" #dialogFrm>
+    <div class="headerConfirm">
+        <b style="color: red;">Tải dữ liệu!</b>
+    </div>
+    <div class="titleConfirm">
+        <br />
+        <p>
+            <b>Thao tác này sẽ thay thế dữ liệu Tài liệu đính kèm và Bước duyệt đã có trước đó, xác nhận thao tác?</b>
+        </p>
+    </div>
+    <div class="btnConfirm">
+        <button (click)="onClick()" class="btn btn-success">Đồng ý</button>
+        <button (click)="closeDialog()" class="btn">Hủy bỏ</button>
+    </div>
+</app-dialog>
+
+<!-- Popup xem nội dung ô (double click) -->
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+    <div class="box" style="height: 400px;overflow-y: auto;">
+        <div class="box-header with-border"
+            style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+            <h3 class="box-title" style="color: white;">Ý kiến</h3>
+            <div class="box-tools pull-right">
+                <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+                    (click)="frmPopupTooltip.hide()" data-toggle="tooltip">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="box-body" style="margin-top: 35px;">
+            <p #contentPopupTooltip></p>
+        </div>
+    </div>
+</wj-popup>

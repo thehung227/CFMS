@@ -261,7 +261,19 @@ export class LayoutFinancialReportEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
-                }
+                },
+                 {
+                    Name: 'vB30CCMBudgetDetail3_Edit',
+                    ParentKey: 'CCMBudgetId',
+                    ChildKey: 'CCMBudgetId',
+                    Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}',
+                        CCMBudgetId: 'Parent.CCMBudgetId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                    }
+                },
             ]
         }
     };
@@ -380,9 +392,18 @@ export class LayoutFinancialReportEditor implements IEditorFormulaDeclaration {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'CCMBudgetId',
             Command: 'usp_Coteccons_CCMBudgetDetail_UpdateFromParentWEB'
-        }
+        },
+        'Evaluator_ServerConstraint_TienDo_GetData': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'CCMBudgetId',
+            Command: 'usp_BCTC_LoadTienDo',
+            DataMember: '',
+            OutputTable: 4
+        },
     };
-
+buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_TienDo_GetData',
+    ];
     serverConstraint = [
         // 'Evaluator_ServerConstraint_DefaultDocNo',
         // //'Evaluator_ServerConstraint_Lay_TenCongViec'
@@ -1086,6 +1107,89 @@ export class LayoutFinancialReportEditor implements IEditorFormulaDeclaration {
             dataType: 'Date',
             format: 'dd/MM/yyyy HH:mm',
             width: 150
+        }
+    ]
+     childColumns4 = [
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            isRequired: true,
+            width: 100,
+            isReadOnly: 'true'
+        },
+        
+        {
+            header: 'Mốc',
+            binding: 'Description',
+            width: 250,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Bắt đầu (Hợp đồng)',
+            binding: 'StartDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (Hợp đồng)',
+            binding: 'ToDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Bắt đầu (BCH)',
+            binding: 'StartDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (BCH)',
+            binding: 'ToDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        // 4 cột dưới đây chỉ để hiển thị: giá trị được tính lại mỗi lần vẽ ô
+        // (xem PlanCostRevConsEditorComponent.calcTienDo) nên tự nhảy khi người dùng sửa ngày BCH.
+        // Chúng không có trong vB30CCMBudgetDetail3_Edit -> khai báo trong childColumnsNotSave để không gửi lên server.
+        {
+            header: 'Tổng số tháng',
+            binding: 'TongSoThang',
+            width: 110,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Đã thực hiện (tháng)',
+            binding: 'DaThucHien',
+            width: 140,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Còn lại (tháng)',
+            binding: 'ConLai',
+            width: 120,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tỷ lệ tiến độ',
+            binding: 'RateTienDo',
+            width: 110,
+            dataType: 'Number',
+            format: 'p2',
+            align: 'right',
+            isReadOnly: 'true'
         }
     ]
 }

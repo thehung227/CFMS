@@ -32,6 +32,7 @@ import { BaseEditorService } from '../../../base/base.service-editor';
 import { BaseExplorerService } from '../../../base/base.service-explorer';
 import { Title } from '@angular/platform-browser';
 import { LayoutApprovedConcreteBudgetExplorer } from '../Layout';
+import { CryptoExtension } from '../../../core/extensions/crypto.extension';
 
 @Component({
   selector: 'approvedconcretebudget-explorer',
@@ -68,6 +69,24 @@ export class ApprovedConcreteBudgetExplorerComponent extends BaseExplorerCompone
 
   onSubmit(formData: FormGroup) {
     this.submit(formData);
+  }
+
+  // Mở "Báo cáo nhanh sản lượng bê tông dự án" (reporterconcretequick) ở tab mới cho gói thầu
+  // của dòng đang chọn; báo cáo tự chạy nhờ tham số ProductCostId truyền trên url.
+  openQuickConcreteReport(grid: wjcGrid.FlexGrid) {
+    let item: any = (grid.selectedItems && grid.selectedItems.length > 0) ? grid.selectedItems[0] : null;
+    let productCostId: string = item ? item['ProductCostId'] : '';
+
+    if (!productCostId) {
+      alert('Chọn 1 dòng kế hoạch bê tông trước khi mở báo cáo.');
+      return;
+    }
+
+    let params = { 'Commandkey': 'REP07_BCNBT', 'ProductCostId': productCostId };
+    let navigateUrl: any = ['#/main', 'reporterconcretequick', 'view', 'REP07_BCNBT',
+      encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(params)))];
+
+    window.open(navigateUrl.join('/'));
   }
 
   _applyGroup() {

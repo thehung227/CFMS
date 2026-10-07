@@ -81,7 +81,12 @@
                 <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">
                   Bước duyệt thanh toán
                 </a>
-              </li>              
+              </li>
+              <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">
+                  Thanh toán 3 bên
+                </a>
+              </li>
             </ul>
           </div>
           <div class="tab-content">
@@ -115,6 +120,16 @@
             <div class="tab-pane" id="tab4">
               <section id="new">
                 <wj-flex-grid class="grid3" #grid3 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
+            <!-- Thanh toán 3 bên của Bảng KL thanh toán liên kết: chỉ xem -->
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 style="height:280px;" [ngStyle]="setHeightGrid()">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>

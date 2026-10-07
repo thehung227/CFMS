@@ -73,7 +73,7 @@ export class LayoutData {
                         binding: 'QuantityBOQ',
                         dataType: 'Number',
                         width: 100,
-                        format: 'n0',
+                        format: 'n2',
                          aggregate: 'Sum'
                     },
                     {
@@ -96,7 +96,7 @@ export class LayoutData {
                         binding: 'Quantity',
                         dataType: 'Number',
                         width: 100,
-                        format: 'n0',
+                        format: 'n2',
                          aggregate: 'Sum'
                     },
                       {
@@ -111,7 +111,7 @@ export class LayoutData {
                         binding: 'TotalQuantity',
                         dataType: 'Number',
                         width: 100,
-                        format: 'n0',
+                        format: 'n2',
                          aggregate: 'Sum'
                     },
                     {
@@ -127,7 +127,7 @@ export class LayoutData {
                         binding: 'KhoiLuongDatHang',
                         dataType: 'Number',
                         width: 100,
-                        format: 'n0',
+                        format: 'n2',
                          aggregate: 'Sum'
                     },
                      {

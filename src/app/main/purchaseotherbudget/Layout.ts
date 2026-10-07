@@ -702,20 +702,44 @@ export class LayoutPurchaseOtherBudgetEditor implements IEditorFormulaDeclaratio
             header: 'Ngày dự kiến sử dụng',
             binding: 'FromDate',
             exprReadOnly: "{EXPR=IsPO} == true",
-        
-          
-        },        
+            validators: "{EXPR=IsTitleRow} == 0 && {EXPR=FromDate} == 0",
+            validatorMessage: 'Bắt buộc nhập Ngày dự kiến sử dụng',
+            ignoreError: 1
+        },
         {
-            header: 'Mã nhóm hàng',
+            dataType: 'Date',
+            format: 'dd/MM/yyyy',
+            width: 100,
+            isRequired: false,
+            header: 'Ngày dự kiến kết thúc sử dụng',
+            binding: 'ToDate',
+            exprReadOnly: "{EXPR=IsPO} == true",
+            validators: "{EXPR=IsTitleRow} == 0 && {EXPR=ToDate} == 0",
+            validatorMessage: 'Bắt buộc nhập Ngày dự kiến kết thúc sử dụng',
+            ignoreError: 1
+        },
+        {
+            header: 'Mã gói thầu',
             binding: 'ItemGroupCode',
             width: 150,
             dataType: 'Array',
-            lookupKey: 'Item',
-            lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (3205) AND Code<>'BETONG'",
+            lookupKey: 'BidPackage',
+             bindingList: {
+                Name: 'BidPackageName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1",
             validators: "{EXPR=ItemGroupCode} == ''",
             validatorMessage: 'Không được bỏ trắng giá trị',
             ignoreError: 1,
             exprReadOnly: "{EXPR=IsPO} == true",
+        },
+        {
+            header: 'Tên gói thầu',
+            binding: 'BidPackageName',
+            dataType: 'String',
+            width: 200,
+            isReadOnly: 'true'
+            // isReadOnly: 'true'
         },
         {
             header: 'Mã hàng (Mã TVG)',

@@ -108,6 +108,19 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
     approveGrid = 0;
 
     evaluators = {
+        // Thanh toán 3 bên của Bill quyết toán liên kết (không lưu):
+        //   Tổng lấy từ tab 3 bên của Bill (BizDocId_PL); Còn lại = Số tiền phải TT đợt này - Tổng
+        'Evaluator_ServerConstraint_Amount_TT3Ben': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'BizDocId_PL',
+            Command: 'usp_Newtecons_TT3Ben_GetAmount',
+            DataMember: 'Amount_TT3Ben'
+        },
+        'Evaluator_Amount_ConLaiTT3Ben_Calculate': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: 'Amount_ConLaiTT3Ben',
+            Value: 'ValueOfPayPeriod - Amount_TT3Ben'
+        },
         'Evaluator_ServerUpdating_UpdateStatusByApproveStatus': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'BizDocId,Id,ApproveStatus,{VAR=Branch.Ma_Dvcs},EmployeeCodeNext,DocCode,{VAR=User.Id},Comment,ApproveStatusWeb',
@@ -221,6 +234,14 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
                         BuiltinOrder: '1',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
+                },
+                {
+                    // Thanh toán 3 bên của Bảng KLQT liên kết (grid5): chỉ xem, không lưu
+                    Name: 'vB30BizDocCCMTripartite_Edit',
+                    IsView: 'view',
+                    ParentKey: 'BizDocId_PL',
+                    ChildKey: 'BizDocId',
+                    Sort: 'BuiltinOrder'
                 }
             ]
         },
@@ -568,6 +589,21 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
                 new NumberBoxInput({
                     key: 'ValueOfPayPeriod',
                     label: 'Số tiền phải TT đợt này',
+                    type: 'number',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                // Thanh toán 3 bên: không lưu, lấy từ tab "Thanh toán 3 bên" của Bảng KLQT
+                new NumberBoxInput({
+                    key: 'Amount_TT3Ben',
+                    label: 'Tổng giá trị thanh toán 3 bên',
+                    type: 'number',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'Amount_ConLaiTT3Ben',
+                    label: 'Số tiền còn lại',
                     type: 'number',
                     isDisabled: 'true',
                     col: 6
@@ -1008,6 +1044,63 @@ export class LayoutApprovedSettlementEditor implements IEditorFormulaDeclaration
             isReadOnly: 'true',
             validatorMessage: 'Không được bỏ trắng giá trị',
         },
+    ]
+
+    // Tab "Thanh toán 3 bên" (grid5): chỉ xem
+    childColumns5 = [
+        {
+            header: 'STT',
+            binding: 'BuiltinOrder',
+            dataType: 'Number',
+            width: 60,
+            format: 'n0',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Mã đối tượng',
+            binding: 'CustomerCode',
+            width: 120,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tên đối tượng',
+            binding: 'CustomerName',
+            width: 300,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 160,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Nội dung hợp đồng',
+            binding: 'ContractDescription',
+            width: 350,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Thanh toán kỳ này',
+            binding: 'PayAmount',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Thanh toán đến kỳ trước',
+            binding: 'PayAmountPrev',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tổng cộng',
+            binding: 'PayAmountTotal',
+            dataType: 'Number',
+            width: 150,
+            isReadOnly: 'true'
+        }
     ]
 }
 

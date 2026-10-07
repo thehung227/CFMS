@@ -1,0 +1,191 @@
+<div class="newt-page">
+<section class="content">
+  <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
+    <div class="box" id="box-content">
+
+      <!-- ============================== HEADER ============================== -->
+      <div class="box-header with-border cps-header">
+        <h3 class="box-title cps-title" id="titleName">
+          <span class="cps-title-icon"><i class="fa fa-line-chart" aria-hidden="true"></i></span>
+          Điều chỉnh kế hoạch doanh thu
+        </h3>
+
+        <div class="cps-meta">
+          <span class="cps-badge cps-badge-admin">
+            <i class="fa fa-user-secret" aria-hidden="true"></i> Admin
+          </span>
+          <span class="cps-badge cps-badge-doc" *ngIf="parentData?.DocNo">
+            <i class="fa fa-file-text-o" aria-hidden="true"></i> {{parentData?.DocNo}}
+          </span>
+          <span class="cps-badge cps-badge-success" *ngIf="parentData?.CompletedApprove == true">
+            <i class="fa fa-check-circle" aria-hidden="true"></i> Đã hoàn thiện duyệt
+          </span>
+          <span class="cps-badge cps-badge-info" *ngIf="parentData?.ApproveSend == true && parentData?.CompletedApprove != true">
+            <i class="fa fa-clock-o" aria-hidden="true"></i> Đang trong quy trình duyệt
+          </span>
+        </div>
+
+        <div class="box-tools pull-right">
+          <button class="btn btn-success" type="submit" [disabled]="!canSave"
+            *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">
+            <i class="fa" [ngClass]="showLoading ? 'fa-spinner fa-spin' : 'fa-floppy-o'" aria-hidden="true"></i>
+            Lưu điều chỉnh
+          </button>
+          <a class="btn btn-default" [routerLink]="['/main','planrevenueadjustedit','index']">
+            <i class="fa fa-times" aria-hidden="true"></i> Thoát
+          </a>
+        </div>
+      </div>
+
+      <!-- ============================ ĐẦU PHIẾU ============================= -->
+      <div class="box-body">
+        <div class="cps-note cps-note-warning" role="note">
+          <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+          <span>
+            <b>Chế độ điều chỉnh số liệu (admin):</b> hệ thống không kiểm tra số liệu, không tự tính lại khi nhập và
+            sau khi lưu, không chạy lại quy trình duyệt. Chỉ các giá trị bạn sửa thay đổi, phần còn lại giữ nguyên.
+          </span>
+        </div>
+
+        <div *ngIf="editorFrm.errors" class="alert alert-danger">
+          <strong>{{editorFrm.errors['error']}}</strong>
+        </div>
+
+        <div class="cps-card">
+          <div class="cps-card-head">
+            <span class="cps-card-icon cps-icon-blue"><i class="fa fa-id-card-o" aria-hidden="true"></i></span>
+            THÔNG TIN KẾ HOẠCH
+            <span class="cps-head-tools">
+              <span class="cps-legend"><i class="cps-swatch cps-swatch-edit"></i>Được điều chỉnh</span>
+              <span class="cps-legend"><i class="cps-swatch cps-swatch-lock"></i>Chỉ xem</span>
+              <button type="button" class="cps-icon-btn" (click)="onclickCollapsablePanel([grid,grid1])"
+                [title]="isVisiblePanel ? 'Thu gọn đầu phiếu' : 'Mở rộng đầu phiếu'"
+                [attr.aria-label]="isVisiblePanel ? 'Thu gọn đầu phiếu' : 'Mở rộng đầu phiếu'"
+                [attr.aria-expanded]="isVisiblePanel">
+                <i class="fa" [ngClass]="isVisiblePanel ? 'fa-chevron-up' : 'fa-chevron-down'" aria-hidden="true"></i>
+              </button>
+            </span>
+          </div>
+          <div *ngFor="let panel of _layoutDeclare.panels" class="form-row cps-form" [ngStyle]="setDisplayPanel()">
+            <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+            </df-panel>
+            <div style="clear:both"></div>
+          </div>
+        </div>
+      </div>
+      <!-- /.box-body -->
+
+      <!-- =============================== TABS =============================== -->
+      <div class="box-footer">
+        <div class="cps-tab-box">
+          <ul class="cps-tabs" role="tablist">
+            <li [class.active]="activeTab=='detail'">
+              <a role="tab" (click)="selectTab('detail', grid)" [attr.aria-selected]="activeTab=='detail'">
+                <i class="fa fa-table" aria-hidden="true"></i>Chi tiết kế hoạch
+                <span class="cps-count" *ngIf="editedCount(grid) > 0" title="Số dòng đã sửa">{{editedCount(grid)}}</span>
+              </a>
+            </li>
+            <li [class.active]="activeTab=='approve'">
+              <a role="tab" (click)="selectTab('approve', grid1)" [attr.aria-selected]="activeTab=='approve'">
+                <i class="fa fa-sitemap" aria-hidden="true"></i>Bước duyệt
+                <i class="fa fa-lock cps-lock" title="Chỉ xem"></i>
+              </a>
+            </li>
+            <li [class.active]="activeTab=='workflow'">
+              <a role="tab" (click)="selectTab('workflow', grid2)" [attr.aria-selected]="activeTab=='workflow'">
+                <i class="fa fa-history" aria-hidden="true"></i>WorkFlow
+                <i class="fa fa-lock cps-lock" title="Chỉ xem"></i>
+              </a>
+            </li>
+          </ul>
+
+          <div class="cps-tab-content">
+            <div class="cps-note cps-note-info" [ngSwitch]="activeTab">
+              <i class="fa fa-info-circle" aria-hidden="true"></i>
+              <span *ngSwitchCase="'detail'">Sửa trực tiếp trên ô; dòng đã sửa được tô nền vàng. Cột Chênh lệch, Tỉ lệ không tự tính lại - sửa tay nếu cần.</span>
+              <span *ngSwitchDefault>Dữ liệu chỉ để tham chiếu, không được lưu từ màn hình này.</span>
+            </div>
+
+            <div class="cps-tab-pane" [class.active]="activeTab=='detail'" role="tabpanel">
+              <wj-flex-grid class="grid cps-grid" #grid style="height:320px;" [ngStyle]="setHeightGrid()">
+                <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                  {{cell.row.index + 1}}
+                </template>
+              </wj-flex-grid>
+              <!-- lưới hỗ trợ in detail -->
+              <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+              </wj-flex-grid>
+            </div>
+
+            <div class="cps-tab-pane" [class.active]="activeTab=='approve'" role="tabpanel">
+              <wj-flex-grid class="grid1 cps-grid" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
+                <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                  {{cell.row.index + 1}}
+                </template>
+              </wj-flex-grid>
+            </div>
+
+            <div class="cps-tab-pane" [class.active]="activeTab=='workflow'" role="tabpanel">
+              <wj-flex-grid class="grid2 cps-grid" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
+                <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                  {{cell.row.index + 1}}
+                </template>
+                <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
+                  <button type="button" class="cps-grid-corner-btn cps-corner-print" title="In WorkFlow" aria-label="In WorkFlow"
+                    (click)="exportHtmlWorkFlow(parentData?.Id,parentData?.DocCode)">
+                    <i class="fa fa-print" aria-hidden="true"></i>
+                  </button>
+                </template>
+              </wj-flex-grid>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.box-footer -->
+    </div>
+  </form>
+</section>
+</div>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+  <img src="/assets/img/gears.svg" style="width:50%">
+  <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->
+
+<!-- Xác nhận lưu điều chỉnh -->
+<app-dialog [(visible)]="showConfirmSave">
+  <div class="headerConfirm">
+    <b>Lưu điều chỉnh kế hoạch {{parentData?.DocNo}}?</b>
+  </div>
+  <div class="titleConfirm cps-confirm">
+    <ul>
+      <li>Số liệu được lưu đúng như đã nhập, không kiểm tra và không tính lại.</li>
+      <li>Trạng thái duyệt và các bước duyệt giữ nguyên, không gửi duyệt lại.</li>
+    </ul>
+  </div>
+  <div class="btnConfirm">
+    <button type="button" (click)="confirmSave()" class="btn btn-success">Đồng ý</button>
+    <button type="button" (click)="showConfirmSave = false" class="btn">Hủy bỏ</button>
+  </div>
+</app-dialog>
+
+<wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
+  <div class="box" style="height: 400px;overflow-y: auto;">
+    <div class="box-header with-border"
+      style="background:linear-gradient(to right,#2385bd,#a8dac3); position: fixed; width: 40%;">
+      <h3 class="box-title" style="color: white;">Ý kiến</h3>
+      <div class="box-tools pull-right">
+        <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool"
+          (click)="frmPopupTooltip.hide()" aria-label="Đóng">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+    </div>
+    <div class="box-body" style="margin-top: 35px;">
+      <p #contentPopupTooltip></p>
+    </div>
+  </div>
+</wj-popup>

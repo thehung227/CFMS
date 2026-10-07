@@ -565,6 +565,14 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
             IgnoreError: 0,
             zExpr: "ApproveSend == true"
         },
+         'Evaluator_ServerUpdating_Check_MonitorQuantity': {
+            EvaluatorName: 'EvaluatorValidate',
+            ConstraintKey: 'ProductCostId,ParentBizDocId,DocCode,Id,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_CheckHopDong_TheoDoiKhoiLuong',
+            MessageText: 'Hợp đồng Quản lý khối lượng, yêu cầu khai báo dữ liệu mã quản lý khối lượng',
+            IgnoreError: 0,
+            zExpr: 'ApproveSend == true'
+        },
         'Evaluator_ServerUpdated_FromDate': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'FromDate,Id',
@@ -608,6 +616,7 @@ export class LayoutSettlementEditor implements IEditorFormulaDeclaration {
     serverUpdating = [
         'Evaluator_ServerConstraint_Check_DanhGiaDoiTac',
         'Evaluator_ServerConstraint_B30BizDoc_Check_Unique_DocNo',
+        'Evaluator_ServerUpdating_Check_MonitorQuantity',
         'Evaluator_ServerConstraint_Check_QuyetToan_KhongLapMoiKhiChuaDuyetCu',
         'Evaluator_ServerConstraint_Check_QuyetToan_KhongLapMoiKhiChuaDuyetThanhToan',
         'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',

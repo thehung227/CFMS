@@ -30,6 +30,7 @@ export class PlanCostRevConsEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid') grid: wjcGrid.FlexGrid;
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
+  @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   @ViewChild('popupEditorFrm') popupEditorFrm: PlanCostRevConsPopupEditorComponent;
 
@@ -55,17 +56,21 @@ export class PlanCostRevConsEditorComponent extends BaseEditorComponent implemen
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
     this.init();
     // this.grid1.isReadOnly = true;
     this.grid1.allowAddNew = false;
     this.grid2.isReadOnly = true;
+    this.grid3.allowAddNew = false;
+
 
     this.dbClickCellContent(this.grid2);
   }
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
+
+    this.setupTienDoGrid();
 
     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
@@ -91,8 +96,121 @@ export class PlanCostRevConsEditorComponent extends BaseEditorComponent implemen
     });
   }
 
+  /** Các cột tiến độ được tính phía client, không ghi vào record (xem childColumnsNotSave trên layout). */
+  private readonly _tienDoColumns = ['TongSoThang', 'DaThucHien', 'ConLai', 'RateTienDo'];
+
+  /**
+   * Vẽ 4 cột tiến độ của lưới Tiến độ. Tính lại mỗi lần vẽ ô thay vì ghi vào dataItem để:
+   * - giá trị tự nhảy ngay khi người dùng sửa StartDateBCH / ToDateBCH,
+   * - không làm phát sinh cột lạ trong payload khi Lưu (payload lấy theo thuộc tính của record).
+   */
+  private setupTienDoGrid() {
+    if (!this.grid3) return;
+
+    this.grid3.formatItem.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.FormatItemEventArgs) => {
+      if (e.panel.cellType != wjcGrid.CellType.Cell) return;
+
+      let _column = s.columns[e.col];
+      if (!_column || this._tienDoColumns.indexOf(_column.binding) < 0) return;
+
+      let _row = s.rows[e.row];
+      let _item = _row ? _row.dataItem : null;
+      if (_item == undefined) {
+        e.cell.textContent = '';
+        return;
+      }
+
+      let _value = this.calcTienDo(_item)[_column.binding];
+      e.cell.textContent = (_value == null) ? '' : wjcCore.Globalize.format(_value, _column.format);
+    });
+
+    // Wijmo chỉ vẽ lại ô vừa sửa, trong khi 4 cột trên phụ thuộc cả 2 cột ngày -> ép vẽ lại cả lưới.
+    this.grid3.cellEditEnded.addHandler((s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs) => {
+      let _binding = s.columns[e.col] ? s.columns[e.col].binding : '';
+      if (_binding == 'StartDateBCH' || _binding == 'ToDateBCH') {
+        s.invalidate();
+      }
+    });
+  }
+
+  /**
+   * TongSoThang  = chênh lệch tháng lịch giữa StartDateBCH và ToDateBCH (bỏ qua phần ngày).
+   * DaThucHien   = chênh lệch tháng lịch từ StartDateBCH đến hôm nay, kẹp trong [0, TongSoThang].
+   * ConLai       = TongSoThang - DaThucHien.
+   * RateTienDo   = DaThucHien / TongSoThang, bằng 0 khi TongSoThang <= 0 (tránh chia cho 0).
+   * Thiếu ngày để tính -> trả null để ô hiển thị trống thay vì số sai.
+   */
+  private calcTienDo(item: any): any {
+    let _start = this.toDateOrNull(item['StartDateBCH']);
+    let _to = this.toDateOrNull(item['ToDateBCH']);
+
+    let _tongSoThang = (_start && _to) ? this.monthDiff(_start, _to) : null;
+
+    let _daThucHien = null;
+    if (_start) {
+      _daThucHien = Math.max(0, this.monthDiff(_start, new Date()));
+      if (_tongSoThang != null && _tongSoThang > 0)
+        _daThucHien = Math.min(_daThucHien, _tongSoThang);
+      else if (_tongSoThang != null)
+        _daThucHien = 0;
+    }
+
+    let _conLai = (_tongSoThang != null && _daThucHien != null) ? _tongSoThang - _daThucHien : null;
+
+    // Thiếu ngày để tính -> để trống như 3 cột trên; TongSoThang <= 0 -> 0 (tránh chia cho 0).
+    let _rate = null;
+    if (_tongSoThang != null)
+      _rate = (_tongSoThang > 0 && _daThucHien != null) ? _daThucHien / _tongSoThang : 0;
+
+    return {
+      TongSoThang: _tongSoThang,
+      DaThucHien: _daThucHien,
+      ConLai: _conLai,
+      RateTienDo: _rate
+    };
+  }
+
+  /** Số tháng lịch giữa 2 mốc: (năm2-năm1)*12 + (tháng2-tháng1). */
+  private monthDiff(from: Date, to: Date): number {
+    return (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+  }
+
+  /** Dữ liệu ngày từ server có thể là Date hoặc chuỗi; ngày <= 01/01/1900 được coi như trống. */
+  private toDateOrNull(value: any): Date {
+    if (value == null || value === '') return null;
+
+    let _date = (value instanceof Date) ? value : new Date(value);
+    if (isNaN(_date.getTime())) return null;
+    if (_date <= new Date(1900, 0, 1)) return null;
+
+    return _date;
+  }
+
   ngOnDestroy() {
     this.destroy();
+  }
+
+  async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
   }
 
   onSubmit(formData: any, isApproveSend?: boolean) {

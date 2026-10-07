@@ -239,7 +239,11 @@ export class PlanQuantityEditorComponent extends BaseEditorComponent implements 
 
     const ntpFields = [
       'Month01', 'Month02', 'Month03', 'Month04', 'Month05', 'Month06',
-      'Month07', 'Month08', 'Month09', 'Month10'
+      'Month07', 'Month08', 'Month09', 'Month10',
+      'Month11', 'Month12', 'Month13', 'Month14', 'Month15', 'Month16',
+      'Month17', 'Month18', 'Month19', 'Month20',
+      'Month21', 'Month22', 'Month23', 'Month24', 'Month25', 'Month26',
+      'Month27', 'Month28', 'Month29', 'Month30'
     ];
 
     const fmtVN = function (n: number): string {
@@ -259,7 +263,7 @@ export class PlanQuantityEditorComponent extends BaseEditorComponent implements 
       const payment = isNaN(paymentRaw) ? 0 : paymentRaw;
       if (Math.round(totalNtp) > Math.round(payment)) {
         _stopLoading();
-        alert('LỖI STT ' + item['ItemNo'] + ': Tổng NTP 01 → NTP 10 (' + fmtVN(totalNtp) + ') vượt quá KH Khối lượng BCH Tính (' + fmtVN(payment) + '). Vui lòng kiểm tra lại.');
+        alert('LỖI STT ' + item['ItemNo'] + ': Tổng NTP 01 → NTP 30 (' + fmtVN(totalNtp) + ') vượt quá KH Khối lượng BCH Tính (' + fmtVN(payment) + '). Vui lòng kiểm tra lại.');
         return;
       }
     }
@@ -319,7 +323,7 @@ export class PlanQuantityEditorComponent extends BaseEditorComponent implements 
         if (!this._errCheck) {
           this.submit(formData, this.indexPage, isApproveSend).then(() => {
             if (this.allowSendMail) {
-              this.sendMail(formData, 'K5', this.id, false, '1');
+              this.sendMail(formData, 'K8', this.id, false, '1');
             }
             _stopLoading();
           }).catch(() => _stopLoading());

@@ -24,6 +24,10 @@ import { ParameterContract } from "../../../contracts/parameter.contract";
 import { Global } from "../../../shared/global";
 import { SystemConstants } from "../../../core/common/system.constants";
 import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { BaseExplorerService } from "../../../base/base.service-explorer";
+
+const MSG_MUST_LOAD =
+  'Gói thầu đã có Kế hoạch vật tư phụ được duyệt. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu version trước khi nhập liệu.';
 
 @Component({
   selector: "app-auxiliarymaterialsbuget-editor-form",
@@ -49,6 +53,8 @@ export class AuxiliaryMaterialsBugetEditorComponent
   output: Array<Object>;
   _errBCTC: boolean = false;
   _errMess: string;
+  // Gói thầu đã có ít nhất 1 version được duyệt → version kế tiếp phải "Tải dữ liệu" trước khi nhập liệu
+  hasApprovedVersion: boolean = false;
 
   constructor(
     service: BaseEditorService,
@@ -57,6 +63,7 @@ export class AuxiliaryMaterialsBugetEditorComponent
     elRef: ElementRef,
     router: Router,
     titleService: Title,
+    private _explorerService: BaseExplorerService,
   ) {
     super(service, route, pcs, elRef, router, titleService);
     this._layoutDeclare = new LayoutAuxiliaryMaterialsBugetEditor(
@@ -72,10 +79,27 @@ export class AuxiliaryMaterialsBugetEditorComponent
 
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
-    this.init();
+    this.init().then(() => {
+      this.checkApprovedVersion().catch((ex) => console.log(ex));
+      this.editorFrm
+        .get("ProductCostId")
+        .valueChanges.subscribe(() =>
+          this.checkApprovedVersion().catch((ex) => console.log(ex)),
+        );
+    });
     //this.grid1.isReadOnly = true;
     this.grid1.allowAddNew = false;
     this.grid2.isReadOnly = true;
+
+    // Chặn nhập liệu lưới chi tiết khi bắt buộc "Tải dữ liệu" mà chưa tải
+    const guardInput = (s, e: wjcGrid.CellRangeEventArgs) => {
+      if (this.mustLoadBeforeInput()) {
+        e.cancel = true;
+        alert(MSG_MUST_LOAD);
+      }
+    };
+    this.grid.beginningEdit.addHandler(guardInput);
+    this.grid.pasting.addHandler(guardInput);
 
     this.dbClickCellContent(this.grid2);
   }
@@ -118,7 +142,21 @@ export class AuxiliaryMaterialsBugetEditorComponent
     this.destroy();
   }
 
-  onSubmit(formData: any, isApproveSend?: boolean) {
+  async onSubmit(formData: any, isApproveSend?: boolean) {
+    this.showLoading = true;
+    let _errCheck: string;
+    try {
+      _errCheck = await this.validateBeforeSave();
+    } catch (ex) {
+      console.log(ex);
+      _errCheck = "Không kiểm tra được dữ liệu trước khi lưu, vui lòng thử lại.";
+    }
+    this.showLoading = false;
+    if (_errCheck) {
+      alert(_errCheck);
+      return;
+    }
+
     let _numEror = 0;
     for (let i in this.gridArray) {
       if (this.gridArray[i].itemsSource.items.length == 0 && i != "2") {
@@ -228,10 +266,81 @@ if (isApproveSend == true) {
     this._errMess = this.output["@_ErrorMessage"];
   }
 
+  // Các rule chặn Lưu / Gửi duyệt; trả về thông báo lỗi, rỗng = được lưu
+  async validateBeforeSave(): Promise<string> {
+    // Chưa có version được duyệt → lưu bình thường, không cần "Tải dữ liệu"
+    await this.checkApprovedVersion();
+    if (this.mustLoadBeforeInput()) return MSG_MUST_LOAD;
+
+    let errs: string[] = [];
+    let customers = await this.codesNotInCatalog("CustomerCode");
+    if (customers.length > 0)
+      errs.push("Mã đối tượng không có trong danh mục: " + customers.join(", "));
+    let itemGroups = await this.codesNotInCatalog("ItemGroupCode");
+    if (itemGroups.length > 0)
+      errs.push("Mã nhóm hàng không có trong danh mục: " + itemGroups.join(", "));
+    return errs.join("\n");
+  }
+
+  // Mã trên lưới chi tiết không tra được trong danh mục (cùng lookupKey + lookupfilter của cột)
+  async codesNotInCatalog(binding: string): Promise<string[]> {
+    let col = this._layoutDeclare.childColumns.find((c) => c.binding == binding);
+    let cv = this.grid.collectionView;
+    let codes: string[] = [];
+    for (let item of cv ? cv.sourceCollection : []) {
+      let code = item && item[binding] ? item[binding].toString().trim() : "";
+      if (code && item["IsTitleRow"] != true && codes.indexOf(code) < 0) codes.push(code);
+    }
+
+    let found: string[] = [];
+    // Chia lô để không vượt số dòng tối đa lookup trả về
+    for (let i = 0; i < codes.length; i += 30) {
+      let batch = codes.slice(i, i + 30);
+      let filter =
+        "(" + col.lookupfilter + ") AND Code IN (" +
+        batch.map((c) => "N'" + c.replace(/'/g, "''") + "'").join(",") + ")";
+      let data: any[] = await this._service
+        .getLookupNew(Global.LookupEndpoint, col.lookupKey, "", filter, "", batch.length)
+        .toPromise();
+      for (let d of data || []) found.push((d["ValueMember"] + "").trim().toUpperCase());
+    }
+    return codes.filter((c) => found.indexOf(c.toUpperCase()) < 0);
+  }
+
+  // Gói thầu đã có ít nhất 1 Kế hoạch vật tư phụ hoàn thiện duyệt (khác phiếu đang mở)?
+  async checkApprovedVersion() {
+    let productCostId = this.editorFrm.get("ProductCostId").value;
+    if (!productCostId) {
+      this.hasApprovedVersion = false;
+      return;
+    }
+
+    let id = Number(this.id) > 0 ? Number(this.id) : -1;
+    let filter =
+      "ProductCostId = '" + productCostId.toString().replace(/'/g, "''") + "'" +
+      " AND BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode = 'L2' AND BudgetTypeCode = '6'" +
+      " AND IsActive = 1 AND CompletedApprove = 1 AND Id <> " + id;
+
+    let count = await this._explorerService
+      .getCountData(Global.DataExplorerEndpoint, "vB30Budget", filter)
+      .toPromise();
+    this.hasApprovedVersion = Number(count) > 0;
+  }
+
+  // Bắt buộc "Tải dữ liệu": đã có version duyệt nhưng lưới chi tiết chưa có dòng tải từ version trước (IsLink)
+  mustLoadBeforeInput(): boolean {
+    if (!this.hasApprovedVersion || this.taidulieu) return false;
+
+    let cv = this.grid.collectionView;
+    let rows: any[] = cv ? cv.sourceCollection : [];
+    return !rows.some((r) => r && r["IsLink"] == true);
+  }
+
   protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
     if (flex) {
       // get list of selected items
       var selected = [];
+      let _skipLink = false;
 
       for (let k in flex.selectedRows) {
         let _idrowdel = flex.selectedRows[k]._idx;
@@ -245,6 +354,11 @@ if (isApproveSend == true) {
             ) {
               continue;
             }
+            // Không xóa những dòng tải từ version đã duyệt
+            if (data && data["IsLink"] == true) {
+              _skipLink = true;
+              continue;
+            }
             selected.push(data);
             break;
           }
@@ -254,6 +368,9 @@ if (isApproveSend == true) {
       for (var i = 0; i < selected.length; i++) {
         flex.itemsSource.remove(selected[i]);
       }
+
+      if (_skipLink)
+        alert("Không được xóa các dòng dữ liệu được tải ra từ version đã duyệt (Link).");
     }
   }
 

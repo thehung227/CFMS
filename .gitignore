@@ -41,3 +41,14 @@ testem.log
 .DS_Store
 Thumbs.db
 /backups
+
+# Local secrets (MCP_SQL_PASSWORD must never be committed)
+.env
+.env.local
+.env.mcp
+# Tài khoản SSO cho tools/browser-sso/login.mjs (mẫu: .env.sso.example)
+.env.sso
+
+# MCP SQL read-only server (tools/mssql-readonly-mcp)
+/tools/mssql-readonly-mcp/node_modules
+/tools/mssql-readonly-mcp/dist

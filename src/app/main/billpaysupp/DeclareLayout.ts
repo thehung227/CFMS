@@ -456,6 +456,19 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
     }
 
     evaluators = {
+        // Thanh toán 3 bên của Bill liên kết (không lưu):
+        //   Tổng lấy từ tab 3 bên của Bill (BizDocId_TT); Còn lại = Giá trị đề nghị thanh toán - Tổng
+        'Evaluator_ServerConstraint_Amount_TT3Ben': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'BizDocId_TT',
+            Command: 'usp_Newtecons_TT3Ben_GetAmount',
+            DataMember: 'Amount_TT3Ben'
+        },
+        'Evaluator_Amount_ConLaiTT3Ben_Calculate': {
+            EvaluatorName: 'EvaluatorCaculate',
+            DataMember: 'Amount_ConLaiTT3Ben',
+            Value: 'Amount_DeNghiTT - Amount_TT3Ben'
+        },
         'Evaluator_ServerConstraint_CTC_DefaultDocNo': {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'ParentBizDocId,DocCode,{VAR=Branch.Ma_Dvcs},ProductCostId,CustomerCode,DocDate,PayTeamType,Id',
@@ -739,7 +752,14 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
             Command: 'usp_Coteccons_UpdateValueOfTBTT',
             //zExpr: "BizDocId_TT != ''"
         },
-       
+        'Evaluator_ServerUpdating_Check_MonitorQuantity': {
+            EvaluatorName: 'EvaluatorValidate',
+            ConstraintKey: 'ProductCostId,ParentBizDocId,DocCode,Id,{VAR=Branch.Ma_Dvcs}',
+            Command: 'usp_CheckHopDong_TheoDoiKhoiLuong',
+            MessageText: 'Hợp đồng Quản lý khối lượng, yêu cầu khai báo dữ liệu mã quản lý khối lượng',
+            IgnoreError: 0,
+            zExpr: 'ApproveSend == true'
+        },
         'Evaluator_ServerConstraint_Check_GiaTriThucHien_BCTC': {
             EvaluatorName: 'EvaluatorValidate',
             ConstraintKey: "ProductCostId,ParentBizDocId,CustomerCode,Amount_THDenKyNayNotVAT,TaxRate,DocDate,{VAR=Branch.Ma_Dvcs},{VAR=User.Id}",
@@ -832,6 +852,7 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Check_ProcessCode',
         'Evaluator_ServerConstraint_Check_GiaTriThucHien_BCTC',
         'Evaluator_ServerConstraint_Check_GiaTriThucHien_KHKK',
+        'Evaluator_ServerUpdating_Check_MonitorQuantity',
         'Evaluator_ServerConstraint_Check_GiaTriThucHien_QuyCheTaiChinh',
         'Evaluator_ServerConstraint_Check_ThanhToan_KhongLapMoiKhiChuaDuyetCu',
         'Evaluator_ServerConstraint_Check_FilePathContract',
@@ -882,6 +903,17 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
     ]
 
     columnChanged: any = {
+        BizDocId_TT: {
+            Evaluators: [
+                'Evaluator_ServerConstraint_Amount_TT3Ben',
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
+            ]
+        },
+        Amount_DeNghiTT: {
+            Evaluators: [
+                'Evaluator_Amount_ConLaiTT3Ben_Calculate'
+            ]
+        },
         Amount_TamUng: {
             Evaluators: [
                 // 'Evaluator_Amount_TTKyNay_Calculate',
@@ -1182,6 +1214,19 @@ export class LayoutBillPaySuppEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     isDisabled: "'{EXPR=PayTeamType}' == '01' || '{EXPR=PayTeamType}' == '04' || '{EXPR=PayTeamType}' == '07'",
                     //format: "'{EXPR=CurrencyCode}' != 'VND' ? 'N2' : 'N0'"
+                }),
+                // Thanh toán 3 bên: không lưu, lấy từ tab "Thanh toán 3 bên" của Bảng KL thanh toán
+                new NumberBoxInput({
+                    key: 'Amount_TT3Ben',
+                    label: 'Tổng giá trị thanh toán 3 bên',
+                    col: 6,
+                    isDisabled: 'true'
+                }),
+                new NumberBoxInput({
+                    key: 'Amount_ConLaiTT3Ben',
+                    label: 'Số tiền còn lại',
+                    col: 6,
+                    isDisabled: 'true'
                 }),
             
                 new TextBoxInput({

@@ -52,7 +52,7 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
 
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
-    this.init();
+    this.init().then(() => this.refreshTongThanhToan3Ben());
     this.grid.allowAddNew = false;
     this.grid1.allowAddNew = false;
     this.grid2.isReadOnly = true;
@@ -77,6 +77,12 @@ export class Settlement_DocEditorComponent extends BaseEditorComponent implement
                 e.cell.innerHTML = '';
               }
             });
+  }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên của Bảng KLQT liên kết và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint('Evaluator_ServerConstraint_Amount_TT3Ben');
+    await this.dfpanel.runConstraint('Evaluator_Amount_ConLaiTT3Ben_Calculate');
   }
 
   ngOnDestroy() {

@@ -1,83 +1,67 @@
-<style>
-    .main-sidebar {
-        /* background-color: rgb(19, 133, 36); */
-        font-family: Arial, Helvetica, sans-serif;
-        background-image: url(../assets/img/sidebar-landmark81.jpg);
-        z-index: 1;
-        display: block;
-        top: 0;
-        left: 0;
-        background-size: cover;
-        background-position: 50%;
-    }
-
-    /* ===== Phân biệt sub-menu (treeview lồng trong treeview-menu) =====
-       Không thay đổi màu chủ đạo của hệ thống, chỉ thêm:
-       - Nền nhẹ + border-left accent cho header sub-menu (cấp 2)
-       - Forecolor đậm hơn cho header sub-menu để dễ nhận biết
-       - Thụt lề & icon mờ hơn cho leaf item (cấp 3) */
-    .sidebar-menu .treeview-menu > li.treeview > a {
-        background-color: rgba(5, 80, 150, 0.08);
-        border-left: 3px solid #055096;
-        color: #055096 !important;
-        font-weight: 600;
-    }
-
-    .sidebar-menu .treeview-menu > li.treeview > a:hover {
-        background-color: rgba(5, 80, 150, 0.15);
-        color: #033a6b !important;
-    }
-
-    .sidebar-menu .treeview-menu > li.treeview > a > i {
-        color: #055096;
-    }
-</style>
-
 <aside class="main-sidebar">
 
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
 
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel" style="height: 60px;">
-            <div class="pull-left image" *ngIf="1==0">
-                <img src="assets/img/newtecons.ico" class="img-circle" alt="User Image">
+        <!-- Tìm chức năng (ngay dưới logo). Chỉ tìm trong các mục menu người dùng được phân quyền. -->
+        <div class="nt-menu-search sidebar-form" role="search">
+            <i class="fa fa-search nt-menu-search__icon" aria-hidden="true"></i>
+            <input #searchInput type="text" class="nt-menu-search__input" autocomplete="off"
+                placeholder="Tìm chức năng..." aria-label="Tìm chức năng"
+                (focus)="onSearchFocus()" (input)="onSearchInput($event.target.value)" (keydown)="onSearchKeydown($event)">
+            <button *ngIf="searchText" type="button" class="nt-menu-search__clear" title="Xoá tìm kiếm" aria-label="Xoá tìm kiếm" (click)="clearSearch(); searchInput.focus()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="nt-search-results" *ngIf="searchText" role="listbox" aria-label="Kết quả tìm chức năng">
+            <div class="nt-search-results__meta">
+                {{searchResults.length}} kết quả
+                <span class="nt-search-results__hint">↑↓ chọn · Enter mở · Esc thoát</span>
             </div>
-            <div class="pull-left info" style="left: 15px;">
-                <p>{{showUserFullName}}</p>
-                <!-- Status style="margin-left: 50px;"-->
-                <a href="#">
-                    <i class="fa fa-circle text-success"></i> Online</a>
+            <a *ngFor="let item of searchResults; let i = index" class="nt-search-item" role="option"
+                [class.is-active]="i === searchIndex" [attr.aria-selected]="i === searchIndex"
+                (mousedown)="$event.preventDefault()" (mouseenter)="searchIndex = i" (click)="openSearchItem(item)">
+                <i class="fa fa-angle-right nt-search-item__icon" aria-hidden="true"></i>
+                <span class="nt-search-item__text">
+                    <span class="nt-search-item__label">{{item.label}}</span>
+                    <span class="nt-search-item__path" *ngIf="item.path">{{item.path}}</span>
+                </span>
+            </a>
+            <div class="nt-search-empty" *ngIf="!searchResults.length">
+                Không tìm thấy chức năng phù hợp với "{{searchText}}".
             </div>
         </div>
 
-        <!-- search form (Optional) -->
-        <form action="#" method="get" class="sidebar-form" style="display:none">
-            <div class="input-group">
-                <input type="text" name="q" class="form-control" placeholder="Search...">
-                <span class="input-group-btn">
-                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
-                        <i class="fa fa-search"></i>
-                    </button>
-                </span>
+        <!-- Sidebar user panel -->
+        <div class="nt-user-panel" [hidden]="searchText">
+            <span class="nt-user-panel__avatar" aria-hidden="true">{{userInitials}}</span>
+            <div class="nt-user-panel__info">
+                <div class="nt-user-panel__name" [title]="showUserFullName">{{showUserFullName}}</div>
+                <div class="nt-user-panel__status"><i class="fa fa-circle" aria-hidden="true"></i> Online</div>
             </div>
-        </form>
-        <!-- /.search form -->
+        </div>
 
         <!-- Sidebar Menu -->
 
-        <ul class="sidebar-menu">
+        <ul class="sidebar-menu" #menuRoot [hidden]="searchText">
 
             <li class="treeview">
-                <a [routerLink]="['notifications','index']" style="color: #055096;font-weight: bold;">
+                <a [routerLink]="['notifications','index']">
                     <i class="fa fa-circle-o"></i>
                     <span> Hồ sơ cần xử lý</span>
                 </a>
             </li>
-            
+            <li class="treeview">
+                <a [routerLink]="['hosodaduyet','index']">
+                    <i class="fa fa-check-square-o"></i>
+                    <span> Hồ sơ đã duyệt</span>
+                </a>
+            </li>
+
             <!-- Đề nghị, Trình duyệt -->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplan)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-file-text-o"></i>
                     <span>Đề nghị, Trình duyệt</span>
                     <span class="pull-right-container">
@@ -165,9 +149,22 @@
                         </a>
                     </li>
                     <li>
+                        <a [routerLink]="['conspermitstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_conspermitstatus)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Tình trạng giấy phép xây dựng
+                        </a>
+                    </li>
+                   
+                    <li>
                         <a [routerLink]="['supportlltc','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_supportlltc)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
                             Theo dõi hỗ trợ NTP/NCC
+                        </a>
+                    </li>
+                      <li>
+                        <a [routerLink]="['subconincurred','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_subconincurred)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            PS không có DT NTP/NCC
                         </a>
                     </li>
                     <li>
@@ -209,7 +206,13 @@
                     <li>
                         <a [routerLink]="['plansignstatus','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plansignstatus)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
-                            Tình hình KHKKHĐ
+                            Theo dõi HĐ và tạm ứng đầu
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plantrackingpayment','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plantrackingpayment)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Theo dõi thanh/quyết toán
                         </a>
                     </li>
                     <li>
@@ -265,7 +268,7 @@
 
             <!-- Kế hoạch -->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplan)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-file-text-o"></i>
                     <span>Kế hoạch</span>
                     <span class="pull-right-container">
@@ -399,7 +402,7 @@
             </li>
 
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandplanfinace)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-book"></i>
                     <span>Kế hoạch Thu - Chi</span>
                     <span class="pull-right-container">
@@ -431,6 +434,18 @@
                             Kế hoạch Dòng tiền
                         </a>
                     </li>
+                    <li>
+                        <a [routerLink]="['planrevenueadjustedit','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_planrevenueadjustedit)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Điều chỉnh KH Doanh thu (Admin)
+                        </a>
+                    </li>
+                    <li>
+                        <a [routerLink]="['plancashflowsiteedit','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_plancashflowsiteedit)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            Điều chỉnh KH Dòng tiền (Admin)
+                        </a>
+                    </li>
                    
                     <!-- <li>
                         <a [routerLink]="['spendingplan','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_spendingplan)" (click)="clickItem($event)">
@@ -450,7 +465,7 @@
 
             <!-- Hợp đồng, phụ lục -->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandcontract)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-book"></i>
                     <span>Hợp đồng, phụ lục</span>
                     <span class="pull-right-container">
@@ -464,6 +479,7 @@
                             Trình ký hợp đồng, phụ lục
                         </a>
                     </li>
+                  
                     <li>
                         <a [routerLink]="['regcontract_viewCT','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_regcontract_viewCT)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -499,7 +515,7 @@
 
             <!-- Theo dõi hồ sơ -->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commanddocument)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-sticky-note-o"></i>
                     <span>Theo dõi hồ sơ</span>
                     <span class="pull-right-container">
@@ -574,6 +590,12 @@
                             TT chi phí phân bổ
                         </a>
                     </li>
+                    <li>
+                        <a [routerLink]="['allocsettlementedit','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_allocsettlementedit)" (click)="clickItem($event)">
+                            <i class="fa fa-circle-o"></i>
+                            QT chi phí phân bổ
+                        </a>
+                    </li>
                     <!-- <li>
                         <a [routerLink]="['billpaysupp_view','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_billpaysupp_view)" (click)="clickItem($event)">
                             <i class="fa fa-circle-o"></i>
@@ -587,7 +609,7 @@
 
             <!--Thanh toán-->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandbillpay)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-money"></i>
                     <span>Thanh toán</span>
                     <span class="pull-right-container">
@@ -637,7 +659,7 @@
 
             <!-- Quyết toán -->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-check"></i>
                     <span>Quyết toán</span>
                     <span class="pull-right-container">
@@ -667,7 +689,7 @@
             
             </li>
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandtckt)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-check"></i>
                     <span>Tài chính kế toán</span>
                     <span class="pull-right-container">
@@ -685,7 +707,7 @@
                 </ul>
             </li>
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandbdsdt)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-check"></i>
                     <span>BĐS đầu tư</span>
                     <span class="pull-right-container">
@@ -709,7 +731,7 @@
             </li>
            
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-usd"></i>
                     <span>Tài chính Chủ đầu tư</span>
                     <span class="pull-right-container">
@@ -824,7 +846,7 @@
             </li>
 
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandsettlement)">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-wrench"></i>
                     <span>Bảo hành, bảo trì</span>
                     <span class="pull-right-container">
@@ -897,7 +919,7 @@
 
             <!-- CUNG ỨNG VẬT TƯ (đã tái cấu trúc thành 7 nhóm con) -->
             <li class="treeview" *ngIf="(isSysAdmin=='true' || (isPermissionAll_commandecommerce)) && isPermissionAll_TMDvcs">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-shopping-cart"></i>
                     <span>Cung ứng vật tư</span>
                     <span class="pull-right-container">
@@ -1013,6 +1035,48 @@
                             </li>
                             <li>
                                 <a [routerLink]="['auxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_auxiliarymaterialsbuget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch mua hàng VTP
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- 3b. Kế hoạch mua hàng (CCM) - bản dùng chung dữ liệu, không ràng buộc duyệt -->
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-calendar-check-o"></i> Kế hoạch mua hàng (CCM)
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li>
+                                <a [routerLink]="['ccmpurchasebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_ccmpurchasebudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch thép
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['ccmpurchaseotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_ccmpurchaseotherbudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    KH mua vật tư chính - XD
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['ccmpurchasemeotherbudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_ccmpurchasemeotherbudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    KH mua vật tư chính - ME
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['ccmconcretebudget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_ccmconcretebudget)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Kế hoạch bê tông
+                                </a>
+                            </li>
+                            <li>
+                                <a [routerLink]="['ccmauxiliarymaterialsbuget','index']" *ngIf="isSysAdmin=='true' || (isPermissionAll_ccmauxiliarymaterialsbuget)" (click)="clickItem($event)">
                                     <i class="fa fa-circle-o"></i>
                                     Kế hoạch mua hàng VTP
                                 </a>
@@ -1186,6 +1250,12 @@
                                 </a>
                             </li>
                             <li>
+                                <a [routerLink]="['reportertonghopdamphan','view']" *ngIf="isSysAdmin=='true' || (isPermissionAll_reportertonghopdamphan)" (click)="clickItem($event)">
+                                    <i class="fa fa-circle-o"></i>
+                                    Tổng hợp đàm phán mua hàng
+                                </a>
+                            </li>
+                            <li>
                                 <a [routerLink]="['rep05_haohutvattu','view','REP01_KHMH']" *ngIf="isSysAdmin=='true' || (isPermissionAll_rep05_haohutvattu)" (click)="clickItem($event)">
                                     <i class="fa fa-circle-o"></i>
                                     Báo cáo Hao hụt vật tư chính
@@ -1234,7 +1304,7 @@
             </li>
             <!--Báo cáo-->
             <li class="treeview" *ngIf="isSysAdmin=='true' || (isPermissionAll_commandreportccm) || isSubAdmin=='true'">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-bar-chart"></i>
                     <span>Báo cáo</span>
                     <span class="pull-right-container">
@@ -1508,7 +1578,7 @@
 
             <!-- quản trị hệ thống -->
             <li class="treeview" *ngIf="isSysAdmin=='true'">
-                <a href="#" style="color: #055096;font-weight: bold;">
+                <a href="#">
                     <i class="fa fa-cog"></i>
                     <span>Hệ thống</span>
                     <span class="pull-right-container">

@@ -32,6 +32,7 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
+  @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
     @ViewChild('dataPopup') dataPopup: Popup;
   
@@ -57,13 +58,17 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
-    this.init();
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
+    this.init().then(() => this.refreshTongThanhToan3Ben());
     this.grid.isReadOnly = true;
     this.grid.allowAddNew = false;
     this.grid2.isReadOnly = true;
-    
+
     this.grid3.isReadOnly = true;
+    // Thanh toán 3 bên của Bảng KLQT liên kết: chỉ xem
+    this.grid5.isReadOnly = true;
+    this.grid5.allowAddNew = false;
+    this.grid5.allowDelete = false;
 
     this.doubleClickGrid(this.grid3);
     this.dbClickCellContent(this.grid);
@@ -88,6 +93,12 @@ export class ApprovedSettlementEditorComponent extends BaseEditorComponent imple
             }
           });
     //this.wordWrapGrid();
+  }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên của Bảng KLQT liên kết và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint('Evaluator_ServerConstraint_Amount_TT3Ben');
+    await this.dfpanel.runConstraint('Evaluator_Amount_ConLaiTT3Ben_Calculate');
   }
 
   ngOnDestroy() {

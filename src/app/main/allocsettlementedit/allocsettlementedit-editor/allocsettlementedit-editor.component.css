@@ -1,0 +1,478 @@
+/* =============================================================================
+   Điều chỉnh quyết toán chi phí phân bổ - style riêng của module.
+
+   Khung ngoài (section.content > .box > header/body/footer) và chia cột vẫn theo
+   chuẩn AdminLTE + Bootstrap của hệ thống. Bảng màu, cỡ chữ lấy đúng bộ style
+   "cps-*" của màn Hợp đồng (contract) / Tình trạng GPXD (conspermitstatus):
+     navy chữ #00008b  - nhấn #3c8dbc  - viền #9dc3e6  - nền nhạt #eef6fc
+   Font: kế thừa font chung của hệ thống (không khai báo font-family).
+
+   Phần bên trong df-panel / Wijmo dựng lúc chạy -> phải dùng ::ng-deep.
+   ========================================================================== */
+
+:host {
+    display: block;
+}
+
+/* ------------------------------- HEADER ---------------------------------- */
+.cps-header {
+    padding: 12px 15px;
+}
+
+.cps-title {
+    display: inline-block;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #cc0000;
+    text-transform: uppercase;
+    line-height: 30px;
+    margin: 0;
+}
+
+.cps-title-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 7px;
+    background: #d9edf7;
+    color: #3c8dbc;
+    font-size: 15px;
+    margin-right: 9px;
+    vertical-align: middle;
+}
+
+.cps-meta {
+    margin: 6px 0 0 39px;
+}
+
+.cps-meta .cps-badge {
+    margin-right: 6px;
+}
+
+.box-tools .btn,
+.box-tools .btn-group {
+    margin-left: 6px;
+}
+
+.box-tools .btn i {
+    margin-right: 4px;
+}
+
+/* ------------------------------- BADGE ----------------------------------- */
+.cps-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.6;
+    border: 1px solid transparent;
+}
+
+.cps-badge i { margin-right: 4px; }
+.cps-badge-doc { background: #ecf0f5; color: #00008b; border-color: #d2d6de; }
+.cps-badge-success { background: #dff0d8; color: #00733e; border-color: #c3e6cb; }
+.cps-badge-info { background: #d9edf7; color: #367fa9; border-color: #bce8f1; }
+
+/* ------------------------------ MẪU IN ----------------------------------- */
+.cps-print-menu {
+    min-width: 330px;
+    padding: 6px;
+    border: 1px solid #9dc3e6;
+    border-radius: 6px;
+}
+
+.cps-print-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 8px;
+    border-radius: 4px;
+}
+
+.cps-print-item:hover { background: #eef6fc; }
+.cps-print-name { font-size: 13px; color: #00008b; padding-right: 12px; }
+.cps-print-btns .cps-icon-btn { margin-left: 4px; }
+.cps-pdf { color: #e08e0b; }
+.cps-word { color: #3c8dbc; }
+.cps-excel { color: #00a65a; }
+
+.cps-icon-btn {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    line-height: 28px;
+    text-align: center;
+    border: 1px solid #d2d6de;
+    border-radius: 6px;
+    background: #fff;
+    color: #3c8dbc;
+    cursor: pointer;
+}
+
+.cps-icon-btn:hover,
+.cps-icon-btn:focus { background: #ecf0f5; outline: none; }
+
+/* ------------------------------- NOTES ----------------------------------- */
+.cps-note {
+    padding: 10px 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.cps-note > i {
+    float: left;
+    margin-right: 9px;
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.cps-note > span {
+    display: block;
+    overflow: hidden;
+}
+
+.cps-note-info { background: #edf6fb; border: 1px solid #d9edf7; color: #31708f; }
+.cps-note-warning { background: #fcf8e3; border: 1px solid #faebcc; color: #8a6d3b; }
+
+/* -------------------------------- CARD ----------------------------------- */
+.cps-card {
+    background: #ffffff;
+    border: 2px solid #9dc3e6;
+    border-radius: 6px;
+    padding: 14px 18px 8px;
+    margin-bottom: 10px;
+}
+
+.cps-card-head {
+    position: relative;
+    font-size: 14px;
+    font-weight: 700;
+    color: #00008b;
+    margin-bottom: 14px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid #cfe7f7;
+    line-height: 30px;
+}
+
+.cps-card-icon {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    text-align: center;
+    border-radius: 6px;
+    margin-right: 8px;
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+.cps-icon-blue { background: #d9edf7; color: #3c8dbc; }
+
+.cps-head-tools {
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-weight: 400;
+}
+
+.cps-legend {
+    font-size: 12px;
+    color: #31708f;
+    margin-right: 14px;
+}
+
+.cps-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 5px;
+    vertical-align: -2px;
+    border-radius: 3px;
+}
+
+.cps-swatch-edit { background: #fff; border: 1px solid #3c8dbc; }
+.cps-swatch-lock { background: #f4f6f9; border: 1px solid #d2d6de; }
+
+/* ============================ FORM ĐẦU PHIẾU =============================
+   Giãn khoảng cách: mỗi dòng cao tối thiểu 36px, cách nhau 12px, hai cột
+   cách nhau 24px. Nhãn navy đậm như form mẫu của hệ thống.
+   ======================================================================== */
+.cps-form {
+    margin: 0 -12px;
+}
+
+.cps-form ::ng-deep .form-group-custom {
+    height: auto;
+    min-height: 36px;
+    margin-bottom: 12px;
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.cps-form ::ng-deep .form-group-custom-label {
+    height: auto;
+    padding-top: 8px;
+    padding-right: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #00008b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Ô được sửa: nền trắng, viền xanh hệ thống. */
+.cps-form ::ng-deep .wj-control.wj-content,
+.cps-form ::ng-deep input[type="text"] {
+    min-height: 34px;
+    border: 1px solid #9dc3e6;
+    border-radius: 5px;
+    font-size: 13px;
+    color: #00008b;
+}
+
+.cps-form ::ng-deep .wj-control input {
+    height: 32px;
+    padding: 0 10px;
+    color: #00008b;
+    font-weight: 600;
+}
+
+.cps-form ::ng-deep .wj-inputnumber input {
+    text-align: right;
+}
+
+.cps-form ::ng-deep .wj-control.wj-content.wj-state-focused {
+    border-color: #3c8dbc;
+    box-shadow: 0 0 0 2px rgba(60, 141, 188, .25);
+}
+
+/* Ô chỉ xem: nền xám nhạt, không mờ chữ (global .wj-state-disabled đặt opacity .5). */
+.cps-form ::ng-deep .wj-control.wj-content.wj-state-disabled,
+.cps-form ::ng-deep .wj-control.wj-content[disabled] {
+    opacity: 1;
+    background: #f4f6f9 !important;
+    border-color: #d2d6de;
+}
+
+.cps-form ::ng-deep .wj-control.wj-state-disabled input,
+.cps-form ::ng-deep .wj-control[disabled] input {
+    color: #333;
+    font-weight: 400;
+    background: transparent;
+}
+
+.cps-form ::ng-deep .wj-control.wj-state-disabled .wj-input-group-btn,
+.cps-form ::ng-deep .wj-control[disabled] .wj-input-group-btn {
+    display: none;
+}
+
+.cps-form ::ng-deep .checkboxcontainer {
+    padding-top: 6px;
+}
+
+.cps-form ::ng-deep .custom-file-upload {
+    min-height: 34px;
+    padding-top: 7px;
+    border: 1px dashed #3c8dbc;
+    border-radius: 5px;
+    color: #3c8dbc;
+}
+
+/* Nút "Xem hợp đồng" (ButtonInput) - đổi sang nút viền nhẹ thay cho khối xanh đậm. */
+.cps-form ::ng-deep #btnHdPl {
+    height: 34px;
+    margin-bottom: 0;
+    background: #fff;
+    border: 1px solid #9dc3e6;
+    border-radius: 5px;
+    color: #3c8dbc;
+    font-weight: 600;
+}
+
+.cps-form ::ng-deep #btnHdPl:hover {
+    background: #eef6fc;
+}
+
+/* --- Thanh tiêu đề phân khung, do renderFieldGroupHeaders() chèn vào ----- */
+.cps-form ::ng-deep .cps-group-head {
+    clear: both;
+    margin: 10px 12px 16px;
+    padding: 8px 12px;
+    border: 1px solid #d9edf7;
+    border-left: 3px solid #3c8dbc;
+    border-radius: 4px;
+    background: #eef6fc;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #00008b;
+    text-transform: uppercase;
+    letter-spacing: .2px;
+}
+
+.cps-form ::ng-deep .cps-group-head:first-child {
+    margin-top: 0;
+}
+
+.cps-form ::ng-deep .cps-group-head i {
+    margin-right: 8px;
+    color: #3c8dbc;
+}
+
+/* -------------------------------- TABS ----------------------------------- */
+.cps-tab-box {
+    border: 2px solid #9dc3e6;
+    border-radius: 6px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.cps-tabs {
+    list-style: none;
+    margin: 0;
+    padding: 0 12px;
+    border-bottom: 1px solid #9dc3e6;
+    background: #fff;
+    overflow: hidden;
+}
+
+.cps-tabs li {
+    float: left;
+    margin-right: 2px;
+}
+
+.cps-tabs li a {
+    display: block;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #31708f;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cps-tabs li a > i:first-child {
+    margin-right: 6px;
+}
+
+.cps-tabs li a:hover,
+.cps-tabs li a:focus {
+    color: #00008b;
+    text-decoration: none;
+}
+
+.cps-tabs li.active a {
+    color: #3c8dbc;
+    border-bottom-color: #3c8dbc;
+}
+
+.cps-lock {
+    margin-left: 6px;
+    font-size: 11px;
+    color: #9fb3c3;
+}
+
+.cps-count {
+    display: inline-block;
+    min-width: 18px;
+    margin-left: 6px;
+    padding: 0 6px;
+    font-size: 11px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 9px;
+    background: #f39c12;
+    color: #fff;
+}
+
+.cps-tab-content {
+    padding: 14px;
+    overflow-x: auto;
+}
+
+.cps-tab-pane { display: none; }
+.cps-tab-pane.active { display: block; }
+
+/* ================================ LƯỚI =================================== */
+::ng-deep .cps-grid {
+    border: 2px solid #9dc3e6;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 13px;
+    max-width: 100%;
+}
+
+::ng-deep .cps-grid .wj-header {
+    background: #cfe7f7 !important;
+    color: #333333 !important;
+    font-weight: 700;
+    font-size: 12.5px;
+    border-color: #9dc3e6 !important;
+}
+
+::ng-deep .cps-grid .wj-cell {
+    border-color: #d5e6f4 !important;
+    padding: 4px 8px;
+    color: #00008b;
+}
+
+::ng-deep .cps-grid .wj-cell.wj-state-selected,
+::ng-deep .cps-grid .wj-cell.wj-state-multi-selected {
+    background: #d9edf7 !important;
+    color: #00008b !important;
+}
+
+::ng-deep .cps-grid .wj-alt:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    background: #f2f8fd;
+}
+
+/* Dòng đã sửa trong phiên (đặt bởi formatItem ở component). */
+::ng-deep .cps-grid .wj-cell.adj-row-edited:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    background: #fcf8e3 !important;
+}
+
+::ng-deep .cps-grid .wj-rowheaders .wj-header {
+    font-weight: 400;
+    color: #7794a8 !important;
+}
+
+::ng-deep .cps-grid-corner-btn {
+    margin: auto;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: #dd4b39;
+}
+
+::ng-deep .cps-corner-print {
+    color: #3c8dbc;
+}
+
+/* --------------------------- HỘP XÁC NHẬN -------------------------------- */
+.cps-confirm ul {
+    margin: 8px 0 4px;
+    padding-left: 18px;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #31708f;
+}
+
+/* ------------------------------ RESPONSIVE -------------------------------- */
+@media (max-width: 991px) {
+    .cps-meta { margin-left: 0; }
+    .cps-head-tools { position: static; display: block; margin-top: 6px; }
+    .cps-tabs li { float: none; }
+    .cps-tabs li a { border-bottom: 1px solid #e4edf5; }
+    .cps-tabs li.active a { border-bottom-color: #3c8dbc; }
+}

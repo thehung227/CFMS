@@ -21,6 +21,10 @@ import { LayoutBillSuppEditor } from "../DeclareLayout";
 import { Title } from "@angular/platform-browser";
 import { LayoutPrinter } from "../billsupp-explorer/billsupp-printer.data";
 import { CryptoExtension } from "../../../core/extensions/crypto.extension";
+import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { Global } from "../../../shared/global";
+import { SystemConstants } from "../../../core/common/system.constants";
+import { ParameterContract } from "../../../contracts/parameter.contract";
 
 @Component({
   selector: "app-billsupp-editor-form",
@@ -36,6 +40,7 @@ export class BillSuppEditorComponent
   @ViewChild("grid2") grid2: wjcGrid.FlexGrid;
   @ViewChild("grid3") grid3: wjcGrid.FlexGrid;
   @ViewChild("grid4") grid4: wjcGrid.FlexGrid;
+  @ViewChild("grid5") grid5: wjcGrid.FlexGrid;
   @ViewChild("dfpanel") _dfpanel: DynamicFormPanelComponent;
 
   @ViewChild("gridPrint") gridPrint: wjcGrid.FlexGrid;
@@ -69,9 +74,106 @@ export class BillSuppEditorComponent
       this.grid2,
       this.grid3,
       this.grid4,
+      this.grid5,
     ];
-    this.init();
+    this.init().then(() => this.refreshTongThanhToan3Ben());
     this.grid3.allowAddNew = false;
+    this.initGridThanhToan3Ben();
+  }
+
+  // Tab "Thanh toán 3 bên": dữ liệu nạp từ hợp đồng, chỉ được nhập "Thanh toán kỳ này", không thêm/xóa dòng
+  initGridThanhToan3Ben() {
+    this.grid5.allowAddNew = false;
+    this.grid5.allowDelete = false;
+
+    // Giữ giá trị trước khi sửa/dán để trả lại khi nhập vượt giới hạn
+    let _oldPayAmount = 0;
+    const _beginEdit = (s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs) => {
+      if (s.columns[e.col].binding != "PayAmount") { e.cancel = true; return; }
+      let _item = s.rows[e.row] ? s.rows[e.row].dataItem : null;
+      _oldPayAmount = _item ? Number(_item["PayAmount"] || 0) : 0;
+    };
+    this.grid5.beginningEdit.addHandler(_beginEdit);
+    this.grid5.pastingCell.addHandler(_beginEdit);
+
+    const _calcPayAmount = (s: wjcGrid.FlexGrid, e: wjcGrid.CellRangeEventArgs) => {
+      if (s.columns[e.col].binding == "PayAmount") this.calcPayAmountThanhToan3Ben(e.row, _oldPayAmount);
+    };
+    this.grid5.cellEditEnded.addHandler(_calcPayAmount);
+    this.grid5.pastedCell.addHandler(_calcPayAmount);
+  }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên (= tổng "Thanh toán kỳ này" của tab 3 bên) và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint("Evaluator_Amount_TT3Ben_Calculate");
+    await this.dfpanel.runConstraint("Evaluator_Amount_ConLaiTT3Ben_Calculate");
+  }
+
+  // Thanh toán kỳ này: nhập trực tiếp. Tổng "Thanh toán kỳ này" của tab 3 bên không được vượt
+  // Giá trị đề nghị thanh toán (gồm VAT) của Bill -> vượt thì trả lại giá trị cũ.
+  // Tổng cộng = kỳ trước + kỳ này. Server tính lại lũy kế kỳ trước sau khi lưu.
+  calcPayAmountThanhToan3Ben(row: number, oldValue: number) {
+    let _item = this.grid5.rows[row] ? this.grid5.rows[row].dataItem : null;
+    if (!_item) return;
+
+    let _isVND = this.editorFrm.get("CurrencyCode").value == "VND";
+    let _amount = Number(_item["PayAmount"] || 0);
+    let _value = _isVND ? Math.round(_amount) : Math.round(_amount * 100) / 100;
+
+    if (_value != oldValue) {
+      let _limit = Number(this.editorFrm.get("Amount_DeNghiTT").value || 0);
+      let _others = this.sumPayAmountThanhToan3Ben(_item);
+      if (_others + _value > _limit) {
+        alert(
+          'Tổng "Thanh toán kỳ này" của tab Thanh toán 3 bên (' + this.formatAmountThanhToan3Ben(_others + _value) +
+          ") không được lớn hơn Giá trị đề nghị thanh toán (gồm VAT) của Bill (" + this.formatAmountThanhToan3Ben(_limit) +
+          ").\nDòng này được nhập tối đa: " + this.formatAmountThanhToan3Ben(Math.max(_limit - _others, 0))
+        );
+        _value = oldValue;
+      }
+    }
+
+    this.grid5.setCellData(row, this.grid5.columns.getColumn("PayAmount").index, _value);
+    this.grid5.setCellData(row, this.grid5.columns.getColumn("PayAmountTotal").index, Number(_item["PayAmountPrev"] || 0) + _value);
+    this.refreshTongThanhToan3Ben();
+  }
+
+  // Tổng "Thanh toán kỳ này" của tab 3 bên (bỏ qua dòng exclude nếu có), làm tròn 2 số lẻ để tránh sai số cộng số thực
+  sumPayAmountThanhToan3Ben(exclude?: any): number {
+    let _sum = 0;
+    let _items = this.grid5.itemsSource ? this.grid5.itemsSource.items : [];
+    for (let item of _items) {
+      if (item !== exclude) _sum += Number(item["PayAmount"] || 0);
+    }
+    return Math.round(_sum * 100) / 100;
+  }
+
+  formatAmountThanhToan3Ben(value: number): string {
+    return wjcCore.Globalize.format(value, this.editorFrm.get("CurrencyCode").value == "VND" ? "n0" : "n2");
+  }
+
+  // Chặn lưu khi tổng "Thanh toán kỳ này" của tab 3 bên > Giá trị đề nghị thanh toán (gồm VAT):
+  // đầu phiếu có thể bị sửa (giảm) sau khi đã nhập tab 3 bên nên kiểm tra lúc nhập là chưa đủ
+  checkTongThanhToan3Ben(): boolean {
+    let _limit = Number(this.editorFrm.get("Amount_DeNghiTT").value || 0);
+    let _total = this.sumPayAmountThanhToan3Ben();
+    if (_total <= _limit || _limit < 0) return true;
+
+    alert(
+      'Tổng "Thanh toán kỳ này" của tab Thanh toán 3 bên (' + this.formatAmountThanhToan3Ben(_total) +
+      ") đang lớn hơn Giá trị đề nghị thanh toán (gồm VAT) của Bill (" + this.formatAmountThanhToan3Ben(_limit) +
+      ").\nĐiều chỉnh lại tab Thanh toán 3 bên trước khi lưu."
+    );
+    return false;
+  }
+
+  async loadThanhToan3Ben() {
+    this.showLoading = true;
+    try {
+      await this.dfpanel.runConstraint("Evaluator_ServerConstraint_Load_TT3Ben");
+    } finally {
+      this.showLoading = false;
+    }
   }
 
   ngAfterViewInit() {
@@ -221,6 +323,8 @@ export class BillSuppEditorComponent
   }
 
   onSubmit(formData: any) {
+    if (!this.checkTongThanhToan3Ben()) return;
+
     this.showLoading = true;
     //if (this.taidulieu == true || this.id > 0) {
     let _errorSave1 = false;
@@ -433,5 +537,64 @@ export class BillSuppEditorComponent
       encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(params))),
     ];
     window.open(navigateUrl.join("/"));
+  }
+
+  output1: Array<Object>;
+  _errCheck: boolean = false;
+  _errMess1: string;
+
+  async checkQuanLyKhoiLuong(formData: any) {
+    this.showLoading = true;
+    let params = new Array<ParameterContract>();
+    const param1 = new ParameterContract();
+    const param2 = new ParameterContract();
+    const param3 = new ParameterContract();
+    const param4 = new ParameterContract();
+    const param5 = new ParameterContract();
+    const param6 = new ParameterContract();
+
+    param1.ParameterName = Global.convertParameterName('ProductCostId');
+    param1.ParameterValue = formData.value['ProductCostId'];
+    params.push(param1);
+
+    param2.ParameterName = Global.convertParameterName('BranchCode');
+    param2.ParameterValue = localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '');
+    params.push(param2);
+
+    param3.ParameterName = Global.convertParameterName('Id');
+    param3.ParameterValue = this.id;
+    params.push(param3);
+
+    param4.ParameterName = Global.convertParameterName('ParentBizDocId');
+    param4.ParameterValue = this.parentData['ParentBizDocId'];
+    params.push(param4);
+
+    param5.ParameterName = Global.convertParameterName('DocCode');
+    param5.ParameterValue = this.parentData['DocCode'];
+    params.push(param5);
+
+    param6.ParameterName = Global.convertParameterName('IsCheckSave');
+    param6.ParameterValue = 1;
+    params.push(param6);
+
+    let _data = await this._service.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_CheckHopDong_TheoDoiKhoiLuong', params)
+      .toPromise().then();
+
+    this.output1 = <Array<Object>>(_data['output']);
+    this._errCheck = this.output1['@_Error'];
+    // Nội dung trả về ngăn cách các câu bằng '||' -> tách thành mỗi câu một dòng (\n) khi hiển thị
+    let _rawMess = this.output1['@_ErrorMessage'];
+    this._errMess1 = _rawMess
+      ? String(_rawMess).split('||').map(s => s.trim()).filter(s => s.length > 0).join('\n')
+      : _rawMess;
+
+    if (this._errCheck) {
+      alert(this._errMess1 + '. Kiểm tra lại Kế hoạch Khối lượng');
+      this.showLoading = false;
+    }
+    else {
+      alert('Kiểm tra Kế hoạch Khối lượng thành công, không có lỗi!');
+      this.showLoading = false;
+    }
   }
 }

@@ -31,6 +31,7 @@ export class FinancialReportEditorComponent extends BaseEditorComponent implemen
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
   @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
+  @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
   
 
@@ -56,7 +57,7 @@ export class FinancialReportEditorComponent extends BaseEditorComponent implemen
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4];
     this.init();
     // this.grid1.isReadOnly = true;
     this.grid1.allowAddNew = false;
@@ -74,6 +75,29 @@ export class FinancialReportEditorComponent extends BaseEditorComponent implemen
 
   ngOnDestroy() {
     this.destroy();
+  }
+
+async onClick_2(state?: any) {
+    try {
+      this.showDialog = false;//Thêm dialog
+
+      if (this.editorFrm.valid) {
+        this.showLoading = true;
+        this.taidulieu = true;
+      }
+
+      for (let command of this._layoutDeclare.buttonLoadChild2) {
+        if (this.editorFrm.valid)
+          await this.dfpanel.runConstraint(command).then();
+      }
+
+      this.showLoading = false;
+    }
+    catch (ex) {
+      alert("Xảy ra lỗi trong quá trình thực hiện");
+      console.log(ex);
+      this.showLoading = false;
+    }
   }
 
   onSubmit(formData: any, isApproveSend?: boolean) {

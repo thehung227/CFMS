@@ -229,7 +229,14 @@ export class LayoutApprovedBillInternalEquipEditor implements IEditorFormulaDecl
                     isReadOnly: 'true',
                     style: 'background-color:#F1EDED;border-radius:8px;'
                 }),
-               
+                new DateBoxInput({
+                    key: 'EffectiveDate',
+                    label: 'Chi phí tháng',
+                    dataType: 'date',
+                    format: 'dd/MM/yyyy',
+                    col: 6,
+                     validators: [Validators.required],
+                }),
               
                 new LookupBoxInput({
                     key: 'ProductCostId',

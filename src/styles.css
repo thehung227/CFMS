@@ -1,6 +1,138 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* ===== Design token - phong cách mới (khung main, sidebar, Hồ sơ cần xử lý) ===== */
+:root {
+    --nt-primary: #0b5cad;
+    --nt-primary-dark: #07407a;
+    --nt-accent: #2fa4e7;
+
+    /* Sidebar navy; logo vẫn nằm trên nền trắng ở header */
+    --nt-sidebar-bg: #142d4e;
+    --nt-sidebar-bg-2: #0f2440;
+    --nt-sidebar-hover: #1e3a5f;
+    --nt-sidebar-active: #1d4ed8;
+    --nt-sidebar-active-bar: #dc2626;
+    --nt-sidebar-border: rgba(255, 255, 255, .1);
+    --nt-sidebar-text: #e2e8f0;
+    --nt-sidebar-sub: #cbd5e1;
+    --nt-sidebar-muted: #94a3b8;
+    --nt-sidebar-icon: #93c5fd;
+    --nt-sidebar-disabled: #64748b;
+
+    --nt-bg: #f1f4f8;
+    --nt-surface: #fff;
+    --nt-border: #e2e8f0;
+    --nt-text: #1e293b;
+    --nt-text-muted: #64748b;
+
+    --nt-danger: #c62828;
+    --nt-danger-bg: #fdecec;
+    --nt-warning: #b45309;
+    --nt-warning-bg: #fff4e5;
+    --nt-success: #1b7f4f;
+    --nt-success-bg: #e8f6ef;
+    --nt-info-bg: #e8f1fb;
+
+    --nt-radius: 10px;
+    --nt-shadow: 0 1px 2px rgba(15, 23, 42, .06), 0 1px 3px rgba(15, 23, 42, .08);
+}
+
+/* Header + nền nội dung (body.newt-theme do MainComponent gắn; đè skin-blue của AdminLTE) */
+body.newt-theme .main-header {
+    box-shadow: 0 1px 0 var(--nt-border), 0 2px 6px rgba(15, 23, 42, .04);
+}
+
+/* Dùng shorthand "background" để xoá gradient cũ khai báo trong assets/css/wijmo.min.css */
+body.newt-theme .main-header .logo,
+body.newt-theme .main-header .logo:hover {
+    background: #fff;
+    border-right: 1px solid var(--nt-border);
+}
+
+body.newt-theme .main-header .navbar {
+    background: #fff;
+}
+
+/* wijmo.min.css đặt .sidebar gradient xanh nhạt + opacity .9 -> che nền navy và làm mờ chữ */
+body.newt-theme .main-sidebar .sidebar {
+    background: transparent;
+    opacity: 1;
+}
+
+body.newt-theme .main-header .navbar .sidebar-toggle {
+    color: var(--nt-primary);
+}
+
+body.newt-theme .main-header .navbar .sidebar-toggle:hover,
+body.newt-theme .main-header .navbar .nav > li > a:hover {
+    background-color: var(--nt-info-bg);
+    color: var(--nt-primary-dark);
+}
+
+body.newt-theme .main-header .navbar .nav > li > a {
+    color: var(--nt-text);
+}
+
+body.newt-theme .wrapper {
+    background-color: var(--nt-sidebar-bg);
+}
+
+body.newt-theme .content-wrapper {
+    background-color: var(--nt-bg);
+}
 .login-page{
     /* background: url('./assets/img/banner.jpg') no-repeat !important; */
     background-size: 100% !important;
     background-color: #fff!important;
+}
+
+/* Chế độ chỉ xem (?view=1) - mở từ màn "Hồ sơ đã duyệt" (base-editor enableViewOnlyMode).
+   Ẩn mọi nút trên thanh công cụ (Duyệt / Trả lại / Đề xuất trả / Lưu / Mẫu in), chỉ còn Thoát (thẻ <a>). */
+.newt-view-only .box-header .box-tools button,
+.newt-view-only .box-header .box-tools .btn-group {
+    display: none !important;
+}
+
+.newt-view-only .box-header .box-title::after {
+    content: 'CHỈ XEM';
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #d9edf7;
+    border: 1px solid #bce8f1;
+    color: #367fa9;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    vertical-align: middle;
+}
+
+/* Logo Newtecons mờ phía sau nội dung */
+.newt-view-only {
+    display: block;
+    position: relative;
+}
+
+.newt-view-only::before {
+    content: '';
+    position: fixed;
+    top: 50px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: url('/assets/img/Logo_Coteccons.png') no-repeat calc(50% + 115px) 58%;
+    background-size: 42% auto;
+    opacity: .07;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.newt-view-only > * {
+    position: relative;
+    z-index: 1;
+}
+
+.newt-view-only .box {
+    background: rgba(255, 255, 255, .86);
 }

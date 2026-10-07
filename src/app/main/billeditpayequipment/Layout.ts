@@ -851,7 +851,6 @@ export class LayoutBillEditPayEquipmentEditor implements IEditorFormulaDeclarati
                     label: 'Giá trị hoàn trả tạm ứng',
                     type: 'number',
                     col: 6,
-                    isReadOnly: 'true',
                   ///  validators: [Validators.ccmmessage1],
                     style: 'background-color:#CCFF66;border-radius:8px;',
                     

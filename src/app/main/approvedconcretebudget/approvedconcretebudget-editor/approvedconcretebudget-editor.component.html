@@ -16,6 +16,7 @@
           <button class="btn btn-warning" title="In, kết xuất" type="button" [disabled]="parentData?.Id == -1" (click)="showDocumentInNewTab(parentData?.IdBudget)">
             Tổng hợp kế hoạch đặt hàng
           </button>
+          <button class="btn bg-teal" type="button" (click)="openQuickConcreteReport(editorFrm)" [disabled]="showLoading==true" title="Báo cáo nhanh sản lượng bê tông dự án">Xem báo cáo</button>
           <button class="btn btn-success" type="button" (click)=onClick(3)
             *ngIf="parentData?.RequireReturn == 1 && parentData?.CompletedApprove != true"
             [disabled]="!editorFrm.valid || parentData?.EmployeeCodeApprove != ''">Đề xuất trả</button>

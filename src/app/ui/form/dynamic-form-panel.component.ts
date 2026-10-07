@@ -3,6 +3,7 @@ import { FormGroup, Validators } from '@angular/forms';
 import { PanelBase } from './../panel/PanelBase';
 import { BravoCtorEnum } from '../../core/enum/type.enum';
 import { Global } from '../../shared/global';
+import { GridRowUtil } from '../../shared/grid-row.util';
 import { ParameterContract } from '../../contracts/parameter.contract';
 import { BaseService } from '../../base/base.service';
 
@@ -658,10 +659,17 @@ console.log(this.linkReporter[key]['parameter'])
     } else {
       this._event = e;
 
+      // e.row là CHỈ SỐ DÒNG CỦA LƯỚI. Khi lưới có group, chỉ số này lệch với
+      // sourceCollection đúng bằng số GroupRow phía trên -> phải phân giải qua rows[].dataItem.
+      let _grid = this.gridArray[evaluator['Tables']];
+      let _item = _grid ? GridRowUtil.itemOf(_grid, e.row) : null;
+      // Chỉ bỏ qua khi xác định được đây là dòng nhóm / dòng không có record.
+      // Nếu evaluator không gắn với lưới nào thì giữ nguyên luồng cũ.
+      if (_grid && _item == null) return;
+
       if (evaluator['zExpr']) {
-        let ds = this.gridArray[evaluator['Tables']].itemsSource;
-        let defaultRow = this.gridArray[evaluator['Tables']].itemsSource['defaultRow'];
-        const expr = this.fn_translate_expr(evaluator['zExpr'], ds.sourceCollection[e.row], defaultRow);
+        let defaultRow = _grid.itemsSource['defaultRow'];
+        const expr = this.fn_translate_expr(evaluator['zExpr'], _item, defaultRow);
         flag = eval(expr);
       }
       if (flag) {
@@ -702,16 +710,21 @@ console.log(this.linkReporter[key]['parameter'])
   }
 
   //Khoa: 19/01/2018 thêm chạy evaluator lưới
+  /** @param rowIndex CHỈ SỐ DÒNG CỦA LƯỚI (cùng không gian với flex.setCellData / flex.rows). */
   async runEvaluatorChild(key: string, rowIndex: number) {
     let evaluator;
     // if(this.evaluators.contains(key))
     evaluator = this.evaluators[key];
     let flag = true;
 
+    let _grid = this.gridArray[evaluator['Tables']];
+    let _item = _grid ? GridRowUtil.itemOf(_grid, rowIndex) : null;
+    // Chỉ bỏ qua khi xác định được đây là dòng nhóm / dòng không có record.
+    if (_grid && _item == null) return;
+
     if (evaluator['zExpr']) {
-      let ds = this.gridArray[evaluator['Tables']].itemsSource.sourceCollection[rowIndex];
-      let defaultRow = this.gridArray[evaluator['Tables']].itemsSource["defaultRow"];
-      const expr = this.fn_translate_expr(evaluator['zExpr'], ds, defaultRow);
+      let defaultRow = _grid.itemsSource["defaultRow"];
+      const expr = this.fn_translate_expr(evaluator['zExpr'], _item, defaultRow);
 
       flag = eval(expr);
     }
@@ -800,7 +813,8 @@ console.log(this.linkReporter[key]['parameter'])
     //let ds = this.gridArray[evaluator['Tables']].itemsSource;
     //let value = this.fn_translate_expr(evaluator['Value'], ds.sourceCollection[rowIndex], ds.itemsRemoved);
 
-    let ds = this.gridArray[evaluator['Tables']].itemsSource.sourceCollection[rowIndex];
+    let ds = GridRowUtil.itemOf(this.gridArray[evaluator['Tables']], rowIndex);
+    if (ds == null) return;
     let defaultRow = this.gridArray[evaluator['Tables']].itemsSource['defaultRow'];
     let value = this.fn_translate_expr(evaluator['Value'], ds, defaultRow);
 
@@ -967,7 +981,8 @@ console.log(this.linkReporter[key]['parameter'])
 
     try {
       let gridtmp: wjcGrid.FlexGrid = this.gridArray[Number(evaluator['Tables'])];
-      let row = gridtmp.itemsSource.sourceCollection[rowIndex];
+      let row = GridRowUtil.itemOf(gridtmp, rowIndex);
+      if (row == null) return;
       const params = this.fn_build_paramater(keys, row);
 
       // let index = 0;
@@ -992,7 +1007,8 @@ console.log(this.linkReporter[key]['parameter'])
             }
           }
           //this.setChildValue(rowIndex, col, evaluator['Tables'], data[0]['Value']);
-          gridtmp.setCellData(rowIndex, index, data[0]['Value']);
+          // Ghi theo record: giữa lúc đọc và lúc ghi có await (gọi SP) nên dòng có thể đã dịch chuyển.
+          GridRowUtil.setCellDataByItem(gridtmp, row, index, data[0]['Value']);
           await this.onCellValueChanged(evaluator['Tables'], col, this._event)
         }
 
@@ -1008,7 +1024,8 @@ console.log(this.linkReporter[key]['parameter'])
             }
           }
           //this.setChildValue(rowIndex, col, evaluator['Tables'], data[0]['Value']);
-          gridtmp.setCellData(rowIndex, index, data[0][col]);//data[0]['Value']
+          // Ghi theo record: giữa lúc đọc và lúc ghi có await (gọi SP) nên dòng có thể đã dịch chuyển.
+          GridRowUtil.setCellDataByItem(gridtmp, row, index, data[0][col]);//data[0]['Value']
           await this.onCellValueChanged(evaluator['Tables'], col, this._event)
         }
 
@@ -1095,7 +1112,8 @@ console.log(this.linkReporter[key]['parameter'])
 
     try {
       let gridtmp: wjcGrid.FlexGrid = this.gridArray[Number(evaluator['Tables'])];
-      let row = gridtmp.itemsSource.sourceCollection[rowIndex];
+      let row = GridRowUtil.itemOf(gridtmp, rowIndex);
+      if (row == null) return;
       const params = this.fn_build_paramater(keys, row);
 
       if (evaluator['Command'].includes('ufn_')) {
@@ -1164,7 +1182,8 @@ console.log(this.linkReporter[key]['parameter'])
     try {
       let gridtmp: wjcGrid.FlexGrid = this.gridArray[Number(evaluator['Tables'])];
 
-      let row = gridtmp.itemsSource.sourceCollection[rowIndex];
+      let row = GridRowUtil.itemOf(gridtmp, rowIndex);
+      if (row == null) return;
       const params = this.fn_build_paramater(keys, row);
 
       if (evaluator['Command'].includes('ufn_')) {
@@ -1278,7 +1297,12 @@ console.log(this.linkReporter[key]['parameter'])
       _length = gridtmp.rows.length;
 
     for (let i = 0; i < _length; i++) {
-      if (gridtmp.rows[i].dataItem[colchild] != null && gridtmp.rows[i].dataItem[colchild] != '') {
+      // Bỏ qua dòng nhóm: dataItem của GroupRow là CollectionViewGroup, đọc colchild ra undefined
+      // -> rơi vào nhánh else và setCellData đè lên chính dòng tiêu đề nhóm.
+      let _item = GridRowUtil.itemOf(gridtmp, i);
+      if (_item == null) continue;
+
+      if (_item[colchild] != null && _item[colchild] != '') {
         continue;
       }
       else {
@@ -1344,6 +1368,8 @@ console.log(this.linkReporter[key]['parameter'])
 
     for (let i = 0; i < _length; i++) {
 
+      if (GridRowUtil.itemOf(gridtmp, i) == null) continue;   // bỏ qua dòng nhóm
+
       gridtmp.setCellData(i, index, value);
 
 
@@ -1389,8 +1415,10 @@ console.log(this.linkReporter[key]['parameter'])
       this.parentData[col] = value;
   }
 
+  /** @param row CHỈ SỐ DÒNG CỦA LƯỚI. */
   setChildValue(row: number, col: string, gridIndex: number, value: any) {
-    this.gridArray[gridIndex].itemsSource.sourceCollection[row][col] = value;
+    let _item = GridRowUtil.itemOf(this.gridArray[gridIndex], row);
+    if (_item != null) _item[col] = value;
   }
 
   private async fn_Evaluator_Query_LoadChild(evaluator, rowIndex?: number) {
@@ -1507,52 +1535,129 @@ console.log(this.linkReporter[key]['parameter'])
 
   }
 
+  /**
+   * EvaluatorCopiedValues — khi thêm dòng mới, chép giá trị của dòng liền trên sang dòng vừa thêm.
+   *
+   * Khai báo trong Layout:
+   *   evaluators = {
+   *     'Evaluator_Detail_CopiedValue': {
+   *       EvaluatorName: 'EvaluatorCopiedValues',
+   *       DataMember: 'ProductCostId0,ProductName0',   // CHỈ những cột này được chép
+   *       Tables: 0,
+   *       // zExpr: '1==0'          -> tắt hẳn (biểu thức tính trên dữ liệu form cha)
+   *       // overwrite: true        -> chép đè cả khi ô đích đã có giá trị (mặc định: không đè)
+   *     }
+   *   }
+   *   rowAdded = [{ Tables: 0, Evaluators: ['Evaluator_Detail_CopiedValue'] }]
+   * và trên template: <wj-flex-grid ... (rowAdded)="rowAddedEvent(grid)">
+   *
+   * Chỉ chạy đúng một lần tại thời điểm dòng được thêm (sự kiện rowAdded), không lặp lại khi
+   * người dùng focus lại dòng đó.
+   */
   private async fn_Evaluator_CopiedValue_Child(evaluator) {
 
     let gridtmp: wjcGrid.FlexGrid = this.gridArray[Number(evaluator['Tables'])];
+    if (!gridtmp || !evaluator['DataMember']) return;
 
+    let cv: any = gridtmp.collectionView;
+    if (!cv) return;
 
-    var selected = [];
-    let rowNew = gridtmp.itemsSource.items.length - 1;
-    if (rowNew < 1)
-      return;
-    selected.push(gridtmp.rows[rowNew - 1].dataItem);
+    // Dòng vừa thêm: Wijmo moveCurrentTo(newItem) ngay trong addNew, nên currentItem là record mới.
+    let newItem = cv.currentItem;
+    let newRow = GridRowUtil.rowIndexOf(gridtmp, newItem);
+    if (newRow < 0) {
+      // Dự phòng khi chưa map được qua currentItem: lấy dòng dữ liệu cuối cùng của lưới.
+      for (let i = gridtmp.rows.length - 1; i >= 0; i--) {
+        if (GridRowUtil.itemOf(gridtmp, i) != null) { newRow = i; break; }
+      }
+      if (newRow < 0) return;
+      newItem = GridRowUtil.itemOf(gridtmp, newRow);
+    }
 
-    let ds = this.gridArray[evaluator['Tables']].itemsSource.sourceCollection;
-    if (ds.length < 0)
-      return;
+    // Dòng nguồn = dòng DỮ LIỆU gần nhất phía trên dòng mới (bỏ qua GroupRow).
+    let sourceItem = null;
+    for (let i = newRow - 1; i >= 0; i--) {
+      let it = GridRowUtil.itemOf(gridtmp, i);
+      if (it != null && it !== newItem) { sourceItem = it; break; }
+    }
+    if (sourceItem == null) return;   // dòng đầu tiên của lưới -> không có gì để chép
 
-    let listCopied = evaluator['DataMember'].split(',');
+    this._copyAllowedColumns(gridtmp, evaluator, newItem, sourceItem, true);
+    gridtmp.invalidate();
+  }
 
-    for (let _col in listCopied) {
-      let value;
-      value = selected[0][listCopied[_col]];
+  /**
+   * Chép các cột được phép từ `sourceItem` sang `targetItem` theo khai báo EvaluatorCopiedValues.
+   *
+   * Dùng khi chèn dòng ở vị trí bất kỳ (menu chuột phải): lúc đó dòng mới CHƯA nằm trên lưới
+   * nên phải ghi thẳng vào record, không qua setCellData.
+   *
+   * @param evaluatorNames tên các evaluator khai báo trong rowAdded của lưới; hàm tự lọc ra
+   *                       những evaluator có EvaluatorName === 'EvaluatorCopiedValues'.
+   */
+  applyCopiedValues(gridIndex: number, targetItem: any, sourceItem: any, evaluatorNames: string[]) {
+    if (gridIndex < 0 || targetItem == null || sourceItem == null) return;
+    if (!evaluatorNames || !evaluatorNames.length) return;
 
-      let colchild = listCopied[_col];
+    let gridtmp: wjcGrid.FlexGrid = this.gridArray[gridIndex];
+    if (!gridtmp) return;
 
-      let _tableIndex;
-      _tableIndex = evaluator['Tables'];
+    for (let name of evaluatorNames) {
+      let evaluator = this.evaluators ? this.evaluators[name] : null;
+      if (!evaluator || evaluator['EvaluatorName'] !== 'EvaluatorCopiedValues') continue;
+      if (Number(evaluator['Tables']) !== gridIndex) continue;
 
-      let index = 0;
-      for (index = 0; index < gridtmp.columns.length; index++) {
-        if (gridtmp.columns[index].binding == colchild) {
-          break;
-        }
+      // zExpr trên dữ liệu form cha -> cho phép bật/tắt khai báo mà không cần xóa.
+      if (evaluator['zExpr']) {
+        try {
+          for (let control in this.form.controls) {
+            this.parentData[control] = this.form.get(control).value;
+          }
+          if (!eval(this.fn_translate_expr(evaluator['zExpr'], this.parentData))) continue;
+        } catch (ex) { continue; }
       }
 
+      this._copyAllowedColumns(gridtmp, evaluator, targetItem, sourceItem, false);
+    }
+  }
+
+  /**
+   * @param viaGrid true = ghi qua setCellData (dòng đã nằm trên lưới),
+   *                false = ghi thẳng vào record (dòng chưa được chèn vào lưới).
+   */
+  private _copyAllowedColumns(gridtmp: wjcGrid.FlexGrid, evaluator: any,
+    targetItem: any, sourceItem: any, viaGrid: boolean) {
+
+    if (!evaluator['DataMember']) return;
+
+    let overwrite = evaluator['overwrite'] === true;
+    let listCopied = String(evaluator['DataMember']).split(',');
+
+    for (let _col of listCopied) {
+      let colchild = _col.trim();
+      if (!colchild) continue;
+
+      let index = -1;
+      for (let i = 0; i < gridtmp.columns.length; i++) {
+        if (gridtmp.columns[i].binding == colchild) { index = i; break; }
+      }
+      if (index < 0) continue;   // cột không có trên lưới -> bỏ qua
+
+      // Mặc định không đè: chỉ điền khi ô đích còn trống.
+      if (!overwrite) {
+        let current = targetItem[colchild];
+        if (current != null && current !== '') continue;
+      }
+
+      let value = sourceItem[colchild];
       if (wjcCore.isNumber(value))
         value = this.replaceDecimal(value);
 
-      if (value instanceof Date) {
-        //if (value != null)
-        //Trên giao diện cùng value  
-        //value =  '\'' + value.toISOString() + '\'';
-      }
-
-      gridtmp.setCellData(rowNew, index, value);
-      //this.onCellValueChanged(evaluator['Tables'], colchild, this._event)
+      if (viaGrid)
+        GridRowUtil.setCellDataByItem(gridtmp, targetItem, index, value);
+      else
+        targetItem[colchild] = value;
     }
-
   }
 
   fn_build_paramater(keys: string, row: any) {

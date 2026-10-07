@@ -185,7 +185,18 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
                         BuiltinOrder: '1',
                         DocDate: 'Parent.DocDate',
                     }
-                }                
+                },
+                {
+                    Name: 'vB30CCMBudgetDetail3_Edit',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'CCMBudgetId',
+                    Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        CCMBudgetId: '',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate'
+                    }
+                },                
             ]
         }
     }
@@ -281,6 +292,18 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
                     key: 'TotalPaymentAmountC',
                     label: 'Chi phí tài chính',
                     isDisabled: 'true',
+                    col: 6
+                }),
+                 new NumberBoxInput({
+                    key: 'TongDinhMuc',
+                    label: 'Giá trị Vật tư BT, thép do CĐT cấp (ko ghi nhận DT)',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'HeSoQuanLy',
+                    label: 'Tỷ lệ CP NS NSC',
+                    format: 'P2',
                     col: 6
                 }),
                 // new NumberBoxInput({
@@ -791,4 +814,88 @@ export class LayoutApprovedPlanCostRevConsEditor implements IEditorFormulaDeclar
             isReadOnly: 'true'
         }
     ]    
+
+     childColumns3 = [
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            isRequired: true,
+            width: 100,
+            isReadOnly: 'true'
+        },
+        
+        {
+            header: 'Mốc',
+            binding: 'Description',
+            width: 250,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Bắt đầu (Hợp đồng)',
+            binding: 'StartDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (Hợp đồng)',
+            binding: 'ToDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Bắt đầu (BCH)',
+            binding: 'StartDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (BCH)',
+            binding: 'ToDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        // 4 cột dưới đây chỉ để hiển thị: giá trị được tính lại mỗi lần vẽ ô
+        // (xem PlanCostRevConsEditorComponent.calcTienDo) nên tự nhảy khi người dùng sửa ngày BCH.
+        // Chúng không có trong vB30CCMBudgetDetail3_Edit -> khai báo trong childColumnsNotSave để không gửi lên server.
+        {
+            header: 'Tổng số tháng',
+            binding: 'TongSoThang',
+            width: 110,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Đã thực hiện (tháng)',
+            binding: 'DaThucHien',
+            width: 140,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Còn lại (tháng)',
+            binding: 'ConLai',
+            width: 120,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tỷ lệ tiến độ',
+            binding: 'RateTienDo',
+            width: 110,
+            dataType: 'Number',
+            format: 'p2',
+            align: 'right',
+            isReadOnly: 'true'
+        }
+    ]
 }

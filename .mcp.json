@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "newtecons-sql-readonly": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["tools/mssql-readonly-mcp/dist/index.js"],
+      "env": {
+        "MCP_SQL_SERVER": "${MCP_SQL_SERVER:-}",
+        "MCP_SQL_PORT": "${MCP_SQL_PORT:-1433}",
+        "MCP_SQL_DATABASE": "${MCP_SQL_DATABASE:-}",
+        "MCP_SQL_USER": "${MCP_SQL_USER:-}",
+        "MCP_SQL_PASSWORD": "${MCP_SQL_PASSWORD:-}",
+        "MCP_SQL_MAX_ROWS": "${MCP_SQL_MAX_ROWS:-500}"
+      }
+    },
+    "chrome-devtools": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "chrome-devtools-mcp@latest", "--browserUrl", "http://127.0.0.1:9222"]
+    }
+  }
+}

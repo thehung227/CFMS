@@ -401,7 +401,7 @@ export class PlanQuantity2EditorComponent extends BaseEditorComponent implements
         if (!this._errCheck) {
           this.submit(formData, this.indexPage, isApproveSend).then(() => {
             if (this.allowSendMail) {
-              this.sendMail(formData, 'M3', this.id, false, '1');
+              this.sendMail(formData, 'M6', this.id, false, '1');
             }
             _stopLoading();
           }).catch(() => _stopLoading());

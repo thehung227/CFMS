@@ -1,0 +1,63 @@
+/* Màu theo mẫu "TONG HOP_Rev10" */
+.th-dp .box-body { font-size: 12px; }
+
+/* Điều kiện lọc */
+.loc { margin-bottom: 12px; }
+.loc td { padding: 2px 6px; vertical-align: middle; }
+.loc .loc-lb { font-weight: bold; color: #1F4E78; white-space: nowrap; }
+.loc select, .loc input { min-width: 190px; background: #FFFF99; }
+.loc .loc-note { color: #7F7F7F; font-style: italic; }
+
+.dang-tai { padding: 8px; color: #1F4E78; }
+.mo { opacity: .5; }
+
+/* Bảng chung */
+.bang { border-collapse: separate; border-spacing: 0; }
+.bang th, .bang td { border-right: 1px solid #C9D3E0; border-bottom: 1px solid #C9D3E0; padding: 3px 6px; vertical-align: middle; }
+.bang th { background: #1F4E78; color: #fff; font-weight: bold; text-align: center; font-size: 11px; }
+.bang tr > :first-child { border-left: 1px solid #C9D3E0; }
+.bang thead tr:first-child th { border-top: 1px solid #C9D3E0; }
+.num { text-align: right; white-space: nowrap; }
+.center { text-align: center; }
+.w-lb { min-width: 230px; }
+.w-so { min-width: 120px; }
+.w-nv { min-width: 120px; }
+.w-da { min-width: 320px; }
+
+/* Bảng tổng hợp */
+.tong-hop { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; margin-bottom: 14px; }
+.tong-hop .bang td { background: #fff; }
+.lb-CHOT { background: #C6EFCE !important; font-weight: bold; }
+.lb-DANGDP { background: #FFF2CC !important; font-weight: bold; }
+.lb-CHUADP { background: #DDEBF7 !important; font-weight: bold; }
+.lb-TRE { color: #C00000; font-weight: bold; }
+.thut { padding-left: 22px !important; }
+.ngay-bc { margin-left: auto; }
+.ngay-bc td { min-width: 120px; text-align: center; font-weight: bold; background: #FFFF99 !important; }
+
+/* Bảng chi tiết: cuộn trong khung, cố định tiêu đề và 3 cột đầu */
+.chi-tiet { overflow: auto; max-height: calc(100vh - 230px); border-top: 1px solid #C9D3E0; }
+.chi-tiet .bang td { background: #fff; }
+.chi-tiet thead th { position: sticky; top: 0; z-index: 3; }
+.c-stt { position: sticky; left: 0; width: 44px; min-width: 44px; max-width: 44px; z-index: 2; }
+.c-ten { position: sticky; left: 44px; width: 110px; min-width: 110px; max-width: 110px; z-index: 2; }
+.c-nd { position: sticky; left: 154px; width: 230px; min-width: 230px; max-width: 230px; z-index: 2; }
+.c-gop { position: sticky; left: 0; z-index: 2; font-weight: bold; }
+.chi-tiet thead th.c-stt, .chi-tiet thead th.c-ten, .chi-tiet thead th.c-nd { z-index: 4; }
+/* Cột CC cố định độ rộng, chữ dài (thương hiệu...) xuống dòng thay vì kéo giãn cột */
+.chi-tiet .cc { width: 130px; min-width: 130px; max-width: 130px; white-space: normal; word-break: break-word; }
+.chi-tiet td.num.cc { white-space: nowrap; }
+.so-dong { display: inline-block; width: 20px; color: #7F7F7F; }
+
+.r-tong td { background: #A9D08E !important; font-weight: bold; }
+.r-mien td { background: #E2EFDA !important; font-weight: bold; }
+.r-bd td { background: #DDEBF7 !important; font-weight: bold; }
+.r-dau td { border-top: 2px solid #1F4E78; }
+.r-tre td { color: #C00000; font-weight: bold; }
+.r-khoa td { background: #F2F2F2 !important; color: #7F7F7F; font-style: italic; font-size: 11px; }
+
+.st-CHOT { background: #FCE4D6 !important; color: #C65911; text-align: center; }
+.st-DANGDP { background: #C6EFCE !important; color: #006100; text-align: center; }
+.st-CHUADP { color: #595959; text-align: center; }
+.st-TRE { color: #C00000; font-weight: bold; text-align: center; }
+.st-CHECK { color: #C00000; font-weight: bold; text-align: center; }

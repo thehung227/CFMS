@@ -66,7 +66,7 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
   employeeCode: string = '';
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6];
-    this.init();
+    this.init().then(() => this.refreshTongThanhToan3Ben());
     this.isSubAdmin = localStorage.getItem(SystemConstants.CURRENT_ISSUBADMIN);
     this.grid1.allowAddNew = false;
     this.grid2.allowAddNew = false;
@@ -104,6 +104,12 @@ export class BillPaySuppEditorComponent extends BaseEditorComponent implements O
         e.cell.innerHTML = '';
       }
     });
+  }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên của Bảng KL thanh toán liên kết và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint('Evaluator_ServerConstraint_Amount_TT3Ben');
+    await this.dfpanel.runConstraint('Evaluator_Amount_ConLaiTT3Ben_Calculate');
   }
 
   ngOnDestroy() {
@@ -368,4 +374,6 @@ async saveData(formData: any,state: any) {
   exportHtmlWorkFlow(input: any, extInput?: string) {
     this.exportHtml_WorkFlow('WorkFlow_TT.docx', 'WorkFlow TP.NCC - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}', '/3.Mau_In/{VAR=Branch.Ma_Dvcs}/', input, extInput, 'DocCode');
   }
+
+  
 }

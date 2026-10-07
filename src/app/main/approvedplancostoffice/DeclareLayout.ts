@@ -16,6 +16,7 @@ import { UploadImage } from "../../ui/input/UploadImage";
 import { getElement } from "wijmo/wijmo";
 import { RichTextBoxInput } from "../../ui/input/RichTextBoxInput";
 import { Global } from "../../shared/global";
+import { planCostOfficeDetailColumns } from "../plancostoffice/DeclareLayout";
 
 // Phê duyệt kế hoạch ký kết chi phí công trường
 export class LayoutApprovedPlanCostOfficeExplorer implements IExplorerFormulaDeclaration {
@@ -250,15 +251,28 @@ export class LayoutApprovedPlanCostOfficeEditor implements IEditorFormulaDeclara
                 //     col: 6
                 // }),
                 new NumberBoxInput({
-                    key: 'Amount_ChiPhi',
-                    label: 'Chi phí',
+                    key: 'ThuChiKyTruoc',
+                    label: 'Tổng dự trù kỳ trước',
                     isDisabled: 'true',
                     col: 6
                 }),
                 new NumberBoxInput({
-                    key: 'CostAmount',
-                    label: 'Khấu hao',
+                    key: 'TotalPaymentAmountC',
+                    label: 'Thực hiện tới hiện tại',
                     isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'Amount_ChiPhi',
+                    label: 'Tổng dự trù kỳ này',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'TiSuat_LN',
+                    label: '% thực hiện',
+                    isDisabled: 'true',
+                    format: 'P2',
                     col: 6
                 }),
                 // new NumberBoxInput({
@@ -353,99 +367,7 @@ export class LayoutApprovedPlanCostOfficeEditor implements IEditorFormulaDeclara
         })
     ];
 
-    childColumns = [
-        {
-            header: 'STT',
-            binding: 'ItemNo',
-            isRequired: true,
-            width: 100
-        },
-        {
-            header: 'Khoản mục kế toán',
-            binding: 'ExpenseCatgCode',
-            dataType: 'Array',
-            lookupKey: 'ExpenseCatg',
-            bindingList: {
-            },
-            lookupfilter: 'IsGroup=0 AND IsActive=1',
-            multiSelection: false,
-            width: 100
-        },
-        {
-            header: 'Công việc',
-            binding: 'JobCode',
-            dataType: 'Array',
-            lookupKey: 'Job_CCM',
-            bindingList: {
-                Name: 'JobName'
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND ActivityCode='LV-012'",
-            multiSelection: false,
-            width: 100
-        },
-        {
-            header: 'Nội dung công việc',
-            binding: 'JobName',
-            width: 250
-        },
-        {
-            header: 'Mã đối tượng',
-            binding: 'CustomerCode',
-            dataType: 'Array',
-            lookupKey: 'Customer_CCM2',
-            bindingList: {
-                Name: 'CustomerName'
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND List_BranchCode LIKE '%'+'{VAR=Branch.Ma_Dvcs}'+'%'",
-            width: 100
-        },
-        {
-            header: 'Tên đối tượng',
-            binding: 'CustomerName',
-            width: 250,
-        },
-        {
-            header: 'Giá trị dự trù',
-            binding: 'OriginalAmount1',
-            dataType: 'Number',
-            width: 150
-        },
-        {
-            header: 'Giá trị khấu hao',
-            binding: 'CostAmount',
-            dataType: 'Number',
-            width: 150
-        },
-        // {
-        //     header: 'Id hợp đồng',
-        //     binding: 'BizDocId_C1',
-        //     width: 0,
-        //     dataType: 'Array',
-        //     lookupKey: 'BizDoc2',
-        //     bindingList: {
-        //         DocInfo: 'DocInfo',
-        //         ContractType: 'ContractType'
-        //     },
-        //     lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND DocCode IN ('C3','C4') AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (ProductCostId0 = '{EXPR=ProductCostId}' OR ProductCostId = '{EXPR=ProductCostId}' OR IsSubContractPay=1)"
-        // },
-        // {
-        //     header: 'Thông tin hợp đồng',
-        //     binding: 'DocInfo',
-        //     width: 200,
-        //     isReadOnly: 'true'
-        // },
-        // {
-        //     header: 'Loại hợp đồng',
-        //     binding: 'ContractType',
-        //     width: 100,
-        //     isReadOnly: 'true'
-        // },
-        {
-            header: 'Ghi chú',
-            binding: 'Remark',
-            width: 200
-        }
-    ]
+    childColumns = planCostOfficeDetailColumns(true);
 
     childColumns1 = [
         {

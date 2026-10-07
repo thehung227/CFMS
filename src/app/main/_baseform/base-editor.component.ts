@@ -24,6 +24,7 @@ import * as wjcGrid from 'wijmo/wijmo.grid';
 import * as wjcInput from 'wijmo/wijmo.angular2.input';
 
 import { Global } from './../../shared/global';
+import { GridRowUtil } from './../../shared/grid-row.util';
 import { BravoCtorEnum } from './../../core/enum/type.enum';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -186,6 +187,11 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
     this.zCommandKey = router.url.split('/')[2] + '-' + router.url.split('/')[3].replace('detail', 'editor');
 
+    // ?view=1 (mở từ màn "Hồ sơ đã duyệt"): chỉ xem nội dung, chỉ còn nút Thoát.
+    this.isViewOnly = this.route.snapshot.queryParams['view'] == '1';
+    if (this.isViewOnly)
+      this.enableViewOnlyMode();
+
     this.setPermission(permission, permission2);
 
     if (Global.getPermissionAll(permission, permission2, this.zCommandKey, 'IsDisplay') == false && localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN) == 'false') {
@@ -212,6 +218,32 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle);
+  }
+
+  /** true khi mở bằng ?view=1 - xem hồ sơ đã duyệt, không cho Lưu / Duyệt / Trả lại / Đề xuất trả. */
+  isViewOnly = false;
+
+  /**
+   * Các nút thao tác nằm riêng trong template từng màn approved*, nên khoá chung tại host:
+   * class newt-view-only ẩn mọi <button> trên thanh công cụ (styles.css; nút Thoát là thẻ <a>),
+   * đồng thời chặn click / submit ở pha capture phòng khi CSS chưa áp dụng.
+   */
+  private enableViewOnlyMode() {
+    const host: HTMLElement = this.elRef.nativeElement;
+    host.classList.add('newt-view-only');
+
+    host.addEventListener('click', (e: Event) => {
+      const target: any = e.target;
+      if (target && target.closest && target.closest('.box-header .box-tools button')) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+
+    host.addEventListener('submit', (e: Event) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
   }
 
   handleKeyDown(event: any) {
@@ -656,6 +688,8 @@ export abstract class BaseEditorComponent implements OnDestroy {
       ds.trackChanges = true;
 
       this.gridArray[i].cellEditEnded.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+        // Dòng nhóm không có record -> evaluator sẽ eval chuỗi còn {EXPR=...} và ném SyntaxError.
+        if (GridRowUtil.itemOf(this.gridArray[i], e.row) == null) return;
         let column = this.gridArray[i].columns[e.col].binding;
         this.cellValueChanged(i, column, e);
         if (s.columns[e.col].wordWrap) {
@@ -873,6 +907,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
   }
 
   destroy() {
+    this.hideRowMenu();
     if (this.gridArray && this.gridArray.length > 0) {
       for (let grid of this.gridArray) {
         if (grid.itemsSource != null) {
@@ -1031,14 +1066,17 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
       let editRange = flex.editRange;
       if (e.panel.cellType === wjcGrid.CellType.Cell && editRange && editRange.row === e.row && editRange.col === e.col) {
+        // Dòng nhóm (GroupRow) không có record dữ liệu -> không tạo editor.
+        let _itemEdit = GridRowUtil.itemOfArgs(e);
+        if (_itemEdit == null) return;
+
         let column = flex.columns[e.col];
         let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
         let expr = _col['exprReadOnly'];
         try {
 
           if (_col['exprReadOnly']) {
-            let ds = flex.itemsSource.sourceCollection[e.row];
-            expr = this.dfpanel.fn_translate_expr_grid(expr, ds)
+            expr = this.dfpanel.fn_translate_expr_grid(expr, _itemEdit)
             if (eval(expr)) {
               flex.endUpdate();
               return;
@@ -1049,18 +1087,22 @@ export abstract class BaseEditorComponent implements OnDestroy {
             // }
           }
         } catch (ex) { }
-        this.createEditor(flex, column, columnGroups, e);
+        this.createEditor(flex, column, columnGroups, e, _itemEdit);
 
       }
       if (e.panel.cellType === wjcGrid.CellType.Cell) {
         let column = flex.columns[e.col];
 
+        // Record của dòng; null khi là GroupRow hoặc dòng "thêm mới" chưa có dữ liệu.
+        // KHÔNG return sớm ở đây: nút isButton vẫn phải hiện trên dòng thêm mới.
+        let _itemCell = GridRowUtil.itemOfArgs(e);
+        let _isGroupRow = GridRowUtil.isGroupRow(flex, e.row);
+
         let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
         let exprValidators = _col['validators']
         try {
-          if (_col['validators']) {
-            let ds = flex.itemsSource.sourceCollection[e.row];
-            exprValidators = this.dfpanel.fn_translate_expr_grid(exprValidators, ds);
+          if (_col['validators'] && _itemCell) {
+            exprValidators = this.dfpanel.fn_translate_expr_grid(exprValidators, _itemCell);
             if (eval(exprValidators)) {
               e.cell.classList.add('wj-state-invalid');
               if (_col['validatorMessage']) {
@@ -1076,7 +1118,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
             }
           }
 
-               if (_col["isButton"]) {
+               if (_col["isButton"] && !_isGroupRow) {
                   let btnLink = document.createElement('button');
                   if (btnLink instanceof HTMLButtonElement) {
                      btnLink.type = 'button'
@@ -1098,9 +1140,8 @@ export abstract class BaseEditorComponent implements OnDestroy {
 
         let exprReadOnly = _col['exprReadOnly']
         try {
-          if (_col['exprReadOnly']) {
-            let ds = flex.itemsSource.sourceCollection[e.row];
-            exprReadOnly = this.dfpanel.fn_translate_expr_grid(exprReadOnly, ds);
+          if (_col['exprReadOnly'] && _itemCell) {
+            exprReadOnly = this.dfpanel.fn_translate_expr_grid(exprReadOnly, _itemCell);
 
             if (eval(exprReadOnly)) {
               e.cell.classList.add('wj-state-disabled');
@@ -1253,17 +1294,21 @@ export abstract class BaseEditorComponent implements OnDestroy {
       }
    }
 
-  async createEditor(flex: wjcGrid.FlexGrid, column: any, columnGroups: any, e: wjcGrid.FormatItemEventArgs) {
+  async createEditor(flex: wjcGrid.FlexGrid, column: any, columnGroups: any, e: wjcGrid.FormatItemEventArgs, dataItem?: any) {
     let _lookup;
     let editorRoot = document.createElement('div');
     let input;
     let filelabel: HTMLLabelElement;
     let fileinput;
-    var _row = e.row;
 
       let button: HTMLButtonElement;
 
-    let _value = flex.itemsSource.sourceCollection[_row][column['binding']];
+    // Lấy thẳng record của dòng thay vì sourceCollection[e.row]: khi lưới có group,
+    // chỉ số dòng lưới lệch với chỉ số sourceCollection đúng bằng số GroupRow phía trên.
+    let _item = (dataItem != null) ? dataItem : GridRowUtil.itemOfArgs(e);
+    if (_item == null) return;   // GroupRow / dòng không có record -> không tạo editor
+
+    let _value = _item[column['binding']];
     let _col = columnGroups.find(_c => _c['binding'] == column['binding']);
 
     if (_col.dataType === 'Date') {
@@ -1288,7 +1333,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
           } else if (!dateRequired) {
             // Xóa giá trị: ghi null xuống model ngay khi control clear (mirror form panel onDateChanged),
             // không phụ thuộc timing commit của cellEditEnding.
-            flex.itemsSource.sourceCollection[e.row][column['binding']] = null;
+            _item[column['binding']] = null;
           }
         });
 
@@ -1308,7 +1353,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
           } else if (!dateRequired) {
             // Xóa giá trị: ghi null xuống model ngay khi control clear (mirror form panel onDateChanged),
             // không phụ thuộc timing commit của cellEditEnding.
-            flex.itemsSource.sourceCollection[e.row][column['binding']] = null;
+            _item[column['binding']] = null;
           }
         });
       }
@@ -1347,7 +1392,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
           lookupfilter: _col['lookupfilter'],
           hideValueMember: _col['hideValueMember'],
           col: 6
-        }, this._service, flex.itemsSource.sourceCollection[_row]);
+        }, this._service, _item);
 
         input.itemsSource = _lookup.options;
         input.displayMemberPath = 'DisplayMember';
@@ -1378,27 +1423,27 @@ export abstract class BaseEditorComponent implements OnDestroy {
           if (input.itemsSource.items.length <= 1 && !_valueFirst && tmp == _valueFirst) {
             // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
 
-            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, _item, this.parentData);
             await _lookup.getLookupData('').then();
             if (input.itemsSource.items.length != _lookup.options.items.length)
               input.itemsSource = _lookup.options;
           }
           else if (input.itemsSource.items.length == 1 && _valueFirst && input.text.indexOf(_valueFirst) == 0) {
             // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
-            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, _item, this.parentData);
             await _lookup.getLookupData('#' + _valueFirst, true).then();
           }
         });
         input.itemsSourceFunction = async (query, max, callback) => {
           if (input.text) {
             // this.input.lookupfilterCurrent = this.translate_expr(this.input.lookupfilter);
-            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+            _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, _item, this.parentData);
             await _lookup.getLookupData(input.text, false, callback).then();
           }
         }
 
         if (_value) {
-          _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[_row], this.parentData);
+          _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, _item, this.parentData);
           await _lookup.getLookupData('#' + _value, true).then();
         }
       } else if (input instanceof MultiSelect) {
@@ -1470,7 +1515,7 @@ export abstract class BaseEditorComponent implements OnDestroy {
         });
 
         if (!_value) _value = '';
-        _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, flex.itemsSource.sourceCollection[e.row], this.parentData);
+        _lookup.lookupfilterCurrent = Global.translateAutoText(_lookup.lookupfilter, _item, this.parentData);
         await _lookup.getLookupData('^' + _value, true).then(
           () => { }
         );
@@ -1492,9 +1537,9 @@ export abstract class BaseEditorComponent implements OnDestroy {
             //editorRoot = input;
          }
          else {
-      let fileData = flex.itemsSource.sourceCollection[_row]['Data'];
-      let filePath = flex.itemsSource.sourceCollection[_row]['FilePath'];
-      let fileLink = flex.itemsSource.sourceCollection[_row]['LinkFile'];
+      let fileData = _item['Data'];
+      let filePath = _item['FilePath'];
+      let fileLink = _item['LinkFile'];
 
    
       
@@ -1700,6 +1745,12 @@ console.log(_col['folderId'])
         let _c = flex.columns[args.col];
         let _col = columnGroups.find(c => c['binding'] == _c['binding']);
 
+        // Phân giải lại record theo args.row: mọi thao tác GHI dữ liệu dùng object này,
+        // chỉ toạ độ lưới (setCellData) mới dùng args.row/args.col.
+        let _target = GridRowUtil.itemOfArgs(args);
+        if (_target == null) _target = _item;
+        if (_target == null) return;
+
         if (_col.dataType == 'Array') {
           let arr = [];
           if (input instanceof MultiSelect) {
@@ -1707,7 +1758,7 @@ console.log(_col['folderId'])
             for (let i = 0; i < input.checkedItems.length; i++) {
               arr.push(input.checkedItems[i]['ValueMember']);
             }
-            flex.itemsSource.sourceCollection[args.row][column['binding']] = arr.join(',');
+            _target[column['binding']] = arr.join(',');
             let alterInput = <HTMLInputElement>document.getElementById("alterInput" + _lookup.key);
             alterInput.setAttribute("readonly", "");
             for (const source in _lookup.binding) {
@@ -1716,7 +1767,7 @@ console.log(_col['folderId'])
                 arrBind.push(input.checkedItems[i][source]);
               }
               let des = _lookup.binding[source];
-              flex.itemsSource.sourceCollection[args.row][des] = arrBind.join(',');
+              _target[des] = arrBind.join(',');
             }
           }
           else { //Dương fix ngày 13.04
@@ -1726,34 +1777,34 @@ console.log(_col['folderId'])
               _value = '';
 
             if (_value != undefined) {
-              flex.itemsSource.sourceCollection[args.row][column['binding']] = _value;
+              _target[column['binding']] = _value;
               for (const source in _lookup.binding) {
                 let des = _lookup.binding[source];
                 if (_value != '')
-                  flex.itemsSource.sourceCollection[args.row][des] = input.itemsSource.items[input.itemsSource._idx][source];
+                  _target[des] = input.itemsSource.items[input.itemsSource._idx][source];
                 else
-                  flex.itemsSource.sourceCollection[args.row][des] = '';
+                  _target[des] = '';
               }
             }
           }
-          flex.itemsSource.refresh();
+          this.refreshAfterEdit(flex, _target, args.col, [column['binding']].concat(this.bindingTargets(_lookup)));
         } else if (_col.dataType == 'Object') {
                if (!_col['isButton']) {
           let name = '';
-          let _fileData = flex.itemsSource.sourceCollection[args.row]['Data']
+          let _fileData = _target['Data']
           if (!filelabel.textContent.includes('Nhấn để chọn file')) {
             name = filelabel.textContent.trim();
           }
-          
+
           if (name) {
             if (_fileData != null) {
               if (_fileData.name == name) return;
             }
             else {
               flex.setCellData(args.row, args.col, name);
-              flex.itemsSource.sourceCollection[args.row]['Data'] = fileinput.files[0];
+              _target['Data'] = fileinput.files[0];
             }
-            
+
           }
           else {
             flex.setCellData(args.row, args.col, '');
@@ -1763,9 +1814,9 @@ console.log(_col['folderId'])
         } else if (_col.dataType === 'Date' && input.value == null && _col.isRequired !== true) {
           // Xóa ngày về null: Wijmo setCellData CHẶN null cho cột Date qua type-check
           // (changeType(null,Date)=null, getType(null)=Object != Date => return false),
-          // nên ghi thẳng xuống sourceCollection giống nhánh Array/Object để giá trị null được giữ lại.
-          flex.itemsSource.sourceCollection[args.row][_c['binding']] = null;
-          flex.itemsSource.refresh();
+          // nên ghi thẳng xuống record giống nhánh Array/Object để giá trị null được giữ lại.
+          _target[_c['binding']] = null;
+          this.refreshAfterEdit(flex, _target, args.col, [_c['binding']]);
         } else if (input.value != undefined)
           flex.setCellData(args.row, args.col, input.value);
         // this.filesUpload.i
@@ -1776,6 +1827,62 @@ console.log(_col['folderId'])
     // subscribe the handler to the cellEditEnding event
     flex.cellEditEnding.addHandler(editEndingEH);
 
+  }
+
+  /** Danh sách cột đích mà lookup ghi giá trị sang (bindingList). */
+  protected bindingTargets(lookup: any): string[] {
+    let result: string[] = [];
+    if (lookup && lookup.binding) {
+      for (const source in lookup.binding) {
+        if (lookup.binding[source]) result.push(lookup.binding[source]);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Cập nhật lưới sau khi ghi thẳng giá trị xuống record (bypass setCellData).
+   *
+   * Trước đây gọi thẳng itemsSource.refresh(). Với lưới có group, refresh() dựng lại
+   * toàn bộ nhóm NGAY TRONG cellEditEnding => dòng đang sửa nhảy sang nhóm khác trước khi
+   * cellEditEnded / evaluator kịp chạy => evaluator đọc ghi nhầm record.
+   *
+   * Nay: chỉ vẽ lại; nếu giá trị vừa ghi có tham gia khoá group thì hoãn việc gom nhóm lại
+   * sang macrotask kế tiếp và đưa selection bám theo chính record đó.
+   */
+  protected refreshAfterEdit(flex: wjcGrid.FlexGrid, item: any, colIndex: number, touchedBindings: string[]) {
+    let cv: any = flex.itemsSource;
+
+    if (!GridRowUtil.hasGrouping(flex)) {
+      if (cv && cv.refresh) cv.refresh();   // hành vi cũ, giữ nguyên cho lưới không group
+      return;
+    }
+
+    flex.invalidate(true);
+
+    if (GridRowUtil.affectsGrouping(flex, touchedBindings)) {
+      setTimeout(() => {
+        let _cv: any = flex.collectionView;
+        if (!_cv) return;
+        _cv.refresh();
+        _cv.moveCurrentTo(item);
+        let r = GridRowUtil.rowIndexOf(flex, item);
+        if (r >= 0) flex.select(new wjcGrid.CellRange(r, colIndex), true);
+      });
+    }
+  }
+
+  /**
+   * Cột được tính/hiển thị phía client, không tồn tại trong bảng hoặc view tương ứng.
+   * Khai báo trên layout: childColumnsNotSave = { <chỉ số lưới>: ['Col1', 'Col2'] }.
+   * Không khai báo -> luôn trả về false (giữ nguyên hành vi cũ cho mọi form khác).
+   */
+  protected isColumnNotSave(gridIndex: number, binding: string): boolean {
+    let _config = this._layoutDeclare ? this._layoutDeclare['childColumnsNotSave'] : undefined;
+    if (!_config || !binding) return false;
+
+    let _columns = _config[gridIndex];
+    return _columns instanceof Array && _columns.indexOf(binding) > -1;
   }
 
   createColumnGroups(flex: wjcGrid.FlexGrid, columnGroups: any, level: number) {
@@ -1873,10 +1980,40 @@ console.log(_col['folderId'])
 
 
   }
+
+  protected commitPendingGridEdits() {
+    if (!this.gridArray || this.gridArray.length == 0) return;
+
+    for (let grid of this.gridArray) {
+      if (!grid) continue;
+
+      try {
+        // 1) Đóng editor của ô đang gõ dở để giá trị được ghi xuống dòng.
+        if (grid.finishEditing) grid.finishEditing();
+
+        let cv: any = grid.itemsSource;
+        if (!cv) continue;
+
+        // 2) Chốt dòng đang sửa -> vào itemsEdited.
+        if (cv.isEditingItem && cv.commitEdit) cv.commitEdit();
+
+        // 3) Chốt dòng vừa thêm/dán -> vào sourceCollection + itemsAdded.
+        if (cv.isAddingNew && cv.commitNew) cv.commitNew();
+      }
+      catch (ex) {
+        console.log('commitPendingGridEdits', ex);
+      }
+    }
+  }
+
   IsSubmit = false;
   protected async submit(formData: FormGroup, navigateUrl: any[], isApproveSend?: boolean, func?: Promise<void>) {
+    if (this.isViewOnly)
+      return;
     try {
       this.showLoading = true;
+
+      this.commitPendingGridEdits();
       if (this.paramsRoute == 'copy')
         this.id = -1
 
@@ -2080,6 +2217,8 @@ console.log(_col['folderId'])
         let _tbChild = new TableContract(childs[i].Name);
         if (this.gridArray[i].columns) {
           for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+            // Cột chỉ để hiển thị (khai báo trong childColumnsNotSave) không có trong bảng/view -> không đưa vào payload lưu.
+            if (this.isColumnNotSave(i, this.gridArray[i].columns[j].binding)) continue;
             let _colContract = new ColumnContract();
             _colContract.ColumnName = this.gridArray[i].columns[j].binding;
             // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
@@ -2620,6 +2759,8 @@ console.log(_col['folderId'])
         let _tbChild = new TableContract(childs[i].Name);
         if (this.gridArray[i].columns) {
           for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+            // Cột chỉ để hiển thị (khai báo trong childColumnsNotSave) không có trong bảng/view -> không đưa vào payload lưu.
+            if (this.isColumnNotSave(i, this.gridArray[i].columns[j].binding)) continue;
             let _colContract = new ColumnContract();
             _colContract.ColumnName = this.gridArray[i].columns[j].binding;
             // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
@@ -3036,6 +3177,8 @@ console.log(_col['folderId'])
       let _tbChild = new TableContract(childs[i].Name);
       if (this.gridArray[i].columns) {
         for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+          // Cột chỉ để hiển thị (khai báo trong childColumnsNotSave) không có trong bảng/view -> không đưa vào payload lưu.
+          if (this.isColumnNotSave(i, this.gridArray[i].columns[j].binding)) continue;
           let _colContract = new ColumnContract();
           _colContract.ColumnName = this.gridArray[i].columns[j].binding;
           // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
@@ -3498,6 +3641,8 @@ console.log(_col['folderId'])
       let _tbChild = new TableContract(childs[i].Name);
       if (this.gridArray[i].columns) {
         for (let j = 0; j < this.gridArray[i].columns.length; j++) {
+          // Cột chỉ để hiển thị (khai báo trong childColumnsNotSave) không có trong bảng/view -> không đưa vào payload lưu.
+          if (this.isColumnNotSave(i, this.gridArray[i].columns[j].binding)) continue;
           let _colContract = new ColumnContract();
           _colContract.ColumnName = this.gridArray[i].columns[j].binding;
           // Gửi kèm DataType cho cột ngày: server tạo DataTable rỗng và suy kiểu cột từ dòng đầu;
@@ -3975,19 +4120,180 @@ console.log(_col['folderId'])
 
   resetBuiltinOrder(grid: wjcGrid.FlexGrid) {
     let colSort = this._layoutDeclare.layout.Structure.Child[this.dfpanel.gridArray.indexOf(grid)].Sort;
+    // Bỏ qua dòng nhóm: nếu đánh số theo chỉ số lưới thì GroupRow cũng chiếm một số thứ tự.
+    let _no = 0;
     for (let i = 0; i < grid.rows.length - 1; i++) {
-      grid.setCellData(i, colSort, i + 1);
+      if (GridRowUtil.itemOf(grid, i) == null) continue;
+      grid.setCellData(i, colSort, ++_no);
     }
   }
 
   async rowAddedEvent(grid: wjcGrid.FlexGrid) {
-    if (this._layoutDeclare.rowAdded)
-      if (this._layoutDeclare.rowAdded.length > 0)
-        for (let rowadd of this._layoutDeclare.rowAdded[this.dfpanel.gridArray.indexOf(grid)].Evaluators) {
+    let declares = this._layoutDeclare.rowAdded;
+    if (!declares || declares.length <= 0) return;
 
-          await this.dfpanel.runConstraint(rowadd, undefined, null).then(() => console.log(rowadd + ' ..success'));
+    // Tra cứu theo Tables (chỉ số lưới) thay vì theo vị trí trong mảng rowAdded:
+    // nếu chỉ khai báo cho lưới 0 mà sự kiện đến từ lưới 1 thì trước đây sẽ ném TypeError.
+    let gridIndex = this.dfpanel.gridArray.indexOf(grid);
+    let declare = declares.find((d: any) => Number(d['Tables']) === gridIndex);
+    if (!declare) declare = declares[gridIndex];
+    if (!declare || !declare['Evaluators']) return;
 
-        }
+    for (let rowadd of declare['Evaluators']) {
+      await this.dfpanel.runConstraint(rowadd, undefined, null).then(() => console.log(rowadd + ' ..success'));
+    }
+  }
+
+  // ==========================================================================
+  // Menu chuột phải trên lưới: chèn dòng tại vị trí bất kỳ
+  //
+  // Cách dùng trên template:
+  //   <wj-flex-grid ... (contextmenu)="openRowContextMenu($event, grid)">
+  // và đặt khối menu (xem plansignstatus-editor.component.html) ở cuối template.
+  //
+  // Dòng chèn thêm sẽ được chép sẵn giá trị của DÒNG ĐANG ĐỨNG (dòng bấm chuột phải)
+  // theo đúng khai báo EvaluatorCopiedValues trong rowAdded của Layout.
+  // ==========================================================================
+
+  rowMenuVisible: boolean = false;
+  rowMenuStyle: any = {};
+  protected _rowMenuGrid: any = null;
+  protected _rowMenuRowIndex: number = -1;
+
+  private _rowMenuDismiss = (evt?: any) => {
+    if (evt && evt.type === 'keydown' && evt.key !== 'Escape') return;
+    this.hideRowMenu();
+  };
+
+  openRowContextMenu(evt: MouseEvent, grid: wjcGrid.FlexGrid) {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    if (!grid) return;
+
+    const ht = grid.hitTest(evt);
+
+    // Chỉ mở menu khi bấm phải vào vùng ô dữ liệu (bỏ qua header và dòng nhóm).
+    if (!ht || ht.cellType !== wjcGrid.CellType.Cell || ht.row < 0 ||
+      GridRowUtil.itemOf(grid, ht.row) == null) {
+      this.hideRowMenu();
+      return;
+    }
+
+    this._rowMenuGrid = grid;
+    this._rowMenuRowIndex = ht.row;
+
+    try {
+      grid.select(new wjcGrid.CellRange(ht.row, 0, ht.row, grid.columns.length - 1), true);
+    } catch (e) { }
+
+    this.rowMenuStyle = { left: `${evt.clientX}px`, top: `${evt.clientY}px` };
+    this.rowMenuVisible = true;
+
+    // Đăng ký lắng nghe để đóng menu; chỉ tồn tại khi menu đang mở nên không ảnh
+    // hưởng hiệu năng của các màn hình không dùng tính năng này.
+    setTimeout(() => {
+      document.addEventListener('click', this._rowMenuDismiss);
+      document.addEventListener('keydown', this._rowMenuDismiss);
+    }, 0);
+  }
+
+  hideRowMenu() {
+    document.removeEventListener('click', this._rowMenuDismiss);
+    document.removeEventListener('keydown', this._rowMenuDismiss);
+    this.rowMenuVisible = false;
+    this._rowMenuGrid = null;
+    this._rowMenuRowIndex = -1;
+  }
+
+  /** Chèn dòng mới NGAY TRÊN dòng đang đứng. */
+  onInsertRowAtCursor() {
+    let grid = this._rowMenuGrid, row = this._rowMenuRowIndex;
+    this.hideRowMenu();
+    if (grid && row >= 0) this.insertRowAt(grid, row, false);
+  }
+
+  /** Chèn dòng mới NGAY DƯỚI dòng đang đứng. */
+  onInsertRowBelowCursor() {
+    let grid = this._rowMenuGrid, row = this._rowMenuRowIndex;
+    this.hideRowMenu();
+    if (grid && row >= 0) this.insertRowAt(grid, row, true);
+  }
+
+  /** Xóa dòng đang đứng (dùng lại deleteSelectedRows sẵn có). */
+  onDeleteRowAtCursor() {
+    let grid = this._rowMenuGrid, row = this._rowMenuRowIndex;
+    this.hideRowMenu();
+    if (!grid || row < 0) return;
+
+    try {
+      grid.select(new wjcGrid.CellRange(row, 0, row, 0), true);
+    } catch (e) { }
+    this.deleteSelectedRows(grid);
+  }
+
+  /**
+   * Chèn một dòng mới cạnh dòng lưới `gridRowIndex`.
+   *
+   * @param below false = chèn phía trên dòng đang đứng, true = chèn phía dưới.
+   *
+   * Lưu ý về chỉ số: `gridRowIndex` là CHỈ SỐ DÒNG CỦA LƯỚI, còn thao tác splice phải dùng
+   * chỉ số trong sourceCollection — hai giá trị này lệch nhau khi lưới có group.
+   */
+  protected insertRowAt(grid: wjcGrid.FlexGrid, gridRowIndex: number, below: boolean) {
+    if (!grid || !grid.collectionView) return;
+
+    const view: any = grid.collectionView;
+    const src = view.sourceCollection;
+    if (!Array.isArray(src)) return;
+
+    // Dòng đang đứng = nguồn để chép dữ liệu.
+    let sourceItem = GridRowUtil.itemOf(grid, gridRowIndex);
+    if (sourceItem == null) return;
+
+    let at = src.indexOf(sourceItem);
+    if (at < 0) at = src.length; else if (below) at = at + 1;
+
+    // 1. Dựng dòng mới từ cấu trúc mặc định của bảng con.
+    let newItem: any = view['defaultRow'] ? JSON.parse(JSON.stringify(view['defaultRow'])) : {};
+    newItem['Id'] = -1;
+    if (this.parentData && this.parentData['Stt'] != undefined) {
+      newItem['Stt'] = this.parentData['Stt'];
+    }
+
+    // 2. Chép giá trị từ dòng đang đứng, CHỈ những cột được khai báo ở EvaluatorCopiedValues.
+    //    Làm TRƯỚC khi refresh để dòng mới rơi vào đúng nhóm của dòng nguồn.
+    let gridIndex = this.dfpanel.gridArray.indexOf(grid);
+    this.dfpanel.applyCopiedValues(gridIndex, newItem, sourceItem, this.copiedValueEvaluators(gridIndex));
+
+    // 3. Chèn và đánh dấu là dòng thêm mới để submit() nhận diện.
+    if (at > src.length) at = src.length;
+    src.splice(at, 0, newItem);
+    if (view.trackChanges && view.itemsAdded) {
+      view.itemsAdded.push(newItem);
+    }
+    view.refresh();
+
+    // 4. Đưa con trỏ về dòng vừa chèn (tìm lại theo record vì group có thể đã đổi vị trí).
+    setTimeout(() => {
+      let r = GridRowUtil.rowIndexOf(grid, newItem);
+      if (r < 0) return;
+      try {
+        grid.select(new wjcGrid.CellRange(r, 0, r, 0), true);
+        grid.scrollIntoView(r, 0);
+        grid.startEditing(false);
+      } catch (e) { }
+    }, 50);
+  }
+
+  /** Tên các evaluator EvaluatorCopiedValues khai báo trong rowAdded của lưới. */
+  protected copiedValueEvaluators(gridIndex: number): string[] {
+    let declares = this._layoutDeclare.rowAdded;
+    if (!declares || declares.length <= 0 || gridIndex < 0) return [];
+
+    let declare = declares.find((d: any) => Number(d['Tables']) === gridIndex);
+    if (!declare) declare = declares[gridIndex];
+    return (declare && declare['Evaluators']) ? declare['Evaluators'] : [];
   }
 
   setDisplayPanel() {

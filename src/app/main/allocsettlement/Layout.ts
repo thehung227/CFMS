@@ -338,7 +338,7 @@ export class LayoutAllocSettlementEditor implements IEditorFormulaDeclaration {
         PrintDocument: {
             Key: 'BizDocCCMViewer',
             Text: 'TBTT chi phí phân bổ - {VAR=TenGoiThau} - {VAR=CustomerName} - {VAR=DocNo}',
-            Command: 'usp_B30BizDocCCM_VoucherForm',
+            Command: 'usp_B30BizDocCCM_VoucherForm_TachBill',
             Command_WorkFlow: 'usp_Coteccons_WorkFlow_GetPrintData',
             LayoutPrint: [
                 {
@@ -351,10 +351,10 @@ export class LayoutAllocSettlementEditor implements IEditorFormulaDeclaration {
                 },
                 {
                     Layout: "MAU2",
-                    Name: "Bảng KLTT chi phí phân bổ",
-                    FileName: "Bảng KTLL chi phí phân bổ - {EXPR=ProductName} - {EXPR=CustomerName} - {EXPR=DocNo}",
-                    WordName: "Bang_KLTT_Bill_ChiPhi_PhanBo.docx",
-                    ExcelName: "Bang_KLTT_Bill_ChiPhi_PhanBo.xlsx",
+                    Name: "Bảng KLQT chi phí phân bổ",
+                    FileName: "Bảng KTQL chi phí phân bổ - {EXPR=ProductName} - {EXPR=CustomerName} - {EXPR=DocNo}",
+                    WordName: "Bang_KLQT_Bill_ChiPhi_PhanBo.docx",
+                    ExcelName: "11.Bang_KLQT_Ver2_PhanBo.xlsx",
                     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
                 },
                 {
@@ -440,8 +440,8 @@ export class LayoutAllocSettlementEditor implements IEditorFormulaDeclaration {
         },
         'Evaluator_ServerConstraint_DocumentDetail_GetData': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
-            ConstraintKey: 'DocDate,ContractType,{VAR=Branch.Ma_Dvcs},{VAR=IsGetPayment_True},DocCode',
-            Command: 'usp_Web_B30BizDocDocument_GetData2',
+            ConstraintKey: 'DocDate,{VAR=ContractType_QT},{VAR=Branch.Ma_Dvcs},{VAR=IsGetPayment_True},DocCode',
+            Command: 'usp_Web_B30BizDocDocument_GetData_QT',
             DataMember: '',
             OutputTable: 1
         },

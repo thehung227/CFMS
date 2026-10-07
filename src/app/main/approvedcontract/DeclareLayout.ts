@@ -212,7 +212,17 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
                         BuiltinOrder: '1'
 
                     }
-                }             
+                },
+                {
+                    Name: 'vB20TripartitePayment',
+                    ParentKey: 'BizDocId',
+                    ChildKey: 'BizDocId',
+                    DefaultValues: {
+                        BizDocId: 'Parent.BizDocId',
+                        BuiltinOrder: '1'
+
+                    }
+                }              
             ]
         },
         PrintDocument: {
@@ -560,6 +570,14 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
                     col: 6,
                     
                 }, this.srv, this.parentData),   
+                new LookupBoxInput({
+                    key: 'ClassCode3',
+                    label: 'Thanh toán 3 bên',
+                    lookupKey: 'Class',
+                    lookupfilter: "IsActive=1 AND ParentCode='LOAITT'",
+                    hideValueMember: false,
+                    col: 6
+                }, this.srv, this.parentData),  
                 new ButtonInput({
                     key: 'btnBizDocId_GT',
                     label: 'Xem phiếu giao thầu',
@@ -1024,6 +1042,53 @@ export class LayoutApprovedContractEditor implements IEditorFormulaDeclaration {
             binding: 'Description',
             width: 250
         }
+    ]
+
+    childColumns7 = [
+       {
+            header: 'NCC',
+            binding: 'CustomerCode',
+            width: 100,
+            dataType: 'Array',
+            lookupKey: 'Customer_CCM2',
+            bindingList: {
+                Name: 'CustomerName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND Code LIKE 'SI-%'",
+        },
+        {
+            header: 'Tên NCC',
+            binding: 'CustomerName',
+            allowEditing: false,
+            width: 300,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 200,
+            dataType: 'Array',
+            lookupKey: 'BizDoc2',
+            bindingList: {
+                DocInfo: 'DocInfo',
+                ContractType: 'ContractType'
+            },
+            // displayMember: 'DocInfo',
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "((DocCode = 'C3' AND ClassCode3 = '01' AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId0='{EXPR=ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}'))"
+        },
+        {
+            header: 'Thông tin hợp đồng',
+            binding: 'DocInfo',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Loại hợp đồng',
+            binding: 'ContractType',
+            width: 100,
+            isReadOnly: 'true'
+        },
     ]
 }
 
@@ -1896,4 +1961,23 @@ export class LayoutApprovedAppendixEditor implements IEditorFormulaDeclaration {
             folderId: '{EXPR=IdBizDoc}'
         }
     ];
+
+    childColumns6 = [
+      
+        {
+            header: 'Ghi chú',
+            binding: 'Description',
+            width: 250
+        },
+        {
+            header: 'File đính kèm',
+            binding: 'FilePath',
+            width: 600,
+            dataType: 'Object'
+            //validators: "{EXPR=Description} != '' && {EXPR=Description} == 'Yêu cầu đính kèm' && {EXPR=FilePath}==0",
+
+
+            //exprReadOnly: "{EXPR=Attached} == true && {EXPR=Description} != ''"
+        }
+    ]
 }

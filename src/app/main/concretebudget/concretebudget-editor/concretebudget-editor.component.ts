@@ -17,6 +17,7 @@ import { ParameterContract } from "../../../contracts/parameter.contract";
 import { Global } from "../../../shared/global";
 import { SystemConstants } from "../../../core/common/system.constants";
 import { BravoCtorEnum } from "../../../core/enum/type.enum";
+import { CryptoExtension } from "../../../core/extensions/crypto.extension";
 
 @Component({
   selector: 'app-concretebudget-editor-form',
@@ -174,6 +175,26 @@ export class ConcreteBudgetEditorComponent extends BaseEditorComponent implement
       alert('Các Tab chi tiết cần có dữ liệu để Lưu. Yêu cầu nhấn "Tải dữ liệu" để lấy dữ liệu (nếu có).');
     }
 
+  }
+
+  // Mở "Báo cáo nhanh sản lượng bê tông dự án" (reporterconcretequick) ở tab mới cho gói thầu
+  // của phiếu đang mở; báo cáo tự chạy nhờ tham số ProductCostId truyền trên url.
+  openQuickConcreteReport(formData?: any) {
+    let productCostId: string = (formData && formData.value) ? formData.value['ProductCostId'] : '';
+
+    if (!productCostId && this.parentData)
+      productCostId = this.parentData['ProductCostId'];
+
+    if (!productCostId) {
+      alert('Phiếu chưa có gói thầu nên không mở được báo cáo.');
+      return;
+    }
+
+    let params = { 'Commandkey': 'REP07_BCNBT', 'ProductCostId': productCostId };
+    let navigateUrl: any = ['#/main', 'reporterconcretequick', 'view', 'REP07_BCNBT',
+      encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(params)))];
+
+    window.open(navigateUrl.join('/'));
   }
 
   async checkKhoiLuong_KeHoach_PO(formData: any) {

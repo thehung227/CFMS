@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { WjGridModule } from 'wijmo/wijmo.angular2.grid';
@@ -17,6 +17,7 @@ import { InputControlService } from './../../../ui/input/InputControlService';
 
 import { Global } from './../../../shared/global';
 import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 import { InputBase } from './../../../ui/input/InputBase';
 import { DropDownInput } from './../../../ui/input/DropDownInput';
@@ -36,6 +37,10 @@ import { Title } from '@angular/platform-browser';
 import { SystemConstants } from '../../../core/common/system.constants';
 import { CryptoExtension } from '../../../core/extensions/crypto.extension';
 import * as wjcGridFilter from 'wijmo/wijmo.grid.filter';
+import { toSearchText, matchesAllWords } from '../../../shared/search-text';
+
+/** Trạng thái một hồ sơ - cùng quy tắc tô màu dòng trên lưới. */
+type RowStatus = 'returned' | 'overdue' | 'ontime';
 
 @Component({
   selector: 'notifications-explorer',
@@ -54,10 +59,25 @@ export class NotificationsExplorerComponent {
   showLoading = false;
 
   pathPage = ['/main', 'notifications', 'detail'];
+
+  /** Lọc nhanh: thẻ trạng thái + ô tìm kiếm (không dấu). Áp lên dữ liệu gốc allRows. */
+  kpis = [
+    { key: 'all', label: 'Tất cả hồ sơ', icon: 'fa-folder-open-o' },
+    { key: 'overdue', label: 'Quá hạn / đến hạn', icon: 'fa-exclamation-circle' },
+    { key: 'returned', label: 'Bị trả lại', icon: 'fa-reply' },
+    { key: 'ontime', label: 'Còn trong hạn', icon: 'fa-clock-o' }
+  ];
+  stats = { all: 0, overdue: 0, returned: 0, ontime: 0 };
+  statusFilter = 'all';
+  searchText = '';
+  private allRows: any[] = [];
+  private rowSearchText = new Map<any, string>();
+  private searchTimer: any;
  
 
   constructor(private srv: BaseExplorerService,
     private router: Router,
+    private location: Location,
     private ics: InputControlService, titleService: Title) {
   }
   nUserId: string;
@@ -110,12 +130,77 @@ export class NotificationsExplorerComponent {
     let _data = await this.srv.getDataOutput(Global.DATA_ENDPOINT, BravoCtorEnum.StoreProcedure, 'usp_Coteccons_ApproveNotifications', params)
       .toPromise().then();
 
-    this.data = new wjcCore.CollectionView(_data['data']);
-    this.grid.itemsSource = new wjcCore.CollectionView(_data['data']);
+    this.setRows(_data['data'] || []);
     this.showLoading = false;
   }
 
+  /** Số hồ sơ đang hiển thị (sau lọc nhanh + bộ lọc cột của lưới). */
+  get visibleCount(): number {
+    return this.data && this.data.items ? this.data.items.length : 0;
+  }
+
+  setStatusFilter(key: string) {
+    this.statusFilter = this.statusFilter === key ? 'all' : key;
+    this.applyQuickFilter();
+  }
+
+  onSearchInput(value: string) {
+    this.searchText = value;
+    clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.applyQuickFilter(), 150);
+  }
+
+  clearQuickFilter() {
+    this.searchText = '';
+    this.statusFilter = 'all';
+    this.applyQuickFilter();
+  }
+
+  private setRows(rows: any[]) {
+    const bindings = this._layoutDeclare.parentGrid.map(c => c['binding']).filter(b => !!b);
+    this.allRows = rows;
+    this.rowSearchText.clear();
+    this.stats = { all: rows.length, overdue: 0, returned: 0, ontime: 0 };
+
+    rows.forEach(row => {
+      this.stats[this.rowStatus(row)]++;
+      this.rowSearchText.set(row, toSearchText(bindings.map(b => row[b]).join(' ')));
+    });
+
+    this.data = new wjcCore.CollectionView(this.filterRows());
+    this.grid.itemsSource = this.data;
+  }
+
+  private applyQuickFilter() {
+    if (this.data) {
+      // Đổi sourceCollection giữ nguyên nhóm (DocType, ProductName) và bộ lọc cột đang chọn.
+      this.data.sourceCollection = this.filterRows();
+    }
+  }
+
+  private filterRows(): any[] {
+    const query = toSearchText(this.searchText);
+    const words = query ? query.split(' ') : [];
+    return this.allRows.filter(row =>
+      (this.statusFilter === 'all' || this.rowStatus(row) === this.statusFilter) &&
+      (!words.length || matchesAllWords(words, this.rowSearchText.get(row) || '')));
+  }
+
+  private rowStatus(row: any): RowStatus {
+    if (row['CheckReturn'] > 0) {
+      return 'returned';
+    }
+    if ((row['DayOfDelay'] < 0) || row['DayOfDelay'] == 0) {
+      return 'overdue';
+    }
+    return 'ontime';
+  }
+
   async ApprovedAll(resetProductCostId: boolean = false) {
+    // Duyệt đúng các dòng đang hiển thị (đã qua lọc nhanh / lọc cột) -> xác nhận trước khi ghi.
+    if (!this.visibleCount || !confirm('Duyệt theo lô ' + this.visibleCount + ' hồ sơ đang hiển thị?')) {
+      return;
+    }
     this.showLoading = true;
     const params = new Array<ParameterContract>();
     const param1 = new ParameterContract();
@@ -167,7 +252,20 @@ export class NotificationsExplorerComponent {
     // this.showLoading = false;
   }
 
+  // Kéo lưới cao tới sát footer: vị trí đầu lưới đổi theo header (thẻ KPI có thể xuống dòng) nên đo lúc chạy.
+  @HostListener('window:resize')
+  fitGridHeight() {
+    const host: HTMLElement = this.grid && this.grid.hostElement;
+    if (!host) return;
+    const footer = document.querySelector('.main-footer') as HTMLElement;
+    const top = host.getBoundingClientRect().top + window.pageYOffset;
+    const bottomGap = (footer ? footer.offsetHeight : 0) + 24; // padding đáy .nt-inbox + viền card
+    host.style.height = Math.max(420, window.innerHeight - top - bottomGap) + 'px';
+    this.grid.invalidate();
+  }
+
   ngAfterViewInit() {
+    setTimeout(() => this.fitGridHeight());
 
     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
 
@@ -175,28 +273,17 @@ export class NotificationsExplorerComponent {
         let data = s.rows[e.row].dataItem;
 
         if (e.panel.cellType == wjcGrid.CellType.Cell) {
-          console.log(data['CheckReturn'])
-          if (data['CheckReturn'] > 0) {
-            wjcCore.setCss(e.cell, {
-              color: 'Orange',
-              //fontWeight: 'Bold',
-              // backgroundColor: ''
-            });
-          }
-          else
-          if (data['DayOfDelay'] < 0) {
-            wjcCore.setCss(e.cell, {
-              color: 'red',
-              //fontWeight: 'Bold',
-              // backgroundColor: ''
-            });
-          }
-          else {
-            wjcCore.setCss(e.cell, {
-              color: '',
-              // fontWeight: '',
-              // backgroundColor: ''
-            });
+          const status = this.rowStatus(data);
+          wjcCore.setCss(e.cell, {
+            color: status === 'returned' ? 'orange' : status === 'overdue' ? 'red' : ''
+          });
+
+          // Không chỉ dựa vào màu: thêm icon trạng thái ở cột "Loại hồ sơ".
+          if (status !== 'ontime' && s.columns[e.col].binding === 'Ten_Ct') {
+            const icon = status === 'returned' ? 'fa-reply' : 'fa-exclamation-circle';
+            const title = status === 'returned' ? 'Bị trả lại' : 'Quá hạn / đến hạn';
+            e.cell.innerHTML = '<i class="fa ' + icon + '" title="' + title + '" style="margin-right:6px"></i>' +
+              wjcCore.escapeHtml(e.cell.textContent);
           }
         }
       }
@@ -207,125 +294,67 @@ export class NotificationsExplorerComponent {
     this._applyGroup();
   }
 
+  /** Nhấp đúp vào ô dữ liệu -> mở hồ sơ ở tab mới (bỏ qua header, viền cột, dòng nhóm). */
   doubleClickGrid(grid: wjcGrid.FlexGrid) {
-    let navigateUrl: any[] = [];
-    let host = grid.hostElement;
-    let self = this;
-
-    let paramsEdit = this._layoutDeclare.layout.CopiedValues.parameter;
-
-    host.addEventListener('dblclick', function (e) {
-      if (grid.selectedItems[0] != null && grid.selectedItems[0] != undefined) {
-        let key = grid.selectedItems[0]['Id'];
-        let link = grid.selectedItems[0]['_LinkCommandWeb'];
-
-        let doccode = grid.selectedItems[0]['DocCode'];
-        let approvesend = grid.selectedItems[0]['ApproveSend'];
-
-        let EmployeeCode = grid.selectedItems[0]['EmployeeCode_t2'];
-        let PositionCode = grid.selectedItems[0]['PositionCode'];
-        // localStorage.removeItem(SystemConstants.PRODUCTCOSTID);
-        // localStorage.setItem(SystemConstants.PRODUCTCOSTID, grid.selectedItems[0]['ProductCostId']);
-
-        if (doccode == 'PO' && approvesend == 0) {
-          navigateUrl.push(link);
-          navigateUrl.push('-1');
-
-          for (let control in paramsEdit) {
-
-            if (paramsEdit[control].toString().indexOf('{EXPR=') > -1) {
-              paramsEdit[control] = Global.translateAutoText(paramsEdit[control], grid.selectedItems[0]);
-              if (paramsEdit[control].toString().indexOf('?') > -1)
-                paramsEdit[control] = eval(paramsEdit[control]);
-            }
-
-            if (paramsEdit[control].toString().indexOf('{VAR=') > -1)
-              paramsEdit[control] = Global.convertConfig(paramsEdit[control]);
-
-            paramsEdit[control] = Global.replaceString(paramsEdit[control], "'");
-          }
-
-          if (paramsEdit != undefined && paramsEdit != null) {
-            let _value = encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(paramsEdit)));
-            navigateUrl.push(_value);
-          }
-
-          self.router.navigate(navigateUrl);
-
-          navigateUrl = [];
-        }
-        else {
-          if (key) {
-            navigateUrl.push(link);
-            navigateUrl.push(key);
-
-            //window.open(navigateUrl.join('/'));
-            self.router.navigate(navigateUrl);
-
-            navigateUrl = [];
-          }
-        }
+    grid.hostElement.addEventListener('dblclick', (e: MouseEvent) => {
+      const ht = grid.hitTest(e);
+      if (ht.cellType !== wjcGrid.CellType.Cell || ht.row < 0 || grid.rows[ht.row] instanceof wjcGrid.GroupRow) {
+        return;
+      }
+      const item = grid.rows[ht.row].dataItem;
+      if (item) {
+        this.openRecord(item);
       }
     });
   }
 
   editExplorer(grid: wjcGrid.FlexGrid) {
-    let navigateUrl: any[] = [];
-    let host = grid.hostElement;
-    let self = this;
-
-    let paramsEdit = this._layoutDeclare.layout.CopiedValues.parameter;
-
     if (!grid.selectedItems[0]) {
       alert('Chọn dữ liệu hợp lệ để thực hiện!');
     }
     else {
-      if (grid.selectedItems[0] != null && grid.selectedItems[0] != undefined) {
-        let key = grid.selectedItems[0]['Id'];
-        let link = grid.selectedItems[0]['_LinkCommandWeb'];
+      this.openRecord(grid.selectedItems[0]);
+    }
+  }
 
-        let doccode = grid.selectedItems[0]['DocCode'];
-        let approvesend = grid.selectedItems[0]['ApproveSend'];
+  /** Mở hồ sơ ở tab mới (trước đây dùng router.navigate trong cùng tab). */
+  private openRecord(item: any) {
+    const link = item['_LinkCommandWeb'];
+    const key = item['Id'];
+    let navigateUrl: any[];
 
-        if (doccode == 'PO' && approvesend == 0) {
-          navigateUrl.push(link);
-          navigateUrl.push('-1');
+    if (item['DocCode'] == 'PO' && item['ApproveSend'] == 0) {
+      // Sao chép cấu hình: không ghi đè {EXPR=...} gốc, vì màn này vẫn mở để chọn hồ sơ khác.
+      const paramsEdit = Object.assign({}, this._layoutDeclare.layout.CopiedValues.parameter);
 
-          for (let control in paramsEdit) {
+      for (let control in paramsEdit) {
 
-            if (paramsEdit[control].toString().indexOf('{EXPR=') > -1) {
-              paramsEdit[control] = Global.translateAutoText(paramsEdit[control], grid.selectedItems[0]);
-              if (paramsEdit[control].toString().indexOf('?') > -1)
-                paramsEdit[control] = eval(paramsEdit[control]);
-            }
-
-            if (paramsEdit[control].toString().indexOf('{VAR=') > -1)
-              paramsEdit[control] = Global.convertConfig(paramsEdit[control]);
-
-            paramsEdit[control] = Global.replaceString(paramsEdit[control], "'");
-          }
-
-          if (paramsEdit != undefined && paramsEdit != null) {
-            let _value = encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(paramsEdit)));
-            navigateUrl.push(_value);
-          }
-
-          self.router.navigate(navigateUrl);
-
-          navigateUrl = [];
+        if (paramsEdit[control].toString().indexOf('{EXPR=') > -1) {
+          paramsEdit[control] = Global.translateAutoText(paramsEdit[control], item);
+          if (paramsEdit[control].toString().indexOf('?') > -1)
+            paramsEdit[control] = eval(paramsEdit[control]);
         }
-        else {
-          if (key) {
-            navigateUrl.push(link);
-            navigateUrl.push(key);
 
-            //window.open(navigateUrl.join('/'));
-            self.router.navigate(navigateUrl);
+        if (paramsEdit[control].toString().indexOf('{VAR=') > -1)
+          paramsEdit[control] = Global.convertConfig(paramsEdit[control]);
 
-            navigateUrl = [];
-          }
-        }
+        paramsEdit[control] = Global.replaceString(paramsEdit[control], "'");
       }
+
+      navigateUrl = [link, '-1', encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(paramsEdit)))];
+    }
+    else if (key) {
+      navigateUrl = [link, key];
+    }
+    else {
+      return;
+    }
+
+    // Cùng cách mã hoá URL như router.navigate; prepareExternalUrl thêm "#" (useHash).
+    const url = this.location.prepareExternalUrl(this.router.serializeUrl(this.router.createUrlTree(navigateUrl)));
+    const tab = window.open(url, '_blank');
+    if (!tab) {
+      alert('Trình duyệt đã chặn mở tab mới. Vui lòng cho phép popup cho trang này.');
     }
   }
 

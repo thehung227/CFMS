@@ -41,12 +41,8 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
   output: Array<Object>;
   _errBCTC: boolean = false;
   _errMess: string;
-  // ===== Right-click row menu state (ONLY for grid Chi tiết) =====
-  rowMenuVisible: boolean = false;
-  rowMenuStyle: any = {}; // { left: '100px', top: '200px' }
-
-  private _rowMenuGrid: wjcGrid.FlexGrid | null = null;
-  private _rowMenuRowIndex: number = -1;
+  // Menu chuột phải (rowMenuVisible / openRowContextMenu / insertRowAt ...) nay nằm ở
+  // BaseEditorComponent để dùng chung và xử lý đúng khi lưới có group.
 
   constructor(service: BaseEditorService,
     route: ActivatedRoute,
@@ -63,23 +59,6 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
   onWindowResize() {
     // this.resizeWidthControls();
   }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(_evt: MouseEvent) {
-    this.hideRowMenu();
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  onDocumentKeydown(evt: KeyboardEvent) {
-    if (evt.key === 'Escape') this.hideRowMenu();
-  }
-
-  private hideRowMenu() {
-    this.rowMenuVisible = false;
-    this._rowMenuGrid = null;
-    this._rowMenuRowIndex = -1;
-  }
-
 
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
@@ -155,6 +134,26 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
       }
     }
 
+    // Dòng chi tiết (không phải dòng tiêu đề) bắt buộc có ngày bắt đầu / kết thúc sử dụng
+    let _errorDate = '';
+    for (let item of this.grid.itemsSource.items) {
+      if (item['IsTitleRow'] == true || item['IsTitleRow'] == 1) {
+        continue;
+      }
+      if (!item['FromDate'] || !item['ToDate']) {
+        _errorDate = 'Dòng STT ' + (item['ItemNo'] || '') + ': bắt buộc nhập Ngày dự kiến sử dụng và Ngày dự kiến kết thúc sử dụng';
+        break;
+      }
+      if (new Date(item['ToDate']) < new Date(item['FromDate'])) {
+        _errorDate = 'Dòng STT ' + (item['ItemNo'] || '') + ': Ngày dự kiến kết thúc sử dụng phải lớn hơn hoặc bằng Ngày dự kiến sử dụng';
+        break;
+      }
+    }
+    if (_errorDate != '') {
+      alert(_errorDate);
+      return;
+    }
+
     let _errorSave1 = false;
     for (let item of this.grid1.itemsSource.items) {
       if (item['EmployeeCode'] == '') {
@@ -218,56 +217,6 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
 
   }
 
-  openRowContextMenu(evt: MouseEvent, grid: wjcGrid.FlexGrid) {
-    evt.preventDefault();
-    evt.stopPropagation();
-
-    if (!grid) return;
-
-    const ht = grid.hitTest(evt);
-
-    // chỉ mở menu khi click phải lên vùng cell (không phải header)
-    if (!ht || ht.cellType !== wjcGrid.CellType.Cell || ht.row < 0) {
-      this.hideRowMenu();
-      return;
-    }
-
-    this._rowMenuGrid = grid;
-    this._rowMenuRowIndex = ht.row;
-
-    // select đúng dòng đang click phải
-    try {
-      grid.select(new wjcGrid.CellRange(ht.row, 0, ht.row, grid.columns.length - 1), true);
-    } catch (e) { }
-
-    this.rowMenuStyle = { left: `${evt.clientX}px`, top: `${evt.clientY}px` };
-    this.rowMenuVisible = true;
-  }
-
-  onInsertRowAtCursor() {
-    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
-    this.insertRowAt(this._rowMenuGrid, this._rowMenuRowIndex);
-    this.hideRowMenu();
-  }
-
-  onInsertRowBelowCursor() {
-    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
-    this.insertRowAt(this._rowMenuGrid, this._rowMenuRowIndex + 1);
-    this.hideRowMenu();
-  }
-
-  onDeleteRowAtCursor() {
-    if (!this._rowMenuGrid || this._rowMenuRowIndex < 0) return;
-
-    // chọn đúng row rồi dùng lại hàm deleteSelectedRows(grid) đang có
-    try {
-      this._rowMenuGrid.select(new wjcGrid.CellRange(this._rowMenuRowIndex, 0, this._rowMenuRowIndex, 0), true);
-    } catch (e) { }
-
-    this.deleteSelectedRows(this._rowMenuGrid);
-    this.hideRowMenu();
-  }
-
   protected deleteSelectedRows(flex: wjcGrid.FlexGrid) {
     if (flex) {
       // get list of selected items
@@ -293,56 +242,6 @@ export class PurchaseOtherBudgetEditorComponent extends BaseEditorComponent impl
       }
     }
   }
-  private insertRowAt(grid: wjcGrid.FlexGrid, insertIndex: number) {
-    if (!grid || !grid.collectionView) return;
-
-    const view: any = grid.collectionView;
-
-    // clamp index
-    if (insertIndex < 0) insertIndex = 0;
-
-    // 1. Tạo dòng mới dựa trên cấu trúc mặc định (defaultRow) đã được BaseEditorComponent khởi tạo
-    let newItem: any = view['defaultRow'] ? JSON.parse(JSON.stringify(view['defaultRow'])) : {};
-
-    // 2. Thiết lập các thông tin cơ bản để có thể lưu vào database
-    newItem['Id'] = -1; // Đánh dấu là dòng mới
-    if (this.parentData && this.parentData['Stt']) {
-      newItem['Stt'] = this.parentData['Stt']; // Gán Stt của Parent để liên kết dữ liệu
-    }
-
-    // Wijmo thường dùng sourceCollection
-    if (Array.isArray(view.sourceCollection)) {
-      if (insertIndex > view.sourceCollection.length) insertIndex = view.sourceCollection.length;
-      view.sourceCollection.splice(insertIndex, 0, newItem);
-
-      // 3. Quan trọng: Đẩy vào itemsAdded để BaseEditorComponent.submit có thể nhận diện và lưu
-      if (view.trackChanges) {
-        view.itemsAdded.push(newItem);
-      }
-
-      view.refresh();
-    } else if (Array.isArray(view.items)) {
-      if (insertIndex > view.items.length) insertIndex = view.items.length;
-      view.items.splice(insertIndex, 0, newItem);
-
-      if (view.trackChanges) {
-        view.itemsAdded.push(newItem);
-      }
-
-      view.refresh();
-    }
-
-    // focus vào dòng mới
-    try {
-      setTimeout(() => {
-        grid.select(new wjcGrid.CellRange(insertIndex, 0, insertIndex, 0), true);
-        grid.scrollIntoView(insertIndex, 0);
-        grid.startEditing(false);
-      }, 100);
-    } catch (e) { }
-  }
-
-
   async checkKhoiLuong_KeHoach_PO(formData: any) {
     this.showLoading = true;
     let params = new Array<ParameterContract>();

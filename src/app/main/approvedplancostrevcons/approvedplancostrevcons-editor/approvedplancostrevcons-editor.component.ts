@@ -29,6 +29,7 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
   @ViewChild('grid') grid: wjcGrid.FlexGrid;
   @ViewChild('grid1') grid1: wjcGrid.FlexGrid;
   @ViewChild('grid2') grid2: wjcGrid.FlexGrid;
+  @ViewChild('grid3') grid3: wjcGrid.FlexGrid;
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
   indexPage = ['/main', 'plancostrevcons', 'index'];
@@ -50,7 +51,7 @@ export class ApprovedPlanCostRevConsEditorComponent extends BaseEditorComponent 
   }
 
   ngOnInit() {
-    this.gridArray = [this.grid, this.grid1, this.grid2];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3];
     this.init();
     this.grid.isReadOnly = true;
     this.grid1.isReadOnly = true;

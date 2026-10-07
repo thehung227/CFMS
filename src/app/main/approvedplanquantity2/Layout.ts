@@ -386,7 +386,7 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
@@ -394,76 +394,76 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'NTP 01',
             binding: 'Qty01',
             width: 110,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 02',
             binding: 'Qty02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 03',
             binding: 'Qty03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 04',
             binding: 'Qty04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 05',
             binding: 'Qty05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 06',
             binding: 'Qty06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 07',
             binding: 'Qty07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 08',
             binding: 'Qty08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 09',
             binding: 'Qty09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 10',
             binding: 'Qty10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
@@ -744,7 +744,7 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
@@ -752,76 +752,76 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'NTP 11',
             binding: 'Qty01',
             width: 110,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 12',
             binding: 'Qty02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 13',
             binding: 'Qty03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 14',
             binding: 'Qty04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 15',
             binding: 'Qty05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 16',
             binding: 'Qty06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 17',
             binding: 'Qty07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 18',
             binding: 'Qty08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 19',
             binding: 'Qty09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 20',
             binding: 'Qty10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
@@ -879,7 +879,7 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
@@ -887,76 +887,76 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'NTP 21',
             binding: 'Qty01',
             width: 110,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 22',
             binding: 'Qty02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 23',
             binding: 'Qty03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 24',
             binding: 'Qty04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 25',
             binding: 'Qty05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 26',
             binding: 'Qty06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 27',
             binding: 'Qty07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 28',
             binding: 'Qty08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 29',
             binding: 'Qty09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 30',
             binding: 'Qty10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
@@ -1014,7 +1014,7 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
@@ -1022,76 +1022,76 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'NTP 31',
             binding: 'Qty01',
             width: 110,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 32',
             binding: 'Qty02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 33',
             binding: 'Qty03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 34',
             binding: 'Qty04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 35',
             binding: 'Qty05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 36',
             binding: 'Qty06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 37',
             binding: 'Qty07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 38',
             binding: 'Qty08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 39',
             binding: 'Qty09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 40',
             binding: 'Qty10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
@@ -1149,7 +1149,7 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'KH Khối lượng (BCH Tính)',
@@ -1157,76 +1157,76 @@ export class LayoutApprovedPlanQuantity2Editor implements IEditorFormulaDeclarat
             dataType: 'Number',
             isRequired: true,
             width: 110,
-            format: 'n2',
+            format: 'n3',
         },
         {
             header: 'NTP 41',
             binding: 'Qty01',
             width: 110,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 42',
             binding: 'Qty02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 43',
             binding: 'Qty03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 44',
             binding: 'Qty04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 45',
             binding: 'Qty05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 46',
             binding: 'Qty06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 47',
             binding: 'Qty07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 48',
             binding: 'Qty08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 49',
             binding: 'Qty09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 50',
             binding: 'Qty10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {

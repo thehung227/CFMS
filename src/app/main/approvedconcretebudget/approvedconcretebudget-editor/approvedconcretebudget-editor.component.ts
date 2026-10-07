@@ -76,6 +76,26 @@ export class ApprovedConcreteBudgetEditorComponent extends BaseEditorComponent i
     this._location.back();
   }
 
+  // Mở "Báo cáo nhanh sản lượng bê tông dự án" (reporterconcretequick) ở tab mới cho gói thầu
+  // của phiếu đang mở; báo cáo tự chạy nhờ tham số ProductCostId truyền trên url.
+  openQuickConcreteReport(formData?: any) {
+    let productCostId: string = (formData && formData.value) ? formData.value['ProductCostId'] : '';
+
+    if (!productCostId && this.parentData)
+      productCostId = this.parentData['ProductCostId'];
+
+    if (!productCostId) {
+      alert('Phiếu chưa có gói thầu nên không mở được báo cáo.');
+      return;
+    }
+
+    let params = { 'Commandkey': 'REP07_BCNBT', 'ProductCostId': productCostId };
+    let navigateUrl: any = ['#/main', 'reporterconcretequick', 'view', 'REP07_BCNBT',
+      encodeURIComponent(CryptoExtension.encrypt(JSON.stringify(params)))];
+
+    window.open(navigateUrl.join('/'));
+  }
+
   isLoading = false;
   async onClick(state: any) {
     if (Global.convertConfig('{VAR=User.Ma_CbNv}') != this.parentData['EmployeeCode'])

@@ -50,95 +50,84 @@
     </section>
 </div>
 <div [ngClass]="{'col-md-10 content-filter': isUsingFilter}">
-    <section class="content">
-        <div class="box" id="box-content">
-            <div class="box-header with-border">
-                <h3 class="box-title" id="titleName"><b>NHẮC VIỆC: HỒ SƠ CẦN XỬ LÝ</b></h3>
-                <!-- <button type="button" class="btn btn-box-tool btn-filter" data-toggle="tooltip" title="Lọc dữ liệu" (click)="toogleFilter()"> 
-                    <i class="fa fa-filter fa-lg" aria-hidden="true"></i>
-                </button> -->
+    <section class="content nt-inbox">
 
-                <!-- <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div> -->
-            </div>
-            <div class="box-body" #contentFilter>
-                <nav class="navbar navbar-default">
-                    <div class="container-fluid">
-                        <ul class="nav navbar-nav">
-                            <div class="toolbox">
-                                <button type="button" class="btn btn-danger" (click)="ApprovedAll(true)" title="Duyệt theo lô" *ngIf="nUserId==4468 || nUserId==5493">
-                                    <i class="fa fa-thumbs-o-up " aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn btn-success" (click)="editExplorer(grid)" title="Mở">
-                                    <i class="fa fa-pencil-square-o " aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn btn-info" (click)="LoadStore(true)" title="Refresh">
-                                    <i class="fa fa-refresh" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn" title="Thu nhóm" (click)="grid.collapseGroupsToLevel(0)">
-                                    <i class="fa fa-angle-double-up fa-md" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn" title="Mở nhóm" (click)="grid.collapseGroupsToLevel(grid.rows.maxGroupLevel + 1)">
-                                    <i class="fa fa-angle-double-down fa-md" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        </ul>
-                    </div>
-                </nav>
-                <wj-flex-grid [itemsSource]="data" #grid (itemsSourceChanged)="itemsSourceChangedHandler()" style="height:100%;min-height: 650px;">
-                    
-                    <!-- <template wjFlexGridCellTemplate [cellType]="'TopLeft'">
-                        <input type="checkbox" value="">
-                    </template>
-                    <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                        <input type="checkbox" value="">
-                    </template> -->
-
-                    <!-- <wj-flex-grid-column width="0.25*">
-                        <template wjFlexGridCellTemplate [cellType]="'Cell'" let-cell="cell">
-                            <div class="btn-edit" title="Sửa" (click)="edit(grid.selectedRows)">
-                                <a [routerLink]="['/main','purchase','detail', grid.collectionView.currentItem?.Id]">
-                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                </a>
-                            </div>
-                        </template>
-                    </wj-flex-grid-column> -->
-                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
-                </wj-flex-grid>
-            </div>
-            <!-- <div class="box-footer">
-                <div class="ccb-group">
-                    <wj-menu [(value)]="groupBy" [header]="'Nhóm'">
-                        <wj-menu-item [value]="''">(không nhóm)</wj-menu-item>
-                        <wj-menu-item [value]="'ProductName'">Gói thầu</wj-menu-item>
-                        <wj-menu-item [value]="'Ten_Ct'">Hồ sơ</wj-menu-item>
-                        <wj-menu-item [value]="'ProductName,Ten_Ct'">Gói thầu, Hồ sơ</wj-menu-item>
-                    </wj-menu>
+        <!-- Tiêu đề + thao tác chính -->
+        <header class="nt-inbox__head">
+            <div class="nt-inbox__heading">
+                <span class="nt-inbox__heading-icon" aria-hidden="true"><i class="fa fa-inbox"></i></span>
+                <div>
+                    <h3 class="nt-inbox__title" id="titleName">Hồ sơ cần xử lý</h3>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default" (click)="movePage(1)">
-                                    <span class="glyphicon glyphicon-fast-backward"></span>
-                                </button>
-                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber-1)">
-                                    <span class="glyphicon glyphicon-step-backward"></span>
-                                </button>
-                    <button type="button" class="btn btn-default ng-binding">
-                                    {{pageNumber}}/{{totalPage||1}}
-                                </button>
-                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber+1)">
-                                    <span class="glyphicon glyphicon-step-forward"></span>
-                                </button>
-                    <button type="button" class="btn btn-default" (click)="movePage(totalPage)">
-                                    <span class="glyphicon glyphicon-fast-forward"></span>
-                                </button>
+            </div>
+            <!-- Thẻ thống kê = lọc nhanh theo trạng thái -->
+            <div class="nt-kpis" role="group" aria-label="Lọc nhanh theo trạng thái">
+                <button type="button" *ngFor="let k of kpis" class="nt-kpi" [ngClass]="'nt-kpi--' + k.key"
+                    [class.is-active]="statusFilter === k.key" [attr.aria-pressed]="statusFilter === k.key"
+                    (click)="setStatusFilter(k.key)">
+                    <span class="nt-kpi__icon" aria-hidden="true"><i class="fa" [ngClass]="k.icon"></i></span>
+                    <span class="nt-kpi__body">
+                        <span class="nt-kpi__value">{{stats[k.key] | number}}</span>
+                        <span class="nt-kpi__label">{{k.label}}</span>
+                    </span>
+                </button>
+            </div>
+            <!-- <div class="nt-inbox__actions">
+                <button type="button" class="nt-btn nt-btn--danger" (click)="ApprovedAll(true)" title="Duyệt tất cả hồ sơ đang hiển thị" *ngIf="nUserId==4468 || nUserId==5493">
+                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Duyệt theo lô
+                </button>
+                <button type="button" class="nt-btn nt-btn--primary" (click)="editExplorer(grid)" title="Mở hồ sơ đang chọn ở tab mới">
+                    <i class="fa fa-external-link" aria-hidden="true"></i> Mở hồ sơ
+                </button>
+                <button type="button" class="nt-btn" (click)="LoadStore(true)" title="Tải lại danh sách" [disabled]="showLoading">
+                    <i class="fa fa-refresh" [class.fa-spin]="showLoading" aria-hidden="true"></i> Làm mới
+                </button>
+            </div> -->
+        </header>
+
+        <!-- Lưới hồ sơ -->
+        <div class="nt-card" #contentFilter>
+            <!-- <div class="nt-card__toolbar">
+                <div class="nt-search">
+                    <i class="fa fa-search nt-search__icon" aria-hidden="true"></i>
+                    <input type="text" class="nt-search__input" autocomplete="off"
+                        placeholder="Tìm theo loại hồ sơ, đối tượng, nội dung, người lập, số chứng từ..."
+                        aria-label="Tìm trong danh sách hồ sơ"
+                        [value]="searchText" (input)="onSearchInput($event.target.value)" (keydown.escape)="onSearchInput('')">
+                    <button *ngIf="searchText" type="button" class="nt-search__clear" title="Xoá tìm kiếm" aria-label="Xoá tìm kiếm" (click)="onSearchInput('')">
+                        <i class="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <span class="nt-count">Hiển thị <b>{{visibleCount | number}}</b> / {{stats.all | number}} hồ sơ</span>
+
+                <div class="nt-legend" aria-label="Chú thích màu">
+                    <span class="nt-legend__item nt-legend__item--overdue"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Quá hạn / đến hạn</span>
+                    <span class="nt-legend__item nt-legend__item--returned"><i class="fa fa-reply" aria-hidden="true"></i> Bị trả lại</span>
+                </div>
+
+                <div class="nt-card__tools">
+                    <button type="button" class="nt-icon-btn" title="Thu gọn nhóm" aria-label="Thu gọn nhóm" (click)="grid.collapseGroupsToLevel(0)">
+                        <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="nt-icon-btn" title="Mở rộng nhóm" aria-label="Mở rộng nhóm" (click)="grid.collapseGroupsToLevel(grid.rows.maxGroupLevel + 1)">
+                        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+                    </button>
                 </div>
             </div> -->
+
+            <div class="nt-grid-wrap">
+                <wj-flex-grid [itemsSource]="data" #grid (itemsSourceChanged)="itemsSourceChangedHandler()" class="nt-grid">
+                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+                </wj-flex-grid>
+
+                <div class="nt-empty" *ngIf="!showLoading && visibleCount === 0">
+                    <i class="fa fa-check-circle-o nt-empty__icon" aria-hidden="true"></i>
+                    <div class="nt-empty__title" *ngIf="stats.all === 0">Không có hồ sơ nào cần xử lý</div>
+                    <div class="nt-empty__title" *ngIf="stats.all > 0">Không có hồ sơ phù hợp bộ lọc</div>
+                    <button type="button" class="nt-btn" *ngIf="stats.all > 0" (click)="clearQuickFilter()">Bỏ lọc nhanh</button>
+                </div>
+            </div>
         </div>
     </section>
 </div>

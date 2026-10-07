@@ -829,8 +829,8 @@ export class LayoutPurchaseOtherOrderEditor implements IEditorFormulaDeclaration
                 new LookupBoxInput({
                     key: 'ItemGroupCode',
                     label: 'Loại đơn hàng',
-                    lookupKey: 'Item',
-                    lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (3205) AND Code NOT IN ('BETONG','THEP')",
+                    lookupKey: 'BidPackage',
+                    lookupfilter: "IsGroup=0 AND IsActive=1",
                     validators: [Validators.required],
                     hideValueMember: true,
                     maxRow: 20,

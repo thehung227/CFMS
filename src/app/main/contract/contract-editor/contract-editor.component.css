@@ -1,12 +1,30 @@
-.panel{
+/* =============================================================================
+   Hợp đồng - style riêng của module.
+
+   Khung ngoài (section.content > .box > .box-header/.box-body/.box-footer) và
+   việc chia cột (row / col-md-*) vẫn dùng ĐÚNG chuẩn AdminLTE + Bootstrap của
+   hệ thống. File này chỉ tô lại phần bên trong khung, theo đúng bộ style của
+   form "Tình trạng giấy phép xây dựng" (conspermitstatus).
+
+   CSS được Angular scope theo component nên không ảnh hưởng màn hình khác.
+   Riêng phần nhắm vào bên trong lưới phải dùng ::ng-deep vì Wijmo dựng DOM lúc
+   chạy, không mang attribute scoping của Angular.
+   ========================================================================== */
+
+:host {
+    display: block;
+}
+
+/* ===================== STYLE CŨ CỦA FORM (giữ nguyên) ==================== */
+.panel {
     margin-top: 20px;
 }
 
-.panel-heading{
-    padding:1px 15px;
+.panel-heading {
+    padding: 1px 15px;
 }
 
-.panel-body{
+.panel-body {
     padding: 15px 0 0 0;
 }
 
@@ -16,47 +34,450 @@
     border-radius: 2px;
     margin-top: 10px;
 }
-.wj-header-alt{
+
+.wj-header-alt {
     width: 15px;
 }
 
-.wj-rowheaders .wj-header{
+.wj-rowheaders .wj-header {
     font-weight: 100;
 }
 
-/* .col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12{
-    padding-left: 5px;
-    padding-right: 5px;
-} */
-
-input[type="text"]{
-    /* width: 100%; */
-    border: 1px solid rgba(0,0,0,.2);
-    /* border-radius: 4px; */
+input[type="text"] {
+    border: 1px solid rgba(0, 0, 0, .2);
     padding: 3px;
-    /* float: left; */
     min-height: 2em;
 }
 
-.form-group-custom{
+.form-group-custom {
     padding-left: 5px;
     padding-right: 0px;
 }
 
-.form-group-custom1{
+.form-group-custom1 {
     padding-left: 5px;
     padding-right: 0px;
 }
 
-.btn-load{
+.btn-load {
     padding: 4px 12px;
     width: 100%;
 }
 
-.wj-content{
+.wj-content {
     border-radius: 0;
 }
 
-.box-body .row{
+.box-body .row {
     padding-top: 5px;
+}
+
+/* ------------------------------- HEADER ---------------------------------- */
+.cps-title {
+    display: inline-block;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: #cc0000;
+    text-transform: uppercase;
+    line-height: 30px;
+    margin: 0;
+}
+
+.cps-title-icon {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 7px;
+    background: #d9edf7;
+    color: #3c8dbc;
+    font-size: 15px;
+    margin-right: 9px;
+    vertical-align: middle;
+}
+
+.box-tools .btn {
+    margin-left: 6px;
+}
+
+.box-tools .btn i {
+    margin-right: 4px;
+}
+
+/* -------------------------------- CARD ----------------------------------- */
+.cps-card {
+    background: #ffffff;
+    border: 2px solid #9dc3e6;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+
+.cps-card-head,
+.cps-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00008b;
+    margin-bottom: 10px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid #cfe7f7;
+}
+
+.cps-card-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 6px;
+    margin-right: 8px;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.cps-icon-blue { background: #d9edf7; color: #3c8dbc; }
+.cps-icon-indigo { background: #d9edf7; color: #3c8dbc; }
+
+/* ------------------------------ KPI TILES -------------------------------- */
+.cps-kpi-row {
+    margin-left: -5px;
+    margin-right: -5px;
+}
+
+.cps-kpi-row > div {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.cps-kpi {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    overflow: hidden;
+}
+
+.cps-kpi-icon {
+    float: left;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 15px;
+    margin-right: 9px;
+}
+
+.cps-kpi-body {
+    display: block;
+    overflow: hidden;
+    line-height: 1.15;
+}
+
+.cps-kpi-body b {
+    display: block;
+    font-size: 19px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cps-kpi-body small {
+    display: block;
+    font-size: 11.5px;
+    color: #00008b;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Số tiền dài hơn số đếm -> cỡ chữ nhỏ hơn một bậc để không bị cắt. */
+.cps-kpi-money .cps-kpi-body b {
+    font-size: 16px;
+}
+
+.cps-kpi-blue { background: #edf6fb; border-color: #d9edf7; }
+.cps-kpi-blue .cps-kpi-icon { color: #3c8dbc; }
+.cps-kpi-blue b { color: #367fa9; }
+
+.cps-kpi-green { background: #f2f9ec; border-color: #dff0d8; }
+.cps-kpi-green .cps-kpi-icon { color: #00a65a; }
+.cps-kpi-green b { color: #00733e; }
+
+/* -------------------------------- TABS ----------------------------------- */
+/* Cơ chế tab vẫn là bootstrap (data-toggle="tab" + .tab-pane.active), chỉ đổi
+   kiểu hiển thị. KHÔNG dùng id="cssmenu" nữa vì bộ style #cssmenu nằm trong
+   assets/css/wijmo.min.css là global và có độ ưu tiên cao hơn file này. */
+.cps-tab-box {
+    border: 2px solid #9dc3e6;
+    border-radius: 6px;
+    background: #fff;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.cps-tabs {
+    list-style: none;
+    margin: 0;
+    padding: 0 12px;
+    border-bottom: 1px solid #9dc3e6;
+    background: #fff;
+    overflow: hidden;
+}
+
+.cps-tabs li {
+    float: left;
+    margin-right: 2px;
+}
+
+.cps-tabs li a {
+    display: block;
+    padding: 11px 15px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #31708f;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cps-tabs li a i {
+    margin-right: 6px;
+}
+
+.cps-tabs li a:hover,
+.cps-tabs li a:focus {
+    color: #00008b;
+    text-decoration: none;
+}
+
+.cps-tabs li.active a {
+    color: #3c8dbc;
+    border-bottom-color: #3c8dbc;
+}
+
+/* Nếu lưới rộng hơn vùng chứa thì cuộn NGANG BÊN TRONG khối này, không đẩy cả
+   trang sinh scroll ngang - đó là thứ khiến nội dung trượt ra dưới sidebar. */
+.cps-tab-content {
+    padding: 12px 14px;
+    overflow-x: auto;
+}
+
+/* ------------------------------ TOOLBAR ---------------------------------- */
+.cps-toolbar {
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.cps-toolbar-left {
+    float: left;
+}
+
+.cps-toolbar-left > .btn {
+    margin-right: 8px;
+    margin-bottom: 4px;
+}
+
+.cps-btn {
+    border: 1px solid transparent;
+    border-radius: 7px;
+    padding: 6px 13px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #ffffff;
+    color: #00008b;
+}
+
+.cps-btn i {
+    margin-right: 6px;
+}
+
+.cps-btn[disabled] {
+    opacity: .55;
+}
+
+.cps-btn-ghost { background: #fff; border-color: #d2d6de; color: #00008b; }
+.cps-btn-ghost:hover:not([disabled]),
+.cps-btn-ghost:focus { background: #ecf0f5; color: #00008b; }
+
+/* -------------------------------- NOTES ---------------------------------- */
+.cps-notes {
+    margin-top: 4px;
+}
+
+.cps-note {
+    padding: 10px 13px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.cps-note i {
+    float: left;
+    margin-right: 9px;
+    margin-top: 2px;
+    font-size: 14px;
+}
+
+.cps-note span {
+    display: block;
+    overflow: hidden;
+}
+
+.cps-note-info { background: #edf6fb; border: 1px solid #d9edf7; color: #31708f; }
+.cps-note-warning { background: #fcf8e3; border: 1px solid #faebcc; color: #8a6d3b; }
+
+/* ============================ FORM ĐẦU PHIẾU =============================
+   df-panel dựng control bằng Bootstrap của hệ thống; chỉ chỉnh nhẹ cho khớp card.
+   ======================================================================== */
+::ng-deep .cps-card df-panel .form-group-custom-label {
+    padding-top: 7px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #00008b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Giá trị người dùng nhập cũng dùng màu navy như form mẫu. */
+::ng-deep .cps-card df-panel .wj-control input,
+::ng-deep .cps-card df-panel .wj-form-control,
+::ng-deep .cps-card df-panel input[type="text"] {
+    color: #00008b;
+    font-weight: 600;
+}
+
+::ng-deep .cps-card df-panel .wj-control,
+::ng-deep .cps-card df-panel input[type="text"] {
+    border: 1px solid #9dc3e6;
+    border-radius: 5px;
+    min-height: 32px;
+    font-size: 13px;
+    color: #00008b;
+}
+
+::ng-deep .cps-card df-panel .checkboxcontainer {
+    padding-top: 5px;
+}
+
+/* --- Thanh tiêu đề phân khung, do renderFieldGroupHeaders() chèn vào -----
+   Element tạo bằng createElement nên không mang attribute scoping của Angular
+   -> buộc phải ::ng-deep. clear:both để cắt mạch float của các ô col-md-6 và
+   mở khung mới từ cột bên trái. */
+::ng-deep .cps-card .cps-group-head {
+    clear: both;
+    width: 100%;
+    margin: 14px 0 10px;
+    padding: 7px 11px;
+    border: 1px solid #d9edf7;
+    border-left: 3px solid #3c8dbc;
+    border-radius: 4px;
+    background: #eef6fc;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #00008b;
+    text-transform: uppercase;
+    letter-spacing: .2px;
+}
+
+::ng-deep .cps-card .cps-group-head:first-child {
+    margin-top: 0;
+}
+
+::ng-deep .cps-card .cps-group-head i {
+    margin-right: 8px;
+    color: #3c8dbc;
+}
+
+/* ================================ LƯỚI ===================================
+   Wijmo render DOM lúc chạy -> bắt buộc ::ng-deep.
+   ======================================================================== */
+::ng-deep .cps-grid {
+    border: 2px solid #9dc3e6;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 13px;
+    max-width: 100%;
+}
+
+::ng-deep .cps-grid .wj-header {
+    background: #cfe7f7 !important;
+    color: #333333 !important;
+    font-weight: 700;
+    font-size: 12.5px;
+    border-color: #9dc3e6 !important;
+}
+
+::ng-deep .cps-grid .wj-cell {
+    border-color: #d5e6f4 !important;
+    padding: 4px 8px;
+    color: #00008b;
+}
+
+::ng-deep .cps-grid .wj-cell.wj-state-selected,
+::ng-deep .cps-grid .wj-cell.wj-state-multi-selected {
+    background: #d9edf7 !important;
+    color: #00008b !important;
+}
+
+::ng-deep .cps-grid .wj-alt:not(.wj-state-selected):not(.wj-state-multi-selected) {
+    background: #f2f8fd;
+}
+
+::ng-deep .cps-grid .wj-rowheaders .wj-header {
+    font-weight: 400;
+    color: #7794a8 !important;
+}
+
+::ng-deep .cps-grid-corner-btn {
+    margin: auto;
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: #dd4b39;
+}
+
+::ng-deep .cps-corner-print {
+    color: #3c8dbc;
+}
+
+/* --- Badge trạng thái (render trong registerBadgeRenderers) --- */
+::ng-deep .cps-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+::ng-deep .cps-badge-info { background: #d9edf7; color: #367fa9; }
+::ng-deep .cps-badge-muted { background: #ecf0f5; color: #31708f; }
+
+/* ------------------------------ RESPONSIVE -------------------------------- */
+@media (max-width: 991px) {
+    .cps-toolbar-left {
+        float: none;
+    }
+
+    .cps-tabs li {
+        float: none;
+    }
+
+    .cps-tabs li a {
+        border-bottom: 1px solid #e4edf5;
+    }
+
+    .cps-tabs li.active a {
+        border-bottom-color: #3c8dbc;
+    }
 }

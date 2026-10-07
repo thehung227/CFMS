@@ -712,7 +712,12 @@ export class LayoutApprovedSupportLLTCEditor implements IEditorFormulaDeclaratio
             header: 'File đính kèm',
             binding: 'FilePath',
             width: 600,
-            dataType: 'Object'
+            dataType: 'Object',
+             allowRemove: false,
+            allowView: true,
+            allowDownLoad: true,
+            allowUpload: false,
+            folderId: '{EXPR=IdCCMBudget}'
         }
     ]
 }

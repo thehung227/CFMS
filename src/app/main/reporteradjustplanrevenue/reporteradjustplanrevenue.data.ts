@@ -58,7 +58,7 @@ export class LayoutData {
           lookupKey: "CCMBudget",
           label: "Version",
           lookupfilter:
-            "IsActive = 1 AND ProductCostId = '{EXPR=ProductCostId}'",
+            "IsActive = 1 AND ProductCostId = '{EXPR=ProductCostId}' AND DocCode = 'KD'",
           hideValueMember: false,
           // validators: [Validators.required]
         },

@@ -41,7 +41,11 @@
           [disabled]="editorFrm.disabled" style="margin-bottom:10px;" (click)=onclickCollapsablePanel([grid,grid1])>
           <span style="font-size:12pt;"></span>
         </button>
-
+           <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid"
+        style="margin-bottom:10px;" (click)="onClick_2()">
+        <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif">Tải dữ liệu tiến độ</span>
+      
+      </button>
         <!-- <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
           <button class="btn btn-info" type="button" [disabled]="!editorFrm.valid" style="height: 30px;">Nhập dữ liệu từ excel</button>
           <input type="file" id="importControl" [disabled]="!editorFrm.valid" (change)="import('B30CCMBudgetDetailImport',indexPage[1])"/>
@@ -108,7 +112,9 @@
               <li class='active'>
                 <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Chi phí</a>
               </li>
-            
+              <li>
+                <a href="#tab5" data-toggle="tab" (click)="onTabClick(grid4)">Tiến độ</a>
+              </li>
               <li>
                 <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">Bước duyệt kế hoạch</a>
               </li>
@@ -159,6 +165,15 @@
             <div class="tab-pane" id="tab3">
               <section id="new">
                 <wj-flex-grid class="grid3" #grid3 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
+            <div class="tab-pane" id="tab5">
+              <section id="new">
+                <wj-flex-grid class="grid4" #grid4 style="height:280px;" [ngStyle]="setHeightGrid()">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>

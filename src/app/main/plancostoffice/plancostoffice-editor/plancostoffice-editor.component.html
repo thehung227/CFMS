@@ -1,207 +1,210 @@
 <!-- Main content -->
 <section class="content">
-  <!-- Default box -->
   <form (ngSubmit)="onSubmit(editorFrm)" [formGroup]="editorFrm" (keydown)="handleKeyDown($event)">
     <div class="box" id="box-content">
+
+      <!-- ============================== HEADER ============================== -->
       <div class="box-header with-border">
-        <h3 class="box-title" id="titleName">Dự toán chi phí văn phòng</h3>
+        <h3 class="box-title pco-title" id="titleName">
+          <span class="pco-title-icon"><i class="fa fa-building-o" aria-hidden="true"></i></span>
+          Dự toán chi phí văn phòng
+          <span class="pco-status pco-status-done" *ngIf="parentData?.CompletedApprove==true">Đã hoàn thiện duyệt</span>
+          <span class="pco-status pco-status-sent" *ngIf="parentData?.ApproveSend==true && parentData?.CompletedApprove!=true">Đã gửi duyệt</span>
+        </h3>
         <div class="box-tools pull-right">
-          <!-- <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove" style="display:none;">
-                        <i class="fa fa-times"></i>
-                    </button> -->
-          <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true || parentData?.Id == -1" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">Gửi duyệt</button>
-          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid  || showLoading==true" *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">Lưu</button>
-          <a class="btn btn-default" [routerLink]="['/main','plancostoffice','index']">Thoát</a>
-          <!-- (click)="closeWindow()" -->
+          <button class="btn btn-primary" type="button" (click)="onSubmit(editorFrm,true)"
+            [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true || parentData?.Id == -1"
+            *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isApprove">
+            <i class="fa fa-paper-plane-o" aria-hidden="true"></i> Gửi duyệt
+          </button>
+          <button class="btn btn-success" type="submit" [disabled]="!editorFrm.valid || showLoading==true"
+            *ngIf="isSysAdmin=='true' || isPermisionEdiAll_isSave">
+            <i class="fa fa-floppy-o" aria-hidden="true"></i> Lưu
+          </button>
+          <a class="btn btn-default" [routerLink]="['/main','plancostoffice','index']">
+            <i class="fa fa-times" aria-hidden="true"></i> Thoát
+          </a>
         </div>
       </div>
+
+      <!-- ===================== THÔNG TIN CHUNG + KIỂM SOÁT ===================== -->
       <div class="box-body">
         <div *ngIf="editorFrm.errors" class="alert alert-danger">
           <strong>{{editorFrm.errors['error']}}</strong>
         </div>
-        <div *ngFor="let panel of _layoutDeclare.panels" class="form-row" [ngStyle]="setDisplayPanel()">
-          <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
-          </df-panel>
-          <div style="clear:both"></div>
+
+        <div class="row" [ngStyle]="setDisplayPanel()">
+          <div class="col-md-8 col-xs-12">
+            <div class="pco-card">
+              <div class="pco-card-head">
+                <span class="pco-card-icon"><i class="fa fa-file-text-o" aria-hidden="true"></i></span>
+                Thông tin chung
+              </div>
+              <div *ngFor="let panel of _layoutDeclare.panels" class="form-row">
+                <df-panel [panel]="panel" #dfpanel [form]="editorFrm" (valueChanged)="onValueChanged($event)">
+                </df-panel>
+                <div style="clear:both"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-xs-12">
+            <div class="pco-card">
+              <div class="pco-card-head">
+                <span class="pco-card-icon"><i class="fa fa-bar-chart" aria-hidden="true"></i></span>
+                Tổng quan dự toán
+              </div>
+
+              <div class="row pco-kpi-row">
+                <div class="col-xs-6">
+                  <div class="pco-kpi pco-kpi-slate">
+                    <small>Tổng dự trù kỳ trước</small>
+                    <b>{{fmt(summary.prevTotal)}}</b>
+                  </div>
+                </div>
+                <div class="col-xs-6">
+                  <div class="pco-kpi pco-kpi-blue">
+                    <small>Tổng dự trù kỳ này</small>
+                    <b>{{fmt(summary.curTotal)}}</b>
+                  </div>
+                </div>
+                <div class="col-xs-12">
+                  <div class="pco-kpi" [class.pco-kpi-red]="summary.exceedPrev" [class.pco-kpi-green]="!summary.exceedPrev">
+                    <small>Thực hiện tới hiện tại</small>
+                    <b>{{fmt(summary.spentTotal)}}</b>
+                    <div class="pco-progress" title="% thực hiện = Thực hiện / Tổng dự trù kỳ này">
+                      <div class="pco-progress-bar" [class.pco-progress-over]="summary.rate > 1"
+                        [style.width.%]="summary.rate > 1 ? 100 : summary.rate * 100"></div>
+                    </div>
+                    <span class="pco-progress-text">{{(summary.rate * 100) | number:'1.0-2'}}% dự trù kỳ này</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pco-checks">
+                <div class="pco-check" [class.pco-check-ok]="summary.overRows.length == 0" [class.pco-check-err]="summary.overRows.length > 0">
+                  <i class="fa" [class.fa-check-circle]="summary.overRows.length == 0"
+                    [class.fa-times-circle]="summary.overRows.length > 0" aria-hidden="true"></i>
+                  <span *ngIf="summary.overRows.length == 0">Chi phí đã thực hiện không vượt dự trù kỳ này</span>
+                  <span *ngIf="summary.overRows.length > 0">
+                    {{summary.overRows.length}} khoản mục có chi phí đã thực hiện vượt dự trù kỳ này - chưa được gửi duyệt
+                  </span>
+                </div>
+                <div class="pco-check" [class.pco-check-ok]="summary.processOk" [class.pco-check-warn]="!summary.processOk">
+                  <i class="fa" [class.fa-check-circle]="summary.processOk"
+                    [class.fa-exclamation-triangle]="!summary.processOk" aria-hidden="true"></i>
+                  <span *ngIf="summary.exceedPrev">
+                    Thực hiện vượt tổng dự trù kỳ trước: bắt buộc luồng duyệt có GĐĐH
+                  </span>
+                  <span *ngIf="!summary.exceedPrev">
+                    Thực hiện chưa vượt tổng dự trù kỳ trước: không dùng luồng duyệt GĐĐH
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div style="clear:both"></div>
-
       </div>
       <!-- /.box-body -->
+
+      <!-- =============================== TABS =============================== -->
       <div class="box-footer">
-        <button class="btn btn-info fa fa-refresh" style="position:relative;top:0px;left:0px;" type="button" [disabled]="!editorFrm.valid"
-          style="margin-bottom:10px;" (click)=confirmDialog()>
-          <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif"> Tải dữ liệu</span>
-        </button>
+        <div class="form-row pco-tab-box">
+          <ul class="pco-tabs">
+            <li [class.active]="activeTab=='detail'">
+              <a (click)="selectTab('detail')"><i class="fa fa-list-ul" aria-hidden="true"></i> Chi tiết</a>
+            </li>
+            <li [class.active]="activeTab=='approve'">
+              <a (click)="selectTab('approve')"><i class="fa fa-user-plus" aria-hidden="true"></i> Bước duyệt kế hoạch</a>
+            </li>
+            <li [class.active]="activeTab=='workflow'">
+              <a (click)="selectTab('workflow')"><i class="fa fa-sitemap" aria-hidden="true"></i> WorkFlow</a>
+            </li>
+          </ul>
 
-        <button title="Ẩn/ Hiện đầu phiếu" style="position:relative;top:0px;left:0px;" class="btn btn-info fa fa-arrows-v" type="button"
-          [disabled]="editorFrm.disabled" style="margin-bottom:10px;" (click)=onclickCollapsablePanel([grid,grid1])>
-          <span style="font-size:12pt;"></span>
-        </button>
-
-        <!-- <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
-          <button class="btn btn-info" type="button" [disabled]="!editorFrm.valid" style="height: 30px;">Nhập dữ liệu từ excel</button>
-          <input type="file" id="importControl" [disabled]="!editorFrm.valid" (change)="import('B30CCMBudgetDetailImport',indexPage[1])"/>
-        </div> -->
-
-        <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
-          <button class="btn btn-info" type="button" id="importBtn" [disabled]="!editorFrm.valid" *ngIf="parentData?.CountImport == false"
-            (click)="openDialog()" style="height: 30px;">Nhập dữ liệu từ excel</button>
-          <wj-popup #importPopup hideTrigger="None" style="width: 60%;">
-            <div class="box" id="box-content">
-              <div class="box-header with-border">
-                <h3 class="box-title">Nhập liệu từ excel</h3>
-                <div class="box-tools pull-right">
-                  <button type="button" style="color:blue;font-size:18px;" class="btn btn-box-tool" (click)="updateImportTo(grid)" data-toggle="tooltip"
-                    title="OK">
-                    <i class="fa fa-check-square-o"></i>
+          <div class="pco-tab-content">
+            <!-- ------------------------- Tab: Chi tiết ------------------------- -->
+            <div [hidden]="activeTab!='detail'">
+              <div class="pco-toolbar">
+                <div class="pco-toolbar-left">
+                  <button type="button" class="btn pco-btn pco-btn-primary" (click)="confirmDialog()"
+                    [disabled]="!editorFrm.valid || isFormLocked() || showLoading==true">
+                    <i class="fa fa-download" aria-hidden="true"></i> Tải dữ liệu
                   </button>
-                  <button type="button" style="color:red;font-size:18px;" class="btn btn-box-tool" (click)="importPopup.hide()" data-toggle="tooltip"
-                    title="Đóng">
-                    <i class="fa fa-times"></i>
+                  <button type="button" class="btn pco-btn pco-btn-danger-outline" (click)="deleteSelectedRows(grid)"
+                    [disabled]="isFormLocked()">
+                    <i class="fa fa-trash-o" aria-hidden="true"></i> Xóa dòng
                   </button>
-
+                  <button type="button" class="btn pco-btn pco-btn-ghost" title="Ẩn/ Hiện đầu phiếu"
+                    [disabled]="editorFrm.disabled" (click)="onclickCollapsablePanel([grid,grid1])">
+                    <i class="fa fa-arrows-v" aria-hidden="true"></i>
+                  </button>
                 </div>
-                <div>
-                  <input type="file" style="display:none" id="importControl" [disabled]="!editorFrm.valid" (change)="importExcel()" />
-                  <wj-input-number #importNumber data-toggle="tooltip" title="Start Row" place-holder="Start Row" [value]='2'>
-                  </wj-input-number>
+                <div class="pco-toolbar-right pco-hint">
+                  <i class="fa fa-info-circle" aria-hidden="true"></i>
+                  {{summary.rowCount}} khoản mục · Nhập <b>Dự trù kỳ này</b>, <b>Nguyên giá</b>, <b>Lý do</b>
                 </div>
               </div>
-              <div class="box-body">
-                <wj-flex-grid class="grid" #importGrid>
+
+              <section id="new">
+                <wj-flex-grid class="grid pco-grid" #grid style="height:560px;">
                   <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
                     {{cell.row.index + 1}}
                   </template>
                   <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
-                    <button type="button" class="btn" style="margin:auto;width:100%;" (click)="deleteImportRow()">
-                      <a class="fa fa-trash-o" style="color:red;"></a>
+                    <button type="button" class="btn pco-grid-corner-btn" (click)="deleteSelectedRows(grid)">
+                      <i class="fa fa-trash-o" aria-hidden="true"></i>
                     </button>
                   </template>
                 </wj-flex-grid>
-              </div>
+              </section>
             </div>
-          </wj-popup>
-        </div>
 
-        <div class="form-row" style="border:1px solid #ddd;">
+            <!-- ---------------------- Tab: Bước duyệt ---------------------- -->
+            <div [hidden]="activeTab!='approve'">
+              <section id="new">
+                <wj-flex-grid class="grid1 pco-grid" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
 
-          <!-- <div class="nav-tabs-custom">
-            <ul class="nav nav-tabs">
-              <li class="active">
-                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)" style="background-color:#ffe3e3;">
-                  <b>Chi tiết</b>
-                </a>
-              </li>
-              <li>
-                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)" style="background-color:#c7ffc7;">
-                  <b>Bước duyệt kế hoạch</b>
-                </a>
-              </li>
-            </ul>
-          </div> -->
-          <div id='cssmenu'>
-            <ul>
-              <li class='active'>
-                <a href="#tab1" data-toggle="tab" (click)="onTabClick(grid)">Chi tiết</a>
-              </li>
-              <li>
-                <a href="#tab2" data-toggle="tab" (click)="onTabClick(grid1)">Bước duyệt kế hoạch</a>
-              </li>
-              <li>
-                <a href="#tab3" data-toggle="tab" (click)="onTabClick(grid2)">WorkFlow</a>
-              </li>
-            </ul>
+            <!-- ------------------------ Tab: WorkFlow ------------------------ -->
+            <div [hidden]="activeTab!='workflow'">
+              <section id="new">
+                <wj-flex-grid class="grid2 pco-grid" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </wj-flex-grid>
+              </section>
+            </div>
           </div>
-          <div class="tab-content">
-            <div class="tab-pane active" id="tab1">
-              <section id="new">
-                <!-- [ngStyle]="setHeightGrid()" -->
-                <wj-flex-grid class="grid" #grid style="height:650px;">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
-                  <template wjFlexGridCellTemplate [cellType]="'TopLeft'" let-cell="cell">
-                    <button type="button" class="btn" style="margin:auto;width:100%;background-color:aliceblue;" (click)=deleteSelectedRows(grid)>
-                      <a class="fa fa-trash-o" style="color:red;"></a>
-                    </button>
-                  </template>
-                  <!-- Xử lý popup -->
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    <i  class="fa fa-plus-square-o" style="font-size:12pt;color:#53697c" title="Mở form nhập liệu" (click)="showPopup(cell.row,frmPopup)"></i>
-                  </template>
-                </wj-flex-grid>
-              </section>
-            </div>
-            <div class="tab-pane" id="tab2">
-              <section id="new">
-                <wj-flex-grid class="grid1" #grid1 style="height:280px;" [ngStyle]="setHeightGrid()">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
-                </wj-flex-grid>
-              </section>
-            </div>
-            <div class="tab-pane" id="tab3">
-              <section id="new">
-                <wj-flex-grid class="grid2" #grid2 style="height:280px;" [ngStyle]="setHeightGrid()">
-                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
-                    {{cell.row.index + 1}}
-                  </template>
-                </wj-flex-grid>
-              </section>
-            </div>
-            <!-- <div class="tab-pane active" id="glyphicons">
-                            <section id="new">
-                            </section>
-                        </div> -->
-          </div>
-
-
         </div>
       </div>
-
-      <!-- /.box-footer-->
     </div>
   </form>
-  <!-- /.box -->
 </section>
 <!-- /.content -->
+
 <!--Loading-->
 <div *ngIf="showLoading" class="bravo-wait">
   <img src="/assets/img/gears.svg" style="width:50%">
   <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
 </div>
-
 <div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
 <!--/.Loading-->
 
 <!--Popup-->
 <wj-popup class="modal-content" #frmPopup>
-  <!-- <form>
-    <h4 class="modal-header">
-         Nhập liệu chi tiết
-        <button type="button" tabindex="-1" class="close wj-hide" >&times;</button>
-    </h4>
-    <div class="modal-body" >
-        <wj-flex-grid #gridChild style="height:300px; border-radius:5px;">
-
-        </wj-flex-grid>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" (click)="onSavePopup(0)" >Lưu</button>
-    </div>
-</form> -->
   <app-plancostoffice-popup-editor-form #popupEditorFrm [popup]="frmPopup"></app-plancostoffice-popup-editor-form>
 </wj-popup>
-
-
 <!--End Popup-->
 
-<!-- Thêm dialog -->
+<!-- Xác nhận tải dữ liệu -->
 <app-dialog [(visible)]="showDialog" #dialogFrm>
   <div class="headerConfirm">
     <b style="color: red;">Tải dữ liệu!</b>
@@ -217,7 +220,6 @@
     <button (click)="closeDialog()" class="btn">Hủy bỏ</button>
   </div>
 </app-dialog>
-<!-- Hết Thêm dialog -->
 
 <wj-popup #frmPopupTooltip hideTrigger="None" style="width: 40%;height: 400px;">
   <div class="box" style="height: 400px;overflow-y: auto;">

@@ -70,7 +70,11 @@
           (click)=onclickCollapsablePanel([grid,grid1])>
           <span style="font-size:12pt;"></span>
         </button>
-
+        <button class="btn btn-warning fa fa-warning" type="button"
+                    [disabled]="!editorFrm.valid || parentData?.Id < 0" *ngIf="this.parentData?.IsQLKL == true"
+                    style="margin-bottom:10px;" (click)="checkQuanLyKhoiLuong(editorFrm)">
+                    <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif"> Kiểm tra QLKL</span>
+                </button>
         <!-- <div class="upload-btn-wrapper" style="position:relative;top: 6px;">
           <button class="btn btn-info" type="button" [disabled]="!editorFrm.valid" style="height: 30px;">Nhập dữ liệu từ excel</button>
           <input type="file" id="importControl" [disabled]="!editorFrm.valid" (change)="import('B30BizDocCCMDetailImport',indexPage[1])" />
@@ -158,7 +162,11 @@
                   Khấu trừ VT, BHLĐ, Thưởng, Phạt
                 </a>
               </li>
-           
+              <li>
+                <a href="#tab6" data-toggle="tab" (click)="onTabClick(grid5)">
+                  Thanh toán 3 bên
+                </a>
+              </li>
             </ul>
           </div>
           <div class="tab-content">
@@ -239,8 +247,22 @@
                     </button>
                   </template>
                 </br-grid>
-        
-              
+
+
+              </section>
+            </div>
+            <!-- Thanh toán 3 bên: nạp từ hợp đồng, chỉ được nhập "Thanh toán kỳ này", không thêm/xóa dòng -->
+            <div class="tab-pane" id="tab6">
+              <section id="new">
+                <button class="btn btn-info fa fa-refresh" type="button" [disabled]="!editorFrm.valid || parentData?.ApproveSend==true || showLoading==true"
+                  style="margin:5px 0;" (click)="loadThanhToan3Ben()">
+                  <span style="font-size:11pt;font-family:Arial, Helvetica, sans-serif"> Tải thanh toán 3 bên</span>
+                </button>
+                <br-grid class="grid5" #grid5 style="height:650px;" [ngStyle]="setHeightGrid()">
+                  <template wjFlexGridCellTemplate [cellType]="'RowHeader'" let-cell="cell">
+                    {{cell.row.index + 1}}
+                  </template>
+                </br-grid>
               </section>
             </div>
           </div>

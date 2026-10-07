@@ -64,7 +64,7 @@ export class BillPaySuppEditEditorComponent extends BaseEditorComponent implemen
   ngOnInit() {
     this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5];
     this.isSysAdmin = localStorage.getItem(SystemConstants.CURRENT_ISSYSADMIN);
-    this.init().then()
+    this.init().then(() => this.refreshTongThanhToan3Ben())
     // this.init().then(() => {
       
     //   if (this.isSysAdmin == 'true') {
@@ -111,6 +111,12 @@ export class BillPaySuppEditEditorComponent extends BaseEditorComponent implemen
                 e.cell.innerHTML = '';
               }
             });
+  }
+
+  // Đầu phiếu: Tổng giá trị thanh toán 3 bên của Bảng KL thanh toán liên kết và Số tiền còn lại
+  async refreshTongThanhToan3Ben() {
+    await this.dfpanel.runConstraint('Evaluator_ServerConstraint_Amount_TT3Ben');
+    await this.dfpanel.runConstraint('Evaluator_Amount_ConLaiTT3Ben_Calculate');
   }
 
   ngOnDestroy() {

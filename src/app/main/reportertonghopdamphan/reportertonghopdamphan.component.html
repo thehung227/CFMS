@@ -1,0 +1,162 @@
+<div class="content-wrapper th-dp">
+    <section class="content">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">TỔNG HỢP ĐÀM PHÁN MUA HÀNG TẬP TRUNG</h3>
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-success btn-sm" [disabled]="showLoading" (click)="chayBaoCao()">
+                        <i class="fa fa-play"></i> Chạy báo cáo
+                    </button>
+                    <button type="button" class="btn btn-warning btn-sm" [disabled]="showLoading || !daChay" (click)="ketXuat()">
+                        <i class="fa fa-file-excel-o"></i> Kết xuất Excel
+                    </button>
+                </div>
+            </div>
+
+            <div class="box-body">
+                <!-- Điều kiện lọc -->
+                <table class="loc">
+                    <tr>
+                        <td class="loc-lb">Ngày báo cáo</td>
+                        <td><input type="date" class="form-control input-sm" [(ngModel)]="docDate" /></td>
+                        <td class="loc-note">Đây là căn cứ xác nhận "Trễ"</td>
+                    </tr>
+                    <tr>
+                        <td class="loc-lb">Tình trạng đàm phán</td>
+                        <td>
+                            <select class="form-control input-sm" [(ngModel)]="tinhTrang">
+                                <option *ngFor="let x of dsTinhTrang" [ngValue]="x.value">{{x.text}}</option>
+                            </select>
+                        </td>
+                        <td class="loc-note">{{(dsTinhTrang[tinhTrang - 1] || {}).note}}</td>
+                    </tr>
+                    <tr>
+                        <td class="loc-lb">Chi tiết</td>
+                        <td>
+                            <select class="form-control input-sm" [(ngModel)]="chiTiet">
+                                <option *ngFor="let x of dsChiTiet" [ngValue]="x.value">{{x.text}}</option>
+                            </select>
+                        </td>
+                        <td class="loc-note">{{(dsChiTiet[chiTiet - 1] || {}).note}}</td>
+                    </tr>
+                    <tr>
+                        <td class="loc-lb">Mức độ chênh lệch BCTC và kế hoạch muốn cảnh báo</td>
+                        <td>
+                            <select class="form-control input-sm" [(ngModel)]="mucChenhLech">
+                                <option *ngFor="let x of dsMucChenhLech" [ngValue]="x">{{x * 100}}%</option>
+                            </select>
+                        </td>
+                        <td class="loc-note"></td>
+                    </tr>
+                </table>
+
+                <div *ngIf="loi" class="alert alert-danger">{{loi}}</div>
+
+                <div *ngIf="showLoading" class="dang-tai"><i class="fa fa-spinner fa-spin"></i> Đang tải dữ liệu...</div>
+
+                <div *ngIf="daChay" [class.mo]="showLoading">
+
+                    <!-- Bảng 1 + 2: tổng hợp -->
+                    <div class="tong-hop">
+                        <table class="bang">
+                            <thead>
+                                <tr>
+                                    <th class="w-lb">Tổng giá trị BD</th>
+                                    <th class="w-so">Cả nước</th>
+                                    <th class="w-so">Miền Bắc</th>
+                                    <th class="w-so">Miền Nam</th>
+                                    <th class="w-so">Miền Trung</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let r of tongHop">
+                                    <td class="lb-{{r._Style}}" [class.thut]="r._Style == 'TRE'" [title]="r.CachLay">{{r.NoiDung}}</td>
+                                    <td class="num">{{hienThi('N', r.CaNuoc, true)}}</td>
+                                    <td class="num">{{hienThi('N', r.MienBac, true)}}</td>
+                                    <td class="num">{{hienThi('N', r.MienNam, true)}}</td>
+                                    <td class="num">{{hienThi('N', r.MienTrung, true)}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="bang">
+                            <thead>
+                                <tr>
+                                    <th class="w-lb">Hiệu quả đàm phán (Gói đã chốt)</th>
+                                    <th class="w-so">Cả nước</th>
+                                    <th class="w-so">Miền Bắc</th>
+                                    <th class="w-so">Miền Nam</th>
+                                    <th class="w-so">Miền Trung</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let r of hieuQua">
+                                    <td>{{r.NoiDung}}</td>
+                                    <td class="num">{{hienThi(r.Kind, r.CaNuoc, true)}}</td>
+                                    <td class="num">{{hienThi(r.Kind, r.MienBac, true)}}</td>
+                                    <td class="num">{{hienThi(r.Kind, r.MienNam, true)}}</td>
+                                    <td class="num">{{hienThi(r.Kind, r.MienTrung, true)}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="bang ngay-bc">
+                            <tr>
+                                <th>Ngày báo cáo</th>
+                                <td>{{ngayBaoCao}}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Bảng 3: chi tiết -->
+                    <div *ngIf="dongs.length == 0" class="alert alert-info no-excel">
+                        Không có dữ liệu. Kiểm tra cờ "BlockBillIsNotBudgetItem" của gói thầu và kế hoạch mua hàng đã qua CHT.
+                    </div>
+
+                    <div class="chi-tiet" *ngIf="dongs.length > 0">
+                        <table class="bang">
+                            <thead>
+                                <tr>
+                                    <th class="c-stt">STT</th>
+                                    <th class="c-ten">TÊN NGẮN DỰ ÁN</th>
+                                    <th class="c-nd">NỘI DUNG</th>
+                                    <th class="w-so">TỔNG CỘNG</th>
+                                    <th *ngFor="let c of cots" class="cc" [title]="c.ItemGroupCode">{{c.ColName}}</th>
+                                    <th class="w-nv">PTDA</th>
+                                    <th class="w-nv">GĐĐH</th>
+                                    <th class="w-nv">GĐDA</th>
+                                    <th class="w-da">TÊN DỰ ÁN</th>
+                                    <th class="w-nv">TÊN NGẮN DA</th>
+                                    <th class="w-nv">TÊN NGẮN PKT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let d of dongs" [ngClass]="lopDong(d)">
+                                    <ng-container *ngIf="d.RowType != 'CHITIET'">
+                                        <td colspan="3" class="c-gop">{{d.NoiDung}}</td>
+                                    </ng-container>
+                                    <ng-container *ngIf="d.RowType == 'CHITIET'">
+                                        <td *ngIf="d._span" [attr.rowspan]="d._span" class="c-stt center">{{d.STT}}</td>
+                                        <td *ngIf="d._span" [attr.rowspan]="d._span" class="c-ten">{{d.TenNganDA}}</td>
+                                        <td class="c-nd"><span class="so-dong">{{d.ItemNo}}</span>{{d.NoiDung}}</td>
+                                    </ng-container>
+                                    <td class="num">{{hienThi(d.Kind, d.TongCong, d.RowType != 'CHITIET')}}</td>
+                                    <td *ngFor="let c of cots" class="cc" [ngClass]="lopO(d, c)" [class.num]="d.Kind != 'T'" [class.center]="d.Kind == 'T'">{{hienThiO(d, c)}}</td>
+                                    <td>{{d.PTDA}}</td>
+                                    <td>{{d.GDDH}}</td>
+                                    <td>{{d.GDDA}}</td>
+                                    <td>{{d.TenDuAn}}</td>
+                                    <td>{{d.TenNganDA}}</td>
+                                    <td>{{d.TenNganPKT}}</td>
+                                </tr>
+                                <tr class="r-khoa">
+                                    <td [attr.colspan]="10 + cots.length" class="center">DÒNG KHÓA – DỮ LIỆU DỰ ÁN KẾT THÚC TẠI ĐÂY</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

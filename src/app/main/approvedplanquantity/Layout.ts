@@ -417,176 +417,211 @@ export class LayoutApprovedPlanQuantityEditor implements IEditorFormulaDeclarati
         {
             header: 'NTP 01',
             binding: 'Month01',
-            width: 120,
-            format: 'n2',
+            width: 110,
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 02',
             binding: 'Month02',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 03',
             binding: 'Month03',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 04',
             binding: 'Month04',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 05',
             binding: 'Month05',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 06',
             binding: 'Month06',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 07',
             binding: 'Month07',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 08',
             binding: 'Month08',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 09',
             binding: 'Month09',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 10',
             binding: 'Month10',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 11',
             binding: 'Month11',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 12',
             binding: 'Month12',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 13',
-            binding: 'Dt13',
+            binding: 'Month13',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 14',
-            binding: 'Dt14',
+            binding: 'Month14',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 15',
-            binding: 'Dt15',
+            binding: 'Month15',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 16',
-            binding: 'Dt16',
+            binding: 'Month16',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 17',
-            binding: 'Dt17',
+            binding: 'Month17',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 18',
-            binding: 'Dt18',
+            binding: 'Month18',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 19',
-            binding: 'Dt19',
+            binding: 'Month19',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 20',
-            binding: 'Dt20',
+            binding: 'Month20',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 21',
-            binding: 'Dt21',
+            binding: 'Month21',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 22',
-            binding: 'Dt22',
+            binding: 'Month22',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 23',
-            binding: 'Dt23',
+            binding: 'Month23',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 24',
-            binding: 'Dt24',
+            binding: 'Month24',
             width: 120,
-            format: 'n2',
+            format: 'n3',
             dataType: 'Number'
         },
         {
             header: 'NTP 25',
-            binding: 'Dt25',
+            binding: 'Month25',
             width: 120,
-            format: 'n2',
+            format: 'n3',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 26',
+            binding: 'Month26',
+            width: 120,
+            format: 'n3',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 27',
+            binding: 'Month27',
+            width: 120,
+            format: 'n3',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 28',
+            binding: 'Month28',
+            width: 120,
+            format: 'n3',
+            dataType: 'Number'
+        },
+        {
+            header: 'NTP 29',
+            binding: 'Month29',
+            width: 120,
+            format: 'n3',
+            dataType: 'Number'
+        },
+         {
+            header: 'NTP 30',
+            binding: 'Month30',
+            width: 120,
+            format: 'n3',
             dataType: 'Number'
         },
         {

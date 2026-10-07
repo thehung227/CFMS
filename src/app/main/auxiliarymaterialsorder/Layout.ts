@@ -547,7 +547,7 @@ export class LayoutAuxiliaryMaterialsOrderEditor implements IEditorFormulaDeclar
     };
 
     serverConstraint = [
-        
+        'Evaluator_ServerConstraint_Approve_GetData',
         'Evaluator_ServerConstraint_Detail_LoadPrevious'
     ];
 

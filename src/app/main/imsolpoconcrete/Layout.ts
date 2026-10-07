@@ -845,8 +845,7 @@ export class LayoutImSolPoConcreteEditor implements IEditorFormulaDeclaration {
             binding: 'Khoi_Luong_Tinh_Toan',
             dataType: 'Number',
             width: 100,
-             format: 'n2',
-            isReadOnly: 'true'
+             format: 'n2'
         },
         {
             header: 'KL đặt hàng',

@@ -228,6 +228,7 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                     }
                 },
+               
                 {
                     Name: 'vB30BizDocApprove_AEditBudget',
                     ParentKey: 'CCMBudgetId',
@@ -249,7 +250,19 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                         DocDate: 'Parent.DocDate',
                         BranchCode: '{VAR=Branch.Ma_Dvcs}'
                     }
-                }
+                },
+                  {
+                    Name: 'vB30CCMBudgetDetail3_Edit',
+                    ParentKey: 'CCMBudgetId',
+                    ChildKey: 'CCMBudgetId',
+                    Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        BranchCode: '{VAR=Branch.Ma_Dvcs}',
+                        CCMBudgetId: 'Parent.CCMBudgetId',
+                        BuiltinOrder: '1',
+                        DocDate: 'Parent.DocDate',
+                    }
+                },
             ]
         }
     };
@@ -283,6 +296,13 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
             Command: 'usp_B30BizDocApprove_GetData',
             DataMember: '',
             OutputTable: 1
+        },
+        'Evaluator_ServerConstraint_TienDo_GetData': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'CCMBudgetId',
+            Command: 'usp_BCTC_LoadTienDo',
+            DataMember: '',
+            OutputTable: 3
         },
         'Evaluator_ServerConstraint_K2_LoadPrevious': {
             EvaluatorName: 'EvaluatorQueryLoadChild',
@@ -413,6 +433,10 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_DoanhThuChiPhiTC'
     ];
 
+    buttonLoadChild2: string[] = [
+        'Evaluator_ServerConstraint_TienDo_GetData',
+    ];
+
     buttonCommand: string[] = [
     ];
 
@@ -488,6 +512,12 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
     ];
 
     columnsReadOnly = [];
+
+    // Các cột chỉ hiển thị trên lưới, không tồn tại trong bảng/view -> loại khỏi payload khi Lưu.
+    // Key là chỉ số lưới trong gridArray (3 = tab Tiến độ).
+    childColumnsNotSave = {
+        3: ['TongSoThang', 'DaThucHien', 'ConLai', 'RateTienDo']
+    };
 
     linkReporter = {
         'btnBaoCao': {
@@ -596,13 +626,19 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                     isDisabled: 'true',
                     col: 6
                 }),
-                // new NumberBoxInput({
-                //     key: 'HeSoQuanLy',
-                //     label: 'Hệ số quản lý công ty (Dự kiến)',
-                    
-                //     format: 'P2',
-                //     col: 6
-                // }),
+                 new NumberBoxInput({
+                    key: 'TongDinhMuc',
+                    label: 'Giá trị Vật tư BT, thép do CĐT cấp (ko ghi nhận DT)',
+                    validators: [Validators.required],
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'HeSoQuanLy',
+                    label: 'Tỷ lệ CP NS NSC',
+                    validators: [Validators.required],
+                    format: 'P2',
+                    col: 6
+                }),
                 // new NumberBoxInput({
                 //     key: 'HeSoThueTNDN',
                 //     label: 'Thuế TNDN (Dự kiến)',
@@ -639,24 +675,24 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                     key: 'FromDate1',
                     label: 'Tiến độ theo HĐ (Từ ngày)',
                     type: 'date',
+                     isDisabled: 'true',
                     format: 'dd/MM/yyyy',
-                    validators: [Validators.required],
                     col: 6
                 }),
                 new DateBoxInput({
                     key: 'ToDate1',
                     label: 'Tiến độ theo HĐ (Đến ngày)',
                     type: 'date',
+                     isDisabled: 'true',
                     format: 'dd/MM/yyyy',
-                    validators: [Validators.required],
                     col: 6
                 }),
                 new DateBoxInput({
                     key: 'FromDate',
                     label: 'Tiến độ BCH (Từ ngày)',
                     type: 'date',
+                     isDisabled: 'true',
                     format: 'dd/MM/yyyy',
-                    validators: [Validators.required],
                     col: 6
                 }),
                 new DateBoxInput({
@@ -664,7 +700,8 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
                     label: 'Tiến độ BCH (Đến ngày)',
                     type: 'date',
                     format: 'dd/MM/yyyy',
-                    validators: [Validators.required],
+                     isDisabled: 'true',
+
                     col: 6
                 }),
                 // new NumberBoxInput({
@@ -1088,5 +1125,90 @@ export class LayoutPlanCostRevConsEditor implements IEditorFormulaDeclaration {
             width: 150
         }
     ]
+
+    childColumns3 = [
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            isRequired: true,
+            width: 100,
+            isReadOnly: 'true'
+        },
+        
+        {
+            header: 'Mốc',
+            binding: 'Description',
+            width: 250,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Bắt đầu (Hợp đồng)',
+            binding: 'StartDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (Hợp đồng)',
+            binding: 'ToDateHD',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Bắt đầu (BCH)',
+            binding: 'StartDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Kết thúc (BCH)',
+            binding: 'ToDateBCH',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        // 4 cột dưới đây chỉ để hiển thị: giá trị được tính lại mỗi lần vẽ ô
+        // (xem PlanCostRevConsEditorComponent.calcTienDo) nên tự nhảy khi người dùng sửa ngày BCH.
+        // Chúng không có trong vB30CCMBudgetDetail3_Edit -> khai báo trong childColumnsNotSave để không gửi lên server.
+        {
+            header: 'Tổng số tháng',
+            binding: 'TongSoThang',
+            width: 110,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Đã thực hiện (tháng)',
+            binding: 'DaThucHien',
+            width: 140,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Còn lại (tháng)',
+            binding: 'ConLai',
+            width: 120,
+            dataType: 'Number',
+            format: 'n0',
+            align: 'right',
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Tỷ lệ tiến độ',
+            binding: 'RateTienDo',
+            width: 110,
+            dataType: 'Number',
+            format: 'p2',
+            align: 'right',
+            isReadOnly: 'true'
+        }
+    ]
+    
 }
 

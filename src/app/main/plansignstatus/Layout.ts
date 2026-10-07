@@ -23,7 +23,7 @@ export class LayoutPlanSignStatusExplorer implements IExplorerFormulaDeclaration
         Structure: {
             Parent: {
                 Name: 'vB20PlanSign',
-                FilterKey: "IsActive=1 AND ('{VAR=User.IsAdmin}'='True')", //AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))
+                FilterKey: "IsActive=1 AND TypeXDME = '01'", //AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))
                 OrderBy: 'DocDate DESC',
                 RowPage: 50,
                 // DefaultValues: {
@@ -287,7 +287,8 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
                     BranchCode: '{VAR=Branch.Ma_Dvcs}',
                     Stt: '',
                     Id: -1,
-                    
+                    TypeXDME: '01',
+                    ProductCostId: '{VAR=Filter.ProductCostId}',
                     DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate()))
                 }
             },
@@ -395,9 +396,27 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
             EvaluatorName: 'EvaluatorQuery',
             ConstraintKey: 'Stt',
             Command: 'usp_Setlement_UpdateWhenSave'
+        },
+
+        // Thêm dòng mới -> chép sẵn giá trị của dòng liền trên, CHỈ những cột liệt kê ở DataMember.
+        // Chạy đúng một lần lúc thêm dòng. Muốn tắt: đặt zExpr: '1==0' (hoặc bỏ tên này khỏi rowAdded).
+        // Muốn chép đè cả khi ô đích đã có giá trị: thêm overwrite: true.
+        'Evaluator_Detail_CopiedValue': {
+            EvaluatorName: 'EvaluatorCopiedValues',
+            DataMember: 'ProductCostId0,ProductName0',
+            Tables: 0
         }
-       
+
     };
+
+    rowAdded = [
+        {
+            Tables: 0,
+            Evaluators: [
+                'Evaluator_Detail_CopiedValue'
+            ]
+        }
+    ];
 
     serverConstraint = [
        
@@ -481,26 +500,7 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
                     hideValueMember: true,
                     col: 6
                 }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'EmployeeCode',
-                    label: 'PTDA XD',
-                    lookupKey: 'Employee',
-                    lookupfilter: "IsActive=1 AND IsGroup=0",
-                    validators: [Validators.required],
-                    hideValueMember: true,
-                    isReadOnly: 'true',
-                    col: 6
-                }, this.srv, this.parentData),
-                new LookupBoxInput({
-                    key: 'EmployeeCode1',
-                    label: 'PTDA ME',
-                    lookupKey: 'Employee',
-                    lookupfilter: "IsActive=1 AND IsGroup=0",
-                    validators: [Validators.required],
-                    hideValueMember: true,
-                    isReadOnly: 'true',
-                    col: 6
-                }, this.srv, this.parentData),
+               
                 new TextBoxInput({
                     key: 'Description',
                     label: 'Ghi chú',
@@ -521,7 +521,7 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
                 }),
                 new ButtonInput({
                     key: 'btnBaoCao',
-                    label: 'Tình trạng QT dự án',
+                    label: 'Báo cáo theo dõi hợp đồng và tạm ứng đầu',
                     col: 6
                 }),
             ]
@@ -536,62 +536,24 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
             width: 100
         },
         {
-            header: 'Thời gian dự kiến ký kết',
-            binding: 'EstimatedTimeDelivery',
-            isRequired: false,
-            width: 100,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy'
-        },
-        {
-            header: 'Thời gian thi công',
-            binding: 'EstimatedQuotationDate',
-            width: 106,
-            dataType: 'Date',
-            format: 'dd/MM/yyyy',
-            isRequired: false	
-        },
-        {
-            header: 'Mã XD/ME',
-            binding: 'CodeMEXD',
+            header: 'Id dự án',
             dataType: 'Array',
-            lookupKey: 'KHC',
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND ClassCode1='01'",
-            width: 150,
-            // isReadOnly: 'true'
-        },
-        {
-            header: 'Mã Công tác',
-            binding: 'JobCode',
-            isRequired: true,
-            dataType: 'Array',
-            lookupKey: 'Job',
+            binding: 'ProductCostId0',
+            lookupKey: 'ProductCost',
             bindingList: {
-                Name: 'JobName'
+                ProductCostInfo: 'ProductName0'
             },
-            multiSelection: true,
-            lookupfilter: 'IsGroup=0 AND IsActive=1',
-            width: 150,
-            // validators: "{EXPR=JobCode} == ''",
-            // validatorMessage: 'Mã công việc, không được bỏ trắng giá trị',
-            // ignoreError: 1
+            lookupfilter: "ProductType IN (1,3) AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
+            hideValueMember: true,
+            width: 150
         },
         {
-            header: 'Công tác',
-            binding: 'JobName',
-            isRequired: true,
-            width: 250
+            header: 'Tên dự án',
+            binding: 'ProductName0',
+            width: 250,
+            isReadOnly: 'true'
         },
-        {
-            header: 'Nhóm đối tượng',
-            binding: 'Loai_Dt',
-            isRequired: true,
-            dataType: 'Array',
-            lookupKey: 'Class',
-            lookupfilter: "ParentCode='Loai_Dt_CCM'",
-            width: 100
-        },
-        {
+          {
             header: 'Mã NTP/NCC',
             binding: 'CustomerCode',
             isRequired: true,
@@ -601,7 +563,7 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
                 NameBinding: 'CustomerName'
             },
             lookupfilter: "IsGroup=0 AND IsActive=1 AND List_BranchCode LIKE '%'+'{VAR=Branch.Ma_Dvcs}'+'%'",
-            width: 200,
+            width: 100,
             // validators: "{EXPR=CustomerCode} == ''",
             // validatorMessage: 'Mã đối tượng, không được bỏ trắng giá trị',
             // ignoreError: 1
@@ -609,55 +571,93 @@ export class LayoutPlanSignStatusEditor implements IEditorFormulaDeclaration {
         {
             header: 'Tên NTP/NCC',
             binding: 'CustomerName',
-            width: 300
+            width: 300,
+            isReadOnly: 'true'
         },
-        {
-            header: 'Người đàm phán cuối cùng',
-            binding: 'PartNo',
+          {
+            header: 'Gói thầu',
+            binding: 'JobName',
             isRequired: true,
-            dataType: 'Array',
-            lookupKey: 'JobPositionCCM',
-            lookupfilter: "IsGroup=0 AND Code IN ('GDDH','GDDA')",
-            width: 100
+            width: 250
+        },
+       {
+            header: 'Ngày chốt',
+            binding: 'EstimatedTimeDelivery',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
         },
         {
-            header: 'Chức vụ ký HĐ',
-            binding: 'Chuc_Vu',
-            isRequired: true,
-            dataType: 'Array',
-            lookupKey: 'JobPositionCCM',
-            lookupfilter: 'IsGroup=0',
-            width: 100
+            header: 'DS hợp đồng',
+            binding: 'DocNoLst',
+            width: 200,
+            isReadOnly: 'true'
         },
         {
-            header: 'Giá trị ký kết dự kiến (chưa VAT)',
-            binding: 'OriginalAmount',
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 200,
+            dataType: 'Array',
+            lookupKey: 'BizDoc2',
+            bindingList: {
+                DocInfo: 'DocInfo'
+            },
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1)) AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "((DocCode = 'C3' AND FilePath IS NOT NULL AND (ProductCostId='{EXPR=ProductCostId0}' OR ProductCostId0='{EXPR=ProductCostId0}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
+        },
+        {
+            header: 'Nội dung hợp đồng',
+            binding: 'DocInfo',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'File đính kèm',
+            binding: 'FilePath',
+            width: 200,
+            isReadOnly: 'true'
+        },
+        {
+            header: 'Ngày ký HĐ',
+            binding: 'SignDate',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy',
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Số ngày hoàn thành HĐ',
+            binding: 'SoNgayTre',
             dataType: 'Number',
             isRequired: true,
             width: 150
         },
-        {
-            header: 'Không ký',
-            binding: 'ItemGroupCode',
-            isRequired: true,
+          {
+            header: 'Tạm ứng',
+            binding: 'StatusSign',
+            width: 100,
             dataType: 'Array',
-            lookupKey: 'Class',
-            lookupfilter: "ParentCode='KHKK' AND Code IN ('K')",
-            width: 100
+            lookupKey: 'ClassDes',
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1)) AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "ParentCode='SYSCONFIG_YES_NO'",
         },
-        // {
-        //     header: 'Trách nhiệm',
-        //     binding: 'BudgetTypeCode',
-        //     dataType: 'Array',
-        //     lookupKey: 'Class',
-        //     isRequired: true,
-        //     lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode = 'BudgetType'",
-        //     width: 150
-        // },
         {
-            header: 'Nguyễn nhân trễ',
-            binding: 'Reason',
-            width: 250
+            header: 'Ngày tạm ứng',
+            binding: 'EstimatedQuotationDate',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
+        },
+         {
+            header: 'Số ngày tạm ứng',
+            binding: 'SoNgayTamUng',
+            dataType: 'Number',
+            isRequired: true,
+            width: 150,
+            isReadOnly: 'true'
         },
     ]
 

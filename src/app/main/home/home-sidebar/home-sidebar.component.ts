@@ -1,6 +1,18 @@
-import { Component, OnInit, ElementRef, OnDestroy } from '@angular/core'
+import { Component, OnInit, ElementRef, OnDestroy, ViewChild } from '@angular/core'
 import { SystemConstants } from '../../../core/common/system.constants';
 import { Global } from '../../../shared/global';
+import { toSearchText, expandAbbreviations, matchesAllWords } from '../../../shared/search-text';
+
+/** Một mục menu đang hiển thị (đã qua *ngIf phân quyền) dùng cho ô tìm chức năng. */
+interface MenuSearchItem {
+    label: string;
+    path: string;
+    anchor: HTMLAnchorElement;
+    labelText: string;
+    pathText: string;
+}
+
+const MENU_SEARCH_LIMIT = 30;
 
 
 @Component({
@@ -18,6 +30,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_commandplan: boolean;
     isPermissionAll_commandplanfinace: boolean;
     isPermissionAll_plansigncon: boolean;
+    isPermissionAll_plantrackingpayment: boolean;
     isPermissionAll_plansetlement: boolean;
     isPermissionAll_plancostrevcons: boolean;
     isPermissionAll_confirmprojectcomplete: boolean;
@@ -88,6 +101,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_commandbillpay: boolean;
     isPermissionAll_billpayteam: boolean;
     isPermissionAll_billpaysupp: boolean;
+    isPermissionAll_subconincurred: boolean;
     isPermissionAll_billpaybuilding: boolean;
     isPermissionAll_billpaymain: boolean;
     isPermissionAll_billpaydept: boolean;
@@ -97,7 +111,10 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_billinternalequip: boolean;
     isPermissionAll_billpayequipment: boolean;
     isPermissionAll_billeditpayequipment: boolean;
+    isPermissionAll_allocsettlementedit: boolean;
     isPermissionAll_consdocument: boolean;
+    isPermissionAll_conspermitstatus: boolean;
+    isPermissionAll_approvedconspermitstatus: boolean;
     isPermissionAll_plantimekeeping: boolean;
     isPermissionAll_partnerevaluation: boolean;
 
@@ -112,6 +129,8 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_planquantity2: boolean;
     isPermissionAll_plancashflowsite: boolean;
     isPermissionAll_planrevenueadjust: boolean;
+    isPermissionAll_planrevenueadjustedit: boolean;
+    isPermissionAll_plancashflowsiteedit: boolean;
     isPermissionAll_planclaimvalue: boolean;
     isPermissionAll_planaftersales: boolean;
     isPermissionAll_performwarranty: boolean;
@@ -170,6 +189,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_rep04_lichsubiendonggia: boolean;
     isPermissionAll_reportertitrongmuahang: boolean;
     isPermissionAll_reporterbctctonghop: boolean;
+    isPermissionAll_reportertonghopdamphan: boolean;
     isPermissionAll_rep05_kehoachmuahang: boolean;
     isPermissionAll_rep05_reportinventory: boolean;
     isPermissionAll_rep05_reportexitem: boolean;
@@ -222,6 +242,12 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     isPermissionAll_purchaseotherbudget: boolean;
     isPermissionAll_purchasemeotherbudget: boolean;
     isPermissionAll_auxiliarymaterialsbuget: boolean;
+    // Ban CCM cua nhom "Ke hoach mua hang"
+    isPermissionAll_ccmpurchasebudget: boolean;
+    isPermissionAll_ccmconcretebudget: boolean;
+    isPermissionAll_ccmpurchaseotherbudget: boolean;
+    isPermissionAll_ccmpurchasemeotherbudget: boolean;
+    isPermissionAll_ccmauxiliarymaterialsbuget: boolean;
     isPermissionAll_auxiliarymaterialsorder: boolean;
     isPermissionAll_spendingplan: boolean;
     isPermissionAll_categorylist: boolean;
@@ -256,6 +282,13 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     
     isPermissionAll_TMDvcs: boolean;
     currentActive: Element;
+
+    @ViewChild('menuRoot') menuRoot: ElementRef;
+    @ViewChild('searchInput') searchInput: ElementRef;
+    searchText = '';
+    searchResults: MenuSearchItem[] = [];
+    searchIndex = 0;
+    private menuIndex: MenuSearchItem[] = [];
 
     constructor() { 
     }
@@ -319,6 +352,8 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_planlossdetail = Global.getPermissionAll(permission,permission2,'planlossdetail-explorer', 'IsDisplay');
         this.isPermissionAll_planrevenueadjust = Global.getPermissionAll(permission,permission2,'planrevenueadjust-explorer', 'IsDisplay');
         this.isPermissionAll_plancashflowsite = Global.getPermissionAll(permission,permission2,'plancashflowsite-explorer', 'IsDisplay');
+        this.isPermissionAll_planrevenueadjustedit = Global.getPermissionAll(permission,permission2,'planrevenueadjustedit-explorer', 'IsDisplay');
+        this.isPermissionAll_plancashflowsiteedit = Global.getPermissionAll(permission,permission2,'plancashflowsiteedit-explorer', 'IsDisplay');
         this.isPermissionAll_costdeduction = Global.getPermissionAll(permission,permission2,'costdeduction-explorer', 'IsDisplay');
         this.isPermissionAll_plantimekeeping = Global.getPermissionAll(permission,permission2,'plantimekeeping-explorer', 'IsDisplay');
         this.isPermissionAll_plantimekeeping = Global.getPermissionAll(permission,permission2,'plantimekeeping-explorer', 'IsDisplay');
@@ -355,10 +390,14 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_setlementstatus = Global.getPermissionAll(permission,permission2,'setlementstatus-explorer', 'IsDisplay');  
         this.isPermissionAll_settlementrecords = Global.getPermissionAll(permission,permission2,'settlementrecords-explorer', 'IsDisplay');  
         this.isPermissionAll_plansignstatus = Global.getPermissionAll(permission,permission2,'plansignstatus-explorer', 'IsDisplay');        
+        this.isPermissionAll_plantrackingpayment = Global.getPermissionAll(permission,permission2,'plantrackingpayment-explorer', 'IsDisplay');        
         this.isPermissionAll_deadlineproject = Global.getPermissionAll(permission,permission2,'deadlineproject-explorer', 'IsDisplay');        
         this.isPermissionAll_billpayequipment = Global.getPermissionAll(permission,permission2,'billpayequipment-explorer', 'IsDisplay'); 
-        this.isPermissionAll_billeditpayequipment = Global.getPermissionAll(permission,permission2,'billeditpayequipment-explorer', 'IsDisplay'); 
+        this.isPermissionAll_billeditpayequipment = Global.getPermissionAll(permission,permission2,'billeditpayequipment-explorer', 'IsDisplay');
+        this.isPermissionAll_allocsettlementedit = Global.getPermissionAll(permission,permission2,'allocsettlementedit-explorer', 'IsDisplay');
         this.isPermissionAll_consdocument = Global.getPermissionAll(permission,permission2,'consdocument-explorer', 'IsDisplay');
+        this.isPermissionAll_conspermitstatus = Global.getPermissionAll(permission,permission2,'conspermitstatus-explorer', 'IsDisplay');
+        this.isPermissionAll_approvedconspermitstatus = Global.getPermissionAll(permission,permission2,'approvedconspermitstatus-explorer', 'IsDisplay');
         this.isPermissionAll_docaftersales = Global.getPermissionAll(permission,permission2,'docaftersales-explorer', 'IsDisplay');
         this.isPermissionAll_planaftersales = Global.getPermissionAll(permission,permission2,'planaftersales-explorer', 'IsDisplay');
         this.isPermissionAll_paymentproposal = Global.getPermissionAll(permission,permission2,'paymentproposal-explorer', 'IsDisplay');
@@ -432,6 +471,7 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_rep05_kehoachmuahang = Global.getPermissionAll(permission,permission2,'rep05_kehoachmuahang', 'IsDisplay'); 
         this.isPermissionAll_rep05_khmuahangvtphu = Global.getPermissionAll(permission,permission2,'rep05_khmuahangvtphu', 'IsDisplay'); 
         this.isPermissionAll_rep05_kehoachbetong = Global.getPermissionAll(permission,permission2,'reporterconcretebudget', 'IsDisplay');          
+        this.isPermissionAll_reportertonghopdamphan = Global.getPermissionAll(permission,permission2,'reportertonghopdamphan', 'IsDisplay');
         this.isPermissionAll_rep05_haohutvattu = Global.getPermissionAll(permission,permission2,'rep05_haohutvattu', 'IsDisplay');        
         this.isPermissionAll_rep05_reportinventory = Global.getPermissionAll(permission,permission2,'rep05_reportinventory', 'IsDisplay');        
         this.isPermissionAll_rep05_reportexitem = Global.getPermissionAll(permission,permission2,'rep05_reportexitem', 'IsDisplay');        
@@ -493,9 +533,15 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
         this.isPermissionAll_auxiliarymaterialsorder = Global.getPermissionAll(permission,permission2,'auxiliarymaterialsorder-explorer', 'IsDisplay');    
         this.isPermissionAll_purchasebudget = Global.getPermissionAll(permission,permission2,'purchasebudget-explorer', 'IsDisplay');  
         this.isPermissionAll_concretebudget = Global.getPermissionAll(permission,permission2,'concretebudget-explorer', 'IsDisplay');    
+        this.isPermissionAll_ccmpurchasebudget = Global.getPermissionAll(permission,permission2,'ccmpurchasebudget-explorer', 'IsDisplay');
+        this.isPermissionAll_ccmconcretebudget = Global.getPermissionAll(permission,permission2,'ccmconcretebudget-explorer', 'IsDisplay');
+        this.isPermissionAll_ccmpurchaseotherbudget = Global.getPermissionAll(permission,permission2,'ccmpurchaseotherbudget-explorer', 'IsDisplay');
+        this.isPermissionAll_ccmpurchasemeotherbudget = Global.getPermissionAll(permission,permission2,'ccmpurchasemeotherbudget-explorer', 'IsDisplay');
+        this.isPermissionAll_ccmauxiliarymaterialsbuget = Global.getPermissionAll(permission,permission2,'ccmauxiliarymaterialsbuget-explorer', 'IsDisplay');
         this.isPermissionAll_categorylist = Global.getPermissionAll(permission,permission2,'categorylist-explorer', 'IsDisplay');
         this.isPermissionAll_customer = Global.getPermissionAll(permission,permission2,'customer-explorer', 'IsDisplay');
         this.isPermissionAll_pricelibrary = Global.getPermissionAll(permission,permission2,'pricelibrary-explorer', 'IsDisplay');
+        this.isPermissionAll_subconincurred = Global.getPermissionAll(permission,permission2,'subconincurred-explorer', 'IsDisplay');
 
         if (localStorage.getItem(SystemConstants.CURRENT_BRANCH).replace(/"/gi, '') != 'N01')
             this.isPermissionAll_TMDvcs = false;
@@ -511,7 +557,15 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
     get showUserFullName() {
         return JSON.parse(localStorage.getItem(SystemConstants.CURRENT_USERFULLNAME));
     }
-    
+
+    /** "Nguyễn Minh Nhật" -> "NN" (chữ cái đầu của họ và tên) cho avatar. */
+    get userInitials(): string {
+        const words = (this.showUserFullName || this.showUserName || '').toString().trim().split(/\s+/);
+        const first = words[0] ? words[0].charAt(0) : '';
+        const last = words.length > 1 ? words[words.length - 1].charAt(0) : '';
+        return (first + last).toUpperCase();
+    }
+
     getPermission(commandKey: string, option: string)
     {
         return Global.getPermission(commandKey,option);
@@ -543,6 +597,148 @@ export class HomeSidebarComponent implements OnInit, OnDestroy {
             _aTag.parentElement.classList.add('active');
             this.currentActive = _aTag.parentElement;
         }
+    }
+
+    /** Menu dựng sẵn trong template + *ngIf phân quyền: đọc lại các link đang có trong DOM
+     *  mỗi lần focus ô tìm kiếm, nên kết quả luôn khớp đúng quyền của người dùng. */
+    onSearchFocus() {
+        this.menuIndex = this.buildMenuIndex();
+        if (this.searchText) {
+            this.runSearch();
+        }
+    }
+
+    onSearchInput(value: string) {
+        this.searchText = value;
+        this.runSearch();
+    }
+
+    onSearchKeydown(e: KeyboardEvent) {
+        const count = this.searchResults.length;
+        if (e.key === 'ArrowDown' && count) {
+            this.searchIndex = (this.searchIndex + 1) % count;
+            e.preventDefault();
+        } else if (e.key === 'ArrowUp' && count) {
+            this.searchIndex = (this.searchIndex - 1 + count) % count;
+            e.preventDefault();
+        } else if (e.key === 'Enter') {
+            if (count) {
+                this.openSearchItem(this.searchResults[this.searchIndex]);
+            }
+            e.preventDefault();
+        } else if (e.key === 'Escape') {
+            this.clearSearch();
+        }
+    }
+
+    clearSearch() {
+        this.searchText = '';
+        this.searchResults = [];
+        this.searchIndex = 0;
+        if (this.searchInput) {
+            this.searchInput.nativeElement.value = '';
+        }
+    }
+
+    openSearchItem(item: MenuSearchItem) {
+        if (!item) {
+            return;
+        }
+        this.clearSearch();
+        this.searchInput.nativeElement.blur();
+        this.expandMenuTo(item.anchor);
+        // Click thẳng vào link gốc: giữ nguyên routerLink + clickItem (đánh dấu active).
+        item.anchor.click();
+    }
+
+    private runSearch() {
+        const query = toSearchText(this.searchText);
+        this.searchIndex = 0;
+        if (!query) {
+            this.searchResults = [];
+            return;
+        }
+        const words = query.split(' ');
+        const scored: { item: MenuSearchItem, score: number }[] = [];
+
+        this.menuIndex.forEach(item => {
+            let score: number;
+            if (matchesAllWords(words, item.labelText)) {
+                score = 100;
+            } else if (matchesAllWords(words, item.labelText + ' ' + item.pathText)) {
+                score = 50;
+            } else {
+                return;
+            }
+            const plainLabel = toSearchText(item.label);
+            if (plainLabel.indexOf(query) === 0) {
+                score += 30;
+            } else if (plainLabel.indexOf(query) > 0) {
+                score += 15;
+            }
+            scored.push({ item: item, score: score - plainLabel.length / 100 });
+        });
+
+        scored.sort((a, b) => b.score - a.score);
+        this.searchResults = scored.slice(0, MENU_SEARCH_LIMIT).map(x => x.item);
+    }
+
+    private buildMenuIndex(): MenuSearchItem[] {
+        const root: HTMLElement = this.menuRoot.nativeElement;
+        const anchors = root.querySelectorAll('a[href]');
+        const items: MenuSearchItem[] = [];
+        const seen: { [key: string]: boolean } = {};
+
+        for (let i = 0; i < anchors.length; i++) {
+            const anchor = <HTMLAnchorElement>anchors[i];
+            const href = anchor.getAttribute('href');
+            const label = this.cleanText(anchor.textContent);
+            if (!href || href === '#' || !label || seen[href + '|' + label] || this.isDisabledMenu(anchor)) {
+                continue;
+            }
+            seen[href + '|' + label] = true;
+
+            const groups: string[] = [];
+            for (let el = anchor.parentElement.parentElement; el && el !== root; el = el.parentElement) {
+                if (el.tagName === 'LI' && el.classList.contains('treeview')) {
+                    const head = el.firstElementChild;
+                    if (head && head.tagName === 'A') {
+                        groups.unshift(this.cleanText(head.textContent));
+                    }
+                }
+            }
+            const path = groups.join(' › ');
+            items.push({
+                label: label,
+                path: path,
+                anchor: anchor,
+                labelText: expandAbbreviations(toSearchText(label)),
+                pathText: expandAbbreviations(toSearchText(path))
+            });
+        }
+        return items;
+    }
+
+    /** Mở các nhóm cha (AdminLTE tree) để người dùng thấy chức năng vừa chọn nằm ở đâu. */
+    private expandMenuTo(anchor: HTMLElement) {
+        const root: HTMLElement = this.menuRoot.nativeElement;
+        for (let el = anchor.parentElement; el && el !== root; el = el.parentElement) {
+            if (el.tagName === 'UL' && el.classList.contains('treeview-menu')) {
+                el.style.display = 'block';
+                el.parentElement.classList.add('menu-open');
+            }
+        }
+    }
+
+    /** Cùng quy ước với CSS: li.disabled, a.disabled hoặc a[aria-disabled="true"]. */
+    private isDisabledMenu(anchor: HTMLAnchorElement): boolean {
+        return anchor.classList.contains('disabled')
+            || anchor.getAttribute('aria-disabled') === 'true'
+            || anchor.parentElement.classList.contains('disabled');
+    }
+
+    private cleanText(text: string): string {
+        return (text || '').replace(/\s+/g, ' ').trim();
     }
 
     clickParentItem(e) {

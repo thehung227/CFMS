@@ -19,17 +19,21 @@
     <nav class="navbar navbar-static-top" role="navigation">
 
         <!-- Sidebar toggle button-->
-        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" style="color:#029004;">
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button" title="Thu/mở menu">
             <span class="sr-only">Toggle navigation</span>
         </a>
 
-        <div class="col-xs-6" style="margin-top: 17px;">
+        <div class="col-xs-6 nt-product-picker">
             <!-- <select class="form-control" name="productlist" (change)="onChange($event.target.value)">
                     <option value="">Chọn gói thầu</option>
                     <option *ngFor="let product of listProduct" [value]="product.RowId" >{{product.Name}}</option>
             </select> -->
             <div class="dropdown" style="width: 120%;">
-                <button (click)="myFunction()" class="dropbtn" style="width: 100%;">{{getProductName || 'Chọn gói thầu'}} </button>
+                <button (click)="myFunction()" class="dropbtn" style="width: 100%;" title="Chọn gói thầu">
+                    <i class="fa fa-building-o dropbtn__icon" aria-hidden="true"></i>
+                    <span class="dropbtn__text">{{getProductName || 'Chọn gói thầu'}}</span>
+                    <i class="fa fa-angle-down dropbtn__caret" aria-hidden="true"></i>
+                </button>
                 <div id="myDropdown" class="dropdown-content" style="height: 500px;width: 100%">
                     <input type="text" placeholder="Tìm kiếm gói thầu..."  style="width: 100%;" id="myInput" (keyup)="filterFunction()">
                     <!-- <option *ngFor="let product of listProduct" [value]="product.RowId" [label]="product.RowId + ' - ' + product.Name" (click)="onChange($event)">{{product.RowId}} - {{product.Name}}</option> -->

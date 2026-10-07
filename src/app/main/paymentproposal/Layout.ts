@@ -719,7 +719,7 @@ export class LayoutPaymentProposalEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_K6_LoadPrevious_Thep',
         'Evaluator_ServerConstraint_K6_LoadPrevious_CLaim',
         'Evaluator_ServerConstraint_DefaultDocNo',
-        'Evaluator_ServerConstraint_Debt_Load'
+        // 'Evaluator_ServerConstraint_Debt_Load'
     ];
 
     buttonLoadChild2: string[] = [

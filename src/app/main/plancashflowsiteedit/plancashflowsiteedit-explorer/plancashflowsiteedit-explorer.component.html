@@ -1,0 +1,122 @@
+<div class="newt-page">
+<div *ngIf="isUsingFilter" class="col-md-2 filter">
+    <section class="content">
+        <div class="box" id="box-content">
+            <div class="box-header with-border">
+                <h3 class="box-title">Điều kiện lọc</h3>
+                <div class="box-tools pull-right">
+                    <a class="dropdown-toggle btn" data-toggle="dropdown" href="#" aria-label="Chọn điều kiện lọc">
+                        <i class="fa fa-list" aria-hidden="true"></i>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li *ngFor="let item of filterData">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" (click)="updateCheckedOptions($event, item)" [ngModel]="item.isChecked" /> {{item.label}}
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <form (ngSubmit)="onSubmit(form)" [formGroup]="form">
+                <div class="box-body" [style.height.px]="contentFilterHeight">
+                    <div *ngFor="let input of inputs" class="form-row">
+                        <df-input [input]="input" [form]="form" (toogle)="tooglePin($event)"></df-input>
+                    </div>
+                    <div class="box-footer">
+                        <button class="btn btn-primary">Tìm kiếm</button>
+                        <button type="button" (click)="toogleFilter()" class="btn btn-default">Hủy</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+<div [ngClass]="{'col-md-10 content-filter': isUsingFilter}">
+    <section class="content">
+        <div class="box" id="box-content">
+            <div class="box-header with-border cps-header">
+                <h3 class="box-title cps-title" id="titleName">
+                    <span class="cps-title-icon"><i class="fa fa-money" aria-hidden="true"></i></span>
+                    Điều chỉnh kế hoạch dòng tiền dự án
+                </h3>
+                <div class="cps-meta">
+                    <span class="cps-badge cps-badge-admin"><i class="fa fa-user-secret" aria-hidden="true"></i> Admin</span>
+                    <span class="nx-summary">Chọn hồ sơ rồi bấm <b>Mở để điều chỉnh</b> (hoặc nhấp đúp). Màn hình này không thêm mới, không xoá, không gửi duyệt.</span>
+                </div>
+            </div>
+            <div class="box-body" #contentFilter>
+                <div class="nx-toolbar" role="toolbar" aria-label="Thao tác">
+                    <button type="button" class="btn btn-primary" (click)="editExplorer(grid,['/main','plancashflowsiteedit','detail'])"
+                        *ngIf="isSysAdmin=='true' || isPermisionExAll_isEdit">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>Mở để điều chỉnh
+                    </button>
+                    <span class="nx-sep"></span>
+                    <button type="button" class="btn btn-default" (click)="toogleFilter()">
+                        <i class="fa fa-filter" aria-hidden="true"></i>Lọc
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="clearFilterExplorer()">
+                        <i class="fa fa-refresh" aria-hidden="true"></i>Tải lại
+                    </button>
+                    <span class="nx-spacer"></span>
+                    <button type="button" class="btn btn-default nx-icon" title="Thu nhóm" aria-label="Thu nhóm" (click)="grid.collapseGroupsToLevel(0)">
+                        <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-default nx-icon" title="Mở nhóm" aria-label="Mở nhóm" (click)="grid.collapseGroupsToLevel(grid.rows.maxGroupLevel + 1)">
+                        <i class="fa fa-angle-double-down" aria-hidden="true"></i>
+                    </button>
+                </div>
+
+                <wj-flex-grid class="cps-grid" [itemsSource]="data" #grid (itemsSourceChanged)="itemsSourceChangedHandler()" style="height:100%;min-height: 600px;" (click)="clickGridParent(grid)">
+                    <wj-flex-grid-filter #filter></wj-flex-grid-filter>
+
+                    <wj-flex-grid-column [binding]="Button" [isReadOnly]="true">
+                        <ng-template wjFlexGridCellTemplate [cellType]="'Cell'" let-row="row" let-item="item" style="width:30px;">
+                            <span [ngStyle]="{display: gridChild?.isDetailAvailable(row) ? '' : 'none','float':'left'}">
+                                <i [ngStyle]="{display: gridChild.isDetailVisible(row) ? '' : 'none'}" (click)="clickGridParentHideDetail(gridChild,row)"
+                                    class="fa fa-minus"></i>
+                                <i [ngStyle]="{display: !gridChild?.isDetailVisible(row) ? '' : 'none'}" (click)="clickGridParentShowDetail(grid,gridChild,row,true)"
+                                    class="fa fa-plus"></i>
+                            </span>
+                        </ng-template>
+                    </wj-flex-grid-column>
+
+                    <ng-template wjFlexGridDetail #gridChild="wjFlexGridDetail" [detailVisibilityMode]="'Code'" let-item="item">
+                        <plancashflowsiteedit-explorer-child></plancashflowsiteedit-explorer-child>
+                    </ng-template>
+                </wj-flex-grid>
+
+                <wj-flex-grid [itemsSource]="dataPrint" #gridPrint style="height:650px;display:none;">
+                </wj-flex-grid>
+            </div>
+            <div class="box-footer">
+                <div class="nx-pager">
+                    <button type="button" class="btn btn-default" (click)="movePage(1)" aria-label="Trang đầu">
+                        <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber-1)" aria-label="Trang trước">
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    </button>
+                    <span class="btn btn-default disabled">{{pageNumber}}/{{totalPage||1}}</span>
+                    <button type="button" class="btn btn-default" (click)="movePage(pageNumber+1)" aria-label="Trang sau">
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="movePage(totalPage)" aria-label="Trang cuối">
+                        <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div style="clear:both;"></div>
+</div>
+
+<!--Loading-->
+<div *ngIf="showLoading" class="bravo-wait">
+    <img src="/assets/img/gears.svg" style="width:50%">
+    <div style="font-size: 15px; padding-left: 12px;color: #fff;">Loading ....</div>
+</div>
+<div *ngIf="showLoading" class="bravo-wrapper" style="height: 100%; width: 100%;"></div>
+<!--/.Loading-->

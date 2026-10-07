@@ -33,29 +33,43 @@
 
 /* CSS Dropdow */
 .dropbtn {
-    /* background-color: #304c5c;
-    color: white;
-    padding: 4px;
-    font-size: 16px;
-    border: none;
+    display: flex;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--nt-border);
+    border-radius: 8px;
+    background: var(--nt-bg);
+    color: var(--nt-primary-dark);
+    font-weight: 600;
+    text-align: left;
     cursor: pointer;
-    border: green 1px solid;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px; */
-    color: #0b7321;
-    font-weight: bolder;
-    padding: 4px;
-    /* font-size: 16px; */
-    border: none;
-    cursor: pointer;
-    border: #0b7321 1px solid;
-    /* border-top-left-radius: 5px; */
-    /* border-top-right-radius: 5px; */
-    background: linear-gradient(to right,#e4efea,#7dbce0);
+    transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
 
 .dropbtn:hover, .dropbtn:focus {
-    background: linear-gradient(to right,#7dbce0,#e4efea);
+    border-color: var(--nt-accent);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(47, 164, 231, .18);
+    outline: none;
+}
+
+.dropbtn__icon {
+    margin-right: 8px;
+    color: var(--nt-accent);
+}
+
+.dropbtn__text {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dropbtn__caret {
+    margin-left: 8px;
+    color: var(--nt-text-muted);
 }
 
 #myInput {
@@ -79,10 +93,13 @@
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f6f6f6;
+    margin-top: 4px;
+    background-color: #fff;
     min-width: 230px;
     overflow: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--nt-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .15);
     z-index: 1;
 }
 
@@ -109,7 +126,7 @@
 }
 
 .inputbtnproduct {
-    width: 100%;text-align: left;height: 39px;border: none;background-color: aliceblue;color: darkblue;font-weight: 600;
+    width: 100%;text-align: left;height: 36px;padding: 0 14px;border: none;border-bottom: 1px solid #f1f4f8;background-color: #fff;color: var(--nt-text);font-weight: 500;
 }
 
 .dropdown a:hover {background-color: #ddd}
@@ -118,6 +135,10 @@
 
 .dropdown li:hover {background-color: #ddd}
 
-.dropdown input.inputbtnproduct:hover {background-color: #ddd}
+.dropdown input.inputbtnproduct:hover {background-color: var(--nt-info-bg); color: var(--nt-primary-dark);}
 
 .show {display:block;}
+/* Ô chọn gói thầu: nút cao 36px, căn giữa theo chiều dọc header 50px */
+.nt-product-picker {
+    margin-top: 7px;
+}

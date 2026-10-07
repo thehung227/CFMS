@@ -57,16 +57,20 @@ export class PlanSignStatusEditorComponent extends BaseEditorComponent implement
   ngOnInit() {
     this.gridArray = [this.grid,this.grid1];
     this.init();
-    this.grid.allowAddNew = false;
-    this.grid1.allowAddNew = false;
+    this.grid.allowAddNew = true;
   
   }
 
   ngAfterViewInit() {
     this.dfpanel = this._dfpanel; this.afterViewInit();
-
+    this.grid.itemsSourceChanged.addHandler(() => {
+      this.applyGroupGrid2();
+    });
 
     this.grid.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+
+      // GroupRow cũng có _data != undefined nhưng dataItem là CollectionViewGroup, không phải record.
+      if (s.rows[e.row] instanceof wjcGrid.GroupRow) return;
 
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
         let data = s.rows[e.row].dataItem;
@@ -90,6 +94,9 @@ export class PlanSignStatusEditorComponent extends BaseEditorComponent implement
       }
     });
     this.grid1.formatItem.addHandler((s, e: wjcGrid.FormatItemEventArgs) => {
+
+      // GroupRow cũng có _data != undefined nhưng dataItem là CollectionViewGroup, không phải record.
+      if (s.rows[e.row] instanceof wjcGrid.GroupRow) return;
 
       if (s.rows[e.row] != undefined && s.rows[e.row]._data != undefined) {
         let data = s.rows[e.row].dataItem;
@@ -129,7 +136,17 @@ export class PlanSignStatusEditorComponent extends BaseEditorComponent implement
   _errItemSets: boolean = false;
   _errMess: any;
 
-
+applyGroupGrid2() {
+      var cv = this.grid.collectionView;
+      if (cv != null) {
+        cv.beginUpdate();
+        cv.groupDescriptions.clear();
+        var groupDesc = new wjcCore.PropertyGroupDescription("ProductName0");
+        cv.groupDescriptions.push(groupDesc);
+        cv.endUpdate();
+      }
+      this.grid.groupHeaderFormat = "<b>{value}</b>";
+    }
 
   showDocumentInNewTab(id: any) {
 

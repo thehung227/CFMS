@@ -109,13 +109,16 @@ export const mainRoutes: Routes = [
             { path: 'approvedplancostoffice', loadChildren: './approvedplancostoffice/approvedplancostoffice.module#ApprovedPlanCostOfficeModule' },
              // localhost:8888/main/plancostoffice
             
-              { path: 'plancostoffice', loadChildren: './plancostoffice/plancostoffice.module#PlanCostOfficeModule' },
-             { path: 'plancashflowsite', loadChildren: './plancashflowsite/plancashflowsite.module#PlanCashFlowSiteModule' },
-             { path: 'planrevenueadjust', loadChildren: './planrevenueadjust/planrevenueadjust.module#PlanRevenueAdjustModule' },
-             { path: 'paymentproposal', loadChildren: './paymentproposal/paymentproposal.module#PaymentProposalModule' },
-              { path: 'paymentextraproposal', loadChildren: './paymentextraproposal/paymentextraproposal.module#PaymentExtraProposalModule' },
-             { path: 'paymentmeproposal', loadChildren: './paymentmeproposal/paymentmeproposal.module#PaymentMeProposalModule' },
-             { path: 'paymentccmproposal', loadChildren: './paymentccmproposal/paymentccmproposal.module#PaymentCcmProposalModule' },
+            { path: 'plancostoffice', loadChildren: './plancostoffice/plancostoffice.module#PlanCostOfficeModule' },
+            { path: 'plancashflowsite', loadChildren: './plancashflowsite/plancashflowsite.module#PlanCashFlowSiteModule' },
+            { path: 'planrevenueadjust', loadChildren: './planrevenueadjust/planrevenueadjust.module#PlanRevenueAdjustModule' },
+            // Admin điều chỉnh số liệu KH doanh thu / KH dòng tiền (tách riêng khỏi form gốc)
+            { path: 'planrevenueadjustedit', loadChildren: './planrevenueadjustedit/planrevenueadjustedit.module#PlanRevenueAdjustEditModule' },
+            { path: 'plancashflowsiteedit', loadChildren: './plancashflowsiteedit/plancashflowsiteedit.module#PlanCashFlowSiteEditModule' },
+            { path: 'paymentproposal', loadChildren: './paymentproposal/paymentproposal.module#PaymentProposalModule' },
+            { path: 'paymentextraproposal', loadChildren: './paymentextraproposal/paymentextraproposal.module#PaymentExtraProposalModule' },
+            { path: 'paymentmeproposal', loadChildren: './paymentmeproposal/paymentmeproposal.module#PaymentMeProposalModule' },
+            { path: 'paymentccmproposal', loadChildren: './paymentccmproposal/paymentccmproposal.module#PaymentCcmProposalModule' },
              
             // localhost:8888/main/contract
             { path: 'contract', loadChildren: './contract/contract.module#ContractModule' },
@@ -123,7 +126,11 @@ export const mainRoutes: Routes = [
             { path: 'appendix', loadChildren: './appendix/appendix.module#AppendixModule' },
             // localhost:8888/main/settlement
             { path: 'settlement', loadChildren: './settlement/settlement.module#SettlementModule' },
+            { path: 'subconincurred', loadChildren: './subconincurred/subconincurred.module#SubconIncurredModule' },
+            { path: 'approvedsubconincurred', loadChildren: './approvedsubconincurred/approvedsubconincurred.module#ApprovedSubconIncurredModule' },
             { path: 'allocsettlement', loadChildren: './allocsettlement/allocsettlement.module#AllocSettlementModule' },
+            { path: 'allocsettlementedit', loadChildren: './allocsettlementedit/allocsettlementedit.module#AllocSettlementEditModule' },
+            { path: 'approvedallocsettlement', loadChildren: './approvedallocsettlement/approvedallocsettlement.module#ApprovedAllocSettlementModule' },
             { path: 'planclaim', loadChildren: './planclaim/planclaim.module#PlanClaimModule' },
             { path: 'planequipclaim', loadChildren: './planequipclaim/planequipclaim.module#PlanEquipClaimModule' },
             { path: 'settlementclaim', loadChildren: './settlementclaim/settlementclaim.module#SettlementClaimModule' },
@@ -137,10 +144,13 @@ export const mainRoutes: Routes = [
             { path: 'setlementstatus', loadChildren: './setlementstatus/setlementstatus.module#SetlementStatusModule' },
             { path: 'settlementrecords', loadChildren: './settlementrecords/settlementrecords.module#SettlementRecordsModule' },
             { path: 'plansignstatus', loadChildren: './plansignstatus/plansignstatus.module#PlanSignStatusModule' },
+            { path: 'plantrackingpayment', loadChildren: './plantrackingpayment/plantrackingpayment.module#PlanTrackingPaymentModule' },
             { path: 'deadlineproject', loadChildren: './deadlineproject/deadlineproject.module#DeadlineProjectModule' },
             { path: 'approvedpartnerevaluation', loadChildren: './approvedpartnerevaluation/approvedpartnerevaluation.module#ApprovedPartnerEvaluationModule' },
             { path: 'approvedplansignstatus', loadChildren: './approvedplansignstatus/approvedplansignstatus.module#ApprovedPlanSignStatusModule' },
             { path: 'reporterhsqtgiatri', loadChildren: './reporterhsqtgiatri/reporterhsqtgiatri.module#ReporterHsqtGiatriModule' },
+            { path: 'reporterplansignstatus', loadChildren: './reporterplansignstatus/reporterplansignstatus.module#ReporterPlanSignStatusModule' },
+
             { path: 'approvedconfirmprojectcomplete', loadChildren: './approvedconfirmprojectcomplete/approvedconfirmprojectcomplete.module#ApprovedConfirmProjectCompleteModule' },
             // localhost:8888/main/settlement_doc
             { path: 'settlement_doc', loadChildren: './settlement_doc/settlement_doc.module#Settlement_DocModule' },            
@@ -221,6 +231,7 @@ export const mainRoutes: Routes = [
             // localhost:8888/main/reporterplancostrevcons
             { path: 'reporterplancostrevcons',loadChildren : './reporterplancostrevcons/reporterplancostrevcons.module#ReporterPlanCostRevConsModule' },
             { path: 'reporterplansetlement',loadChildren : './reporterplansetlement/reporterplansetlement.module#ReporterPlanSetlementModule' },
+            { path: 'reporterplantrackingpayment',loadChildren : './reporterplantrackingpayment/reporterplantrackingpayment.module#ReporterPlanTrackingPaymentModule' },
             { path: 'reporterphanbocpns',loadChildren : './reporterphanbocpns/reporterphanbocpns.module#ReporterPhanBoCpnsModule' },
             { path: 'reporterplanconsmexd',loadChildren : './reporterplanconsmexd/reporterplanconsmexd.module#ReporterPlanConsMexdModule' },
             { path: 'reportertenderselection',loadChildren : './reportertenderselection/reportertenderselection.module#ReporterTenderSelectionModule' },
@@ -291,6 +302,8 @@ export const mainRoutes: Routes = [
             { path: 'widget',loadChildren : './widget/widget.module#WidgetModule' },
             // localhost:8888/main/notifications
             { path: 'notifications',loadChildren : './notifications/notifications.module#NotificationsModule' },
+            // localhost:8888/main/hosodaduyet - hồ sơ người đăng nhập đã duyệt (xem ở chế độ chỉ xem)
+            { path: 'hosodaduyet', loadChildren: './hosodaduyet/hosodaduyet.module#HoSoDaDuyetModule' },
             // localhost:8888/main/notifications_tm
             { path: 'notifications_tm',loadChildren : './notifications_tm/notifications_tm.module#Notifications_TmModule' },            
             // localhost:8888/main/proposedpurchase
@@ -372,6 +385,10 @@ export const mainRoutes: Routes = [
             { path: 'emailtemplate', loadChildren: './emailtemplate/emailtemplate.module#EmailTemplateModule' },     
             // localhost:8888/main/consdocument
             { path: 'consdocument', loadChildren: './consdocument/consdocument.module#ConsDocumentModule' },
+            // localhost:8888/main/conspermitstatus
+            { path: 'conspermitstatus', loadChildren: './conspermitstatus/conspermitstatus.module#ConsPermitStatusModule' },
+            // localhost:8888/main/approvedconspermitstatus
+            { path: 'approvedconspermitstatus', loadChildren: './approvedconspermitstatus/approvedconspermitstatus.module#ApprovedConsPermitStatusModule' },
             // localhost:8888/main/regcontract_viewCT
             { path: 'regcontract_viewCT', loadChildren: './regcontract_viewCT/regcontract_viewCT.module#RegContract_ViewCTModule' },
             // localhost:8888/main/documentview
@@ -386,6 +403,14 @@ export const mainRoutes: Routes = [
             { path: 'purchaseotherbudget', loadChildren: './purchaseotherbudget/purchaseotherbudget.module#PurchaseOtherBudgetModule' },
             { path: 'purchasemeotherbudget', loadChildren: './purchasemeotherbudget/purchasemeotherbudget.module#PurchaseMeOtherBudgetModule' },
             { path: 'auxiliarymaterialsbuget', loadChildren: './auxiliarymaterialsbuget/auxiliarymaterialsbuget.module#AuxiliaryMaterialsBugetModule' },
+
+            // Ban CCM cua nhom "Ke hoach mua hang" - dung chung du lieu, bo rule/su kien
+            { path: 'ccmpurchasebudget', loadChildren: './ccmpurchasebudget/ccmpurchasebudget.module#CcmPurchaseBudgetModule' },
+            { path: 'ccmpurchaseotherbudget', loadChildren: './ccmpurchaseotherbudget/ccmpurchaseotherbudget.module#CcmPurchaseOtherBudgetModule' },
+            { path: 'ccmpurchasemeotherbudget', loadChildren: './ccmpurchasemeotherbudget/ccmpurchasemeotherbudget.module#CcmPurchaseMeOtherBudgetModule' },
+            { path: 'ccmconcretebudget', loadChildren: './ccmconcretebudget/ccmconcretebudget.module#CcmConcreteBudgetModule' },
+            { path: 'ccmauxiliarymaterialsbuget', loadChildren: './ccmauxiliarymaterialsbuget/ccmauxiliarymaterialsbuget.module#CcmAuxiliaryMaterialsBugetModule' },
+
             { path: 'auxiliarymaterialsorder', loadChildren: './auxiliarymaterialsorder/auxiliarymaterialsorder.module#AuxiliaryMaterialsOrderModule' },
             // localhost:8888/main/approvedpurchasebudget
             { path: 'approvedpurchasebudget', loadChildren: './approvedpurchasebudget/approvedpurchasebudget.module#ApprovedPurchaseBudgetModule' },
@@ -435,7 +460,11 @@ export const mainRoutes: Routes = [
             { path: 'rep05_kehoachmuahang',loadChildren : './rep05_kehoachmuahang/rep05_kehoachmuahang.module#Rep05_KeHoachMuaHangModule' },      
             { path: 'rep05_khmuahangvtphu',loadChildren : './rep05_khmuahangvtphu/rep05_khmuahangvtphu.module#Rep05_KhMuaHangVtphuModule' },      
             { path: 'reporterprojectvaluetable',loadChildren : './reporterprojectvaluetable/reporterprojectvaluetable.module#ReporterProjectValueTableModule' },      
-            { path: 'reporterconcretebudget',loadChildren : './reporterconcretebudget/reporterconcretebudget.module#ReporterConcreteBudgetModule' },      
+            { path: 'reporterconcretebudget',loadChildren : './reporterconcretebudget/reporterconcretebudget.module#ReporterConcreteBudgetModule' },
+            // Báo cáo nhanh sản lượng bê tông dự án - mở từ màn hình concretebudget / approvedconcretebudget
+            { path: 'reporterconcretequick',loadChildren : './reporterconcretequick/reporterconcretequick.module#ReporterConcreteQuickModule' },
+            // Tổng hợp đàm phán mua hàng tập trung
+            { path: 'reportertonghopdamphan',loadChildren : './reportertonghopdamphan/reportertonghopdamphan.module#ReporterTongHopDamPhanModule' },
             { path: 'rep05_haohutvattu',loadChildren : './rep05_haohutvattu/rep05_haohutvattu.module#Rep05_HaoHutVatTuModule' },      
             // localhost:8888/main/reportercongnohoadon
             { path: 'reportercongnohoadon',loadChildren : './reportercongnohoadon/reportercongnohoadon.module#ReporterCongNoHoaDonModule' },

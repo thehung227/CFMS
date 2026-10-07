@@ -644,8 +644,8 @@ export class LayoutExWareMaterialsEditor implements IEditorFormulaDeclaration {
                 new LookupBoxInput({
                     key: 'ItemGroupCode',
                     label: 'Nhóm hàng',
-                    lookupKey: 'Item',
-                    lookupfilter: "IsGroup=1 AND IsActive=1 AND ParentId IN (3203,3205,3978)",
+                    lookupKey: 'BidPackage',
+                    lookupfilter: "IsGroup=0 AND IsActive=1",
                     validators: [Validators.required],
                     hideValueMember: true,
                     maxRow: 20,

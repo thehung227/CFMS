@@ -33,6 +33,7 @@ export class RegContractEditorComponent extends BaseEditorComponent implements O
   @ViewChild('grid4') grid4: wjcGrid.FlexGrid;
   @ViewChild('grid5') grid5: wjcGrid.FlexGrid;
   @ViewChild('grid6') grid6: wjcGrid.FlexGrid;
+  @ViewChild('grid7') grid7: wjcGrid.FlexGrid;
 
   @ViewChild('dfpanel') _dfpanel: DynamicFormPanelComponent;
 
@@ -61,7 +62,7 @@ export class RegContractEditorComponent extends BaseEditorComponent implements O
   _errItemSets: boolean = false;
   ngOnInit() {
      console.log(localStorage.getItem(SystemConstants.POSITION_EMPLOYEE))
-    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6];
+    this.gridArray = [this.grid, this.grid1, this.grid2, this.grid3, this.grid4, this.grid5, this.grid6, this.grid7];
     this.init().then(async () => {
 
       let _value;
@@ -114,7 +115,7 @@ export class RegContractEditorComponent extends BaseEditorComponent implements O
   async onSubmit(formData: any, isApproveSend?: boolean) {
     let _numEror = 0;
     for (let i in this.gridArray) {
-      if (this.gridArray[i].itemsSource.items.length == 0 && i != '3' && i != '5' && i != '6') {
+      if (this.gridArray[i].itemsSource.items.length == 0 && i != '3' && i != '5' && i != '6' && i != '7') {
         _numEror += 1;
         break;
       }

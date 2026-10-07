@@ -17,6 +17,121 @@ import { getElement } from "wijmo/wijmo";
 import { RichTextBoxInput } from "../../ui/input/RichTextBoxInput";
 import { Global } from "../../shared/global";
 
+/**
+ * Luồng duyệt có Giám đốc điều hành (GĐĐH) cho Dự toán chi phí văn phòng.
+ * ĐIỀN mã quy trình (B20Approve.ProcessCode, thuộc nhóm G-005) vào mảng này, ví dụ: ['P-2xx'].
+ *
+ * Khi gửi duyệt:
+ *  - Tổng chi phí đã thực hiện > Tổng dự trù kỳ trước -> BẮT BUỘC chọn 1 luồng trong danh sách này.
+ *  - Chưa vượt                                      -> KHÔNG được chọn luồng trong danh sách này.
+ */
+export const PLANCOSTOFFICE_PROCESS_GDDH: string[] = [];
+
+/**
+ * Cột lưu trữ trên B30CCMBudgetDetail của lưới chi tiết (dùng chung editor + màn hình duyệt).
+ * Không dùng OriginalAmount2/3/4: store UpdateFromParentWEB cộng dồn chúng vào OriginalAmount của K2.
+ */
+export const PlanCostOfficeFields = {
+    ExpenseCatg: 'ExpenseCatgCode',   // Mã chi phí
+    PrevAmount: 'OpenPlanAmount',     // Dự trù version trước
+    SpentAmount: 'PaymentAmount',     // Chi phí đã thực hiện (trực tiếp, không phân bổ)
+    CurAmount: 'OriginalAmount1',     // Dự trù kỳ này
+    OriginalCost: 'CostAmount',       // Nguyên giá
+    Reason: 'Remark'                  // Lý do
+};
+
+/** Cột lưu trữ trên B30CCMBudget của phần tổng hợp đầu phiếu. */
+export const PlanCostOfficeTotals = {
+    PrevTotal: 'ThuChiKyTruoc',       // Tổng dự trù kỳ trước
+    CurTotal: 'Amount_ChiPhi',        // Tổng dự trù kỳ này (server tính lại = SUM(OriginalAmount1) khi lưu)
+    SpentTotal: 'TotalPaymentAmountC',// Thực hiện tới hiện tại
+    SpentRate: 'TiSuat_LN'            // % thực hiện = Thực hiện / Tổng dự trù kỳ này
+};
+
+function toNumber(value: any): number {
+    let n = Number(value);
+    return isNaN(n) ? 0 : n;
+}
+
+/** Dòng có chi phí đã thực hiện > dự trù kỳ này. */
+export function planCostOfficeIsOverRow(row: any): boolean {
+    return !!row && toNumber(row[PlanCostOfficeFields.SpentAmount]) > toNumber(row[PlanCostOfficeFields.CurAmount]);
+}
+
+/** Tổng hợp lưới chi tiết (bỏ dòng tiêu đề) - dùng chung editor + màn hình duyệt. */
+export function planCostOfficeSummary(rows: any[]) {
+    const f = PlanCostOfficeFields;
+    let s = { prevTotal: 0, curTotal: 0, spentTotal: 0, rate: 0, rowCount: 0, overRows: [] as string[] };
+    for (let r of rows || []) {
+        if (!r || r['IsTitleRow'] == true) continue;
+        s.rowCount++;
+        s.prevTotal += toNumber(r[f.PrevAmount]);
+        s.curTotal += toNumber(r[f.CurAmount]);
+        s.spentTotal += toNumber(r[f.SpentAmount]);
+        if (planCostOfficeIsOverRow(r)) s.overRows.push((r[f.ExpenseCatg] || '').toString().trim());
+    }
+    s.rate = s.curTotal != 0 ? s.spentTotal / s.curTotal : 0;
+    return s;
+}
+
+/** Cột lưới chi tiết (6 cột) - màn hình duyệt dùng lại với isReadOnly. */
+export function planCostOfficeDetailColumns(readOnly: boolean): any[] {
+    const f = PlanCostOfficeFields;
+    return [
+        {
+            header: 'Mã chi phí',
+            binding: f.ExpenseCatg,
+            dataType: 'Array',
+            lookupKey: 'ExpenseCatg',
+            bindingList: {
+                Name: 'Description'
+            },
+            lookupfilter: 'IsGroup=0 AND IsActive=1',
+            multiSelection: false,
+            isReadOnly: readOnly,
+            width: 160
+        },
+        {
+            header: 'Dự trù version trước',
+            binding: f.PrevAmount,
+            dataType: 'Number',
+            format: 'n0',
+            isReadOnly: true,
+            width: 170
+        },
+        {
+            header: 'Chi phí đã thực hiện',
+            binding: f.SpentAmount,
+            dataType: 'Number',
+            format: 'n0',
+            isReadOnly: true,
+            width: 170
+        },
+        {
+            header: 'Dự trù kỳ này',
+            binding: f.CurAmount,
+            dataType: 'Number',
+            format: 'n0',
+            isReadOnly: readOnly,
+            width: 170
+        },
+        {
+            header: 'Nguyên giá',
+            binding: f.OriginalCost,
+            dataType: 'Number',
+            format: 'n0',
+            isReadOnly: readOnly,
+            width: 160
+        },
+        {
+            header: 'Lý do',
+            binding: f.Reason,
+            isReadOnly: readOnly,
+            width: '*'
+        }
+    ];
+}
+
 // Kế hoạch chi phí công trường
 export class LayoutPlanCostOfficeExplorer implements IExplorerFormulaDeclaration {
 
@@ -411,8 +526,8 @@ export class LayoutPlanCostOfficeEditor implements IEditorFormulaDeclaration {
         'Evaluator_ServerConstraint_Check_ChuaHoanThienDuyetVerTruoc_KhongTaoVerTiep',
         // 'Evaluator_ServerConstraint_Check_ApproveSent_NotChange',
         //
-        'Evaluator_ServerConstraint_Approve_GetData',
-        'Evaluator_ServerConstraint_K2_LoadPrevious'
+        'Evaluator_ServerConstraint_Approve_GetData'
+        // Lưới chi tiết do PlanCostOfficeEditorComponent.loadDetailData() dựng (thay K2_LoadPrevious)
     ];
 
     buttonCommand: string[] = [
@@ -498,13 +613,11 @@ export class LayoutPlanCostOfficeEditor implements IEditorFormulaDeclaration {
                     type: 'date',
                     format: 'dd/MM/yyyy',
                     validators: [Validators.required],
-                    col: 6,
-                    isReadOnly: 'true',
-                    style: 'background-color:#F1EDED;border-radius:8px;'
+                    col: 6
                 }),
                 new TextBoxInput({
                     key: 'DocNo',
-                    label: 'Số kế hoạch',
+                    label: 'Số kế hoạch',
                     type: 'text',
                     validators: [Validators.required],
                     isReadOnly: 'true',
@@ -544,38 +657,32 @@ export class LayoutPlanCostOfficeEditor implements IEditorFormulaDeclaration {
                     validators: [Validators.required],
                     col: 12
                 }, this.srv, this.parentData),
-                // new NumberBoxInput({
-                //     key: 'Amount_DoanhThu',
-                //     label: 'Doanh thu',
-                //     isDisabled: 'true',
-                //     col: 6
-                // }),
+                // Tổng hợp: tính lại từ lưới chi tiết (PlanCostOfficeEditorComponent.recalcTotals)
+                new NumberBoxInput({
+                    key: 'ThuChiKyTruoc',
+                    label: 'Tổng dự trù kỳ trước',
+                    isDisabled: 'true',
+                    col: 6
+                }),
+                new NumberBoxInput({
+                    key: 'TotalPaymentAmountC',
+                    label: 'Thực hiện tới hiện tại',
+                    isDisabled: 'true',
+                    col: 6
+                }),
                 new NumberBoxInput({
                     key: 'Amount_ChiPhi',
-                    label: 'Chi phí (gồm dự phòng phí)',
+                    label: 'Tổng dự trù kỳ này',
                     isDisabled: 'true',
                     col: 6
                 }),
                 new NumberBoxInput({
-                    key: 'CostAmount',
-                    label: 'Tổng GT Khấu hao',
+                    key: 'TiSuat_LN',
+                    label: '% thực hiện',
                     isDisabled: 'true',
+                    format: 'P2',
                     col: 6
                 }),
-                // new NumberBoxInput({
-                //     key: 'Amount_LoiNhuan',
-                //     label: 'Lợi nhuận',
-                //     isDisabled: 'true',
-                //     col: 6
-                // }),
-                // new NumberBoxInput({
-                //     key: 'TiSuat_LN',
-                //     label: 'Tỉ suất LN (%)',
-                //     isDisabled: 'true',
-                //     col: 6,
-                //     type: 'number',
-                //     format: 'P2'
-                // }),
                 new UploadInput({
                     key: 'FilePath',
                     label: 'Đính kèm',
@@ -607,157 +714,7 @@ export class LayoutPlanCostOfficeEditor implements IEditorFormulaDeclaration {
         })
     ];
 
-    childColumns = [
-        {
-            header: 'STT',
-            binding: 'ItemNo',
-            isRequired: true,
-            width: 100
-        },
-        {
-            header: 'Khoản mục kế toán',
-            binding: 'ExpenseCatgCode',
-            dataType: 'Array',
-            lookupKey: 'ExpenseCatg',
-            bindingList: {
-            },
-            lookupfilter: 'IsGroup=0 AND IsActive=1',
-            multiSelection: false,
-            width: 100
-        },
-        {
-            header: 'Công việc',
-            binding: 'JobCode',
-            dataType: 'Array',
-            lookupKey: 'Job_CCM',
-            bindingList: {
-                Name: 'JobName'
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND ActivityCode='LV-012'",
-            multiSelection: false,
-            width: 100
-        },
-        {
-            header: 'Nội dung công việc',
-            binding: 'JobName',
-            width: 250
-        },
-        {
-            header: 'Mã đối tượng',
-            binding: 'CustomerCode',
-            dataType: 'Array',
-            lookupKey: 'Customer_CCM2',
-            bindingList: {
-                Name: 'CustomerName'
-            },
-            lookupfilter: "IsGroup=0 AND IsActive=1 AND List_BranchCode LIKE '%'+'{VAR=Branch.Ma_Dvcs}'+'%'",
-            width: 100
-        },
-        {
-            header: 'Tên đối tượng',
-            binding: 'CustomerName',
-            width: 250,
-        },
-        {
-            header: 'Giá trị dự trù',
-            binding: 'OriginalAmount1',
-            dataType: 'Number',
-            width: 150,
-            // validators: "{EXPR=OriginalAmount} < {EXPR=AmountPaid} && {EXPR=AmountPaid} != 0",
-            // validatorMessage: 'Giá trị dự trù không được nhỏ hơn giá trị đã thực hiện',
-            ignoreError: 1
-        },
-        {
-            header: 'Giá trị khấu hao',
-            binding: 'CostAmount',
-            dataType: 'Number',
-            width: 150,
-            // validators: "{EXPR=OriginalAmount} < {EXPR=AmountPaid} && {EXPR=AmountPaid} != 0",
-            // validatorMessage: 'Giá trị dự trù không được nhỏ hơn giá trị đã thực hiện',
-            ignoreError: 1
-        },
-        {
-            header: 'Ghi chú',
-            binding: 'Remark',
-            width: 200
-        },
-        // {
-        //     header: 'Id hợp đồng',
-        //     binding: 'BizDocId_C1',
-        //     width: 200,
-        //     dataType: 'Array',
-        //     lookupKey: 'BizDoc2',
-        //     bindingList: {
-        //         DocInfo: 'DocInfo',
-        //         ContractType: 'ContractType'
-        //     },
-        //     // displayMember: 'DocInfo',
-        //     // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND (CompletedApprove=1 OR DocStatus=4) AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1) OR DocCode='C2') AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
-        //     lookupfilter: "((DocCode = 'C3' AND (ProductCostId='{EXPR=ProductCostId}' OR ProductCostId0='{EXPR=ProductCostId}') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND ContractType IN ('HD-10','HD-14') AND CustomerCode = '{EXPR=CustomerCode}') OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
-        // },
-        // {
-        //     header: 'Thông tin hợp đồng',
-        //     binding: 'DocInfo',
-        //     width: 200,
-        //     isReadOnly: 'true'
-        // },
-        // {
-        //     header: 'Loại hợp đồng',
-        //     binding: 'ContractType',
-        //     width: 100,
-        //     isReadOnly: 'true'
-        // },
-        // {
-        //     header: 'KT kiểm tra LNCT',
-        //     binding: 'AmountLNCT_KT',
-        //     dataType: 'Number',
-        //     width: 150
-        // },
-        // {
-        //     header: 'KT kiểm tra LNKT',
-        //     binding: 'AmountLNKT_KT',
-        //     dataType: 'Number',
-        //     width: 150
-        // },
-        // // {
-        // //     header: '% dự phòng phí',
-        // //     binding: 'CostPercent',
-        // //     dataType: 'Number',
-        // //     format: 'n3',
-        // //     width: 100
-        // // },
-        // {
-        //     header: 'Giá trị đã TT',
-        //     binding: 'AmountPaid',
-        //     dataType: 'Number',
-        //     isReadOnly: 'true',
-        //     width: 0
-        // },
-        {
-            header: 'Dòng tiêu đề',
-            binding: 'IsTitleRow',
-            dataType: 'Boolean',
-            width: 50
-        },
-        {
-            header: 'Bậc',
-            binding: 'Level',
-            dataType: 'Number',
-            width: 50,
-            format: 'n0'
-        },
-        {
-            header: 'Công thức',
-            binding: 'Formula',
-            width: 500
-        },
-        {
-            header: 'Tự áp công thức',
-            binding: 'ManualFormula',
-            dataType: 'Boolean',
-            width: 80
-        }
-    ]
+    childColumns = planCostOfficeDetailColumns(false);
 
     childColumns1 = [
         {

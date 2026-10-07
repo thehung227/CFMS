@@ -1,0 +1,819 @@
+import { PanelBase } from "../../ui/panel/PanelBase";
+import { TablePanel } from "../../ui/panel/TablePanel";
+import { DateBoxInput } from "../../ui/input/DateBoxInput";
+import { TextBoxInput } from "../../ui/input/TextBoxInput";
+import { LookupBoxInput } from "../../ui/input/LookupBoxInput";
+import { Validators } from "@angular/forms";
+import { ButtonInput } from "../../ui/input/ButtonInput";
+import { CheckBoxInput } from "../../ui/input/CheckBoxInput";
+import { NumberBoxInput } from "../../ui/input/NumberBoxInput";
+import { IEditorFormulaDeclaration } from ".././IEditorDeclare";
+import { IExplorerFormulaDeclaration } from ".././IExplorerDeclare";
+import { UploadInput } from "../../ui/input/UploadInput";
+import { MultiSelectInput } from "../../ui/input/MultiSelectInput";
+import { SystemConstants } from "../../core/common/system.constants";
+import { UploadImage } from "../../ui/input/UploadImage";
+import { getElement } from "wijmo/wijmo";
+import { RichTextBoxInput } from "../../ui/input/RichTextBoxInput";
+import { Global } from "../../shared/global";
+
+// Phiếu nhập kho
+export class LayoutPlanTrackingPaymentExplorer implements IExplorerFormulaDeclaration {
+    layout = {
+        Structure: {
+            Parent: {
+                Name: 'vB20PlanSign',
+                FilterKey: "IsActive=1 AND TypeXDME = '02'", //AND ('{VAR=User.IsAdmin}'='True' OR ProductCostId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}')))
+                OrderBy: 'DocDate DESC',
+                RowPage: 50,
+                // DefaultValues: {
+                //     CurrencyCode: 'VND'
+                // }
+            },
+            Child: {
+                Name: 'vB30BizDocApprove_PlanSignEx',
+                ParentKey: 'Stt',
+                ChildKey: 'BizDocId',
+                OrderBy: 'BuiltinOrder'
+            }
+        },
+        PrintDocument: {
+            Key: 'CCMBudgetViewer',
+            Text: 'Kế hoạch ký kết hợp đồng - {VAR=ProductName} - {VAR=DocNo}',
+            Command: 'usp_B30CCMBudget_VoucherForm',
+            Command_WorkFlow: 'usp_Coteccons_WorkFlow_GetPrintData',
+            LayoutPrint: [
+                // {
+                //     Layout: "MAU1",
+                //     Name: "Kế hoạch ký kết hợp đồng",
+                //     FileName: "Kế hoạch ký kết hợp đồng - {EXPR=ProductName} - {EXPR=DocNo}",
+                //     WordName: "1.Ke_Hoach_Ky_Ket_Hop_Dong.docx",
+                //     // ExcelName: "1.Ke_Hoach_Ky_Ket_Hop_Dong.docx",
+                //     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                // },
+                // {
+                //     Layout: 'MAU9',
+                //     Name: 'WorkFlow',
+                //     FileName: 'WorkFlow KHKK - {EXPR=ProductName} - {EXPR=DocNo}',
+                //     WordName: 'WorkFlow_KHKK.docx',
+                //     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                // }
+            ],
+            // GroupCols: 'Loai_Dt',
+            PrintGrid: [
+                {
+                    header: 'STT',
+                    binding: 'BuiltinOrder',
+                    width: 73,
+                    dataType: 'String',
+                    align: 'center'
+                },
+                {
+                    header: 'Thời gian ký kết dự kiến',
+                    binding: 'EstimatedTimeDelivery',
+                    width: 106,
+                    dataType: 'Date',
+                    format: 'dd/MM/yyyy'
+                },
+                {
+                    header: 'Nội dung',
+                    columns: [
+                        {
+                            header: 'Công tác',
+                            binding: 'JobName',
+                            width: 163,
+                            dataType: 'String'
+                        },
+                        {
+                            header: 'ĐTC/TP/NCC',
+                            binding: 'CustomerName',
+                            width: 200,
+                            dataType: 'String'
+                        },
+                    ]
+                },
+                {
+                    header: 'Người ký HĐ',
+                    binding: 'Chuc_Vu',
+                    width: 105,
+                    dataType: 'String'
+                },
+                {
+                    header: 'Giá trị dự kiến ký kết (chưa VAT)',
+                    binding: 'OriginalAmount',
+                    width: 112,
+                    dataType: 'Number',
+                    aggregate: 'Sum'
+                },
+                {
+                    header: 'Giá trị thanh toán dự kiến (chưa VAT)',
+                    binding: 'PaymentAmount',
+                    width: 105,
+                    dataType: 'Number',
+                    aggregate: 'Sum'
+                },
+                {
+                    header: 'Loại ĐT',
+                    binding: 'Loai_Dt',
+                    width: 0,
+                    dataType: 'String'
+                },
+            ]
+        },
+        Mail: {
+            ProfileFilter: "Code = 'BRAVO_CTC'",
+            Template: {
+                Command: "usp_Coteccons_GetInfoSendMail",
+                Parameters: {
+                    ProductCostId: "{VAR=Filter.ProductCostId}",
+                    nUserId: "{VAR=User.Id}",
+                    DocCode: "H8",
+                    Id: "{EXPR=Id}",
+                    BranchCode: "{VAR=Branch.Ma_Dvcs}",
+                    State: "1"
+                },
+                FolderPath: "/5.TemplateMail/",
+                FileName: "PO_GuiNhaCungCap.docx"
+            },
+            FileAttach: {
+                Command: "usp_B30BizDoc_VoucherForm",
+                Parameters: {
+                    DocCode: "PO",
+                    Id: "{EXPR=Id}"
+                },
+                SourcePath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/BM-F006a-Rev01 Don Dat Hang Mua - Approved.docx",
+                DestinationPath: "{VAR=Filter.ProductCostId}/Don_Hang_Mua/{EXPR=Id}/",
+                FileName: "{EXPR=DocNo}.pdf"
+            },
+            Expr: "1==1",
+            Message: "Đơn hàng chưa hoàn thành duyệt, không thể gửi mail cho Nhà cung cấp."
+        },
+        CancelMail: {
+            Command: "usp_SOL_DuyetHuyHoSo",
+            Expr: "{EXPR=CompletedApprove}==true",
+            Message: "Đơn hàng chưa hoàn thành duyệt."
+        }
+        // CopiedValues: {
+        //     parameter: { 'Commandkey': 'plansigncon-editor', 'StageCode': '{EXPR=StageCode}' }
+        // }
+    }
+
+    parentGrid = [
+        // {
+        //     header: 'CCMBudgetId',
+        //     binding: 'CCMBudgetId',
+        //     width: 200
+        // },
+       
+        // {
+        //     header: 'Số Rev',
+        //     binding: 'DocNo2',
+        //     width: 60,
+        //     dataType: 'String'
+        // },
+       
+        {
+            header: 'Ngày',
+            binding: 'DocDate',
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
+        },
+       {
+            header: 'Gói thầu',
+            binding: 'ProductName',
+            width: 200
+        },
+        {
+            header: 'Nội dung',
+            binding: 'Description',
+            width: 150,
+            dataType: 'String'
+        },
+        {
+            header: 'Id',
+            binding: 'Id',
+            width: 50,
+            dataType: 'Number'
+        }
+        
+    ]
+
+    childGrid = [
+        {
+            header: 'STT',
+            binding: 'ApproveGroup',
+            dataType: 'Number',
+            width: 50,
+            align: 'center'
+        },
+        {
+            header: 'Bộ phận',
+            binding: 'DeptName',
+            width: 350,
+            dataType: 'String'
+        },
+        {
+            header: 'Cấp bậc duyệt',
+            binding: 'PositionName',
+            width: 200,
+            dataType: 'String'
+        },
+        // {
+        //     header: 'Người thực hiện',
+        //     binding: 'EmployeeName',
+        //     width: 150
+        // },
+        {
+            header: 'Người đã thực hiện',
+            binding: 'EmployeeNameApprove',
+            width: 150
+        },
+        {
+            header: 'Đã xử lý',
+            binding: 'ApproveStatus',
+            width: 80,
+            dataType: 'Boolean',
+            textAlign: 'center'
+        },
+        {
+            header: 'Trạng thái',
+            binding: 'ApproveStatusName',
+            width: 100
+        },
+        {
+            header: 'Ý kiến',
+            binding: 'Comment',
+            width: 200,
+            dataType: 'String',
+            isContentHtml: true
+        },
+        {
+            header: 'Số ngày thực hiện',
+            binding: 'NumberOfDays',
+            width: 150,
+            dataType: 'Number',
+            format: 'n0'
+        },
+        {
+            header: 'Ngày đến hạn',
+            binding: 'StartDate',
+            width: 150,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm'
+        },
+        {
+            header: 'Ngày hoàn thành',
+            binding: 'FinishDate',
+            dataType: 'Date',
+            format: 'dd/MM/yyyy HH:mm',
+            width: 150
+        },
+    ]
+}
+
+export class LayoutPlanTrackingPaymentEditor implements IEditorFormulaDeclaration {
+
+    constructor(private srv?: any,
+        private parentData?: any) {
+    }
+
+    // Khai báo view lấy dữ liệu <Tables> B7
+    layout = {
+        Structure: {
+            Parent: {
+                Name: 'vB20PlanSign',
+                DefaultValues: {
+                    BranchCode: '{VAR=Branch.Ma_Dvcs}',
+                    Stt: '',
+                    Id: -1,
+                    TypeXDME: '02',
+                    ProductCostId: '{VAR=Filter.ProductCostId}',
+                    DocDate: new Date(Date.UTC((new Date()).getFullYear(), (new Date()).getMonth(), (new Date()).getDate()))
+                }
+            },
+            Child: [
+                {
+                    Name: 'vB20PlanSignDetail',
+                    ParentKey: 'Stt',
+                    ChildKey: 'Stt',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        Stt: 'Parent.Stt',
+                        BuiltinOrder: '1'
+                    }
+                },
+                {
+                    Name: 'vB20PlanSignProduct',
+                    ParentKey: 'Stt',
+                    ChildKey: 'Stt',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        Stt: 'Parent.Stt',
+                        BuiltinOrder: '1'
+                    }
+                },
+                 {
+                    Name: 'vB20PlanSignExcludeContract',
+                    ParentKey: 'Stt',
+                    ChildKey: 'Stt',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        Stt: 'Parent.Stt',
+                        BuiltinOrder: '1'
+                    }
+                }, 
+                {
+                    Name: 'vB20PlanSignExcludeCustomer',
+                    ParentKey: 'Stt',
+                    ChildKey: 'Stt',
+                    // Sort: 'BuiltinOrder',
+                    DefaultValues: {
+                        Stt: 'Parent.Stt',
+                        BuiltinOrder: '1'
+                    }
+                }
+               
+            ]
+        },
+        PrintDocument: {
+            Key: 'CCMBudgetViewer',
+            Text: 'Kế hoạch ký kết hợp đồng - {VAR=ProductName} - {VAR=DocNo}',
+            Command: 'usp_B30CCMBudget_VoucherForm',
+            Command_WorkFlow: 'usp_Coteccons_WorkFlow_GetPrintData',
+            LayoutPrint: [
+                // {
+                //     Layout: "MAU1",
+                //     Name: "Kế hoạch ký kết hợp đồng",
+                //     FileName: "Kế hoạch ký kết hợp đồng - {EXPR=ProductName} - {EXPR=DocNo}",
+                //     WordName: "1.Ke_Hoach_Ky_Ket_Hop_Dong.docx",
+                //     FolderPath: "/3.Mau_In/{VAR=Branch.Ma_Dvcs}/"
+                // }
+            ],
+            PrintGrid: [
+                {
+                    header: 'STT',
+                    binding: 'BuiltinOrder',
+                    width: 73,
+                    dataType: 'String',
+                    align: 'center'
+                },
+                {
+                    header: 'Thời gian ký kết dự kiến',
+                    binding: 'EstimatedTimeDelivery',
+                    width: 106,
+                    dataType: 'Date',
+                    format: 'dd/MM/yyyy'
+                },
+                {
+                    header: 'Nội dung',
+                    columns: [
+                        {
+                            header: 'Công tác',
+                            binding: 'JobName',
+                            width: 163,
+                            dataType: 'String'
+                        },
+                        {
+                            header: 'ĐTC/TP/NCC',
+                            binding: 'CustomerName',
+                            width: 190,
+                            dataType: 'String'
+                        },
+                    ]
+                },
+                {
+                    header: 'Người ký HĐ',
+                    binding: 'Ten_Chuc_Vu',
+                    width: 105,
+                    dataType: 'String'
+                },
+                {
+                    header: 'Giá trị dự kiến ký kết (chưa VAT)',
+                    binding: 'OriginalAmount',
+                    width: 112,
+                    dataType: 'Number'
+                },
+                {
+                    header: 'Giá trị thanh toán dự kiến (chưa VAT)',
+                    binding: 'PaymentAmount',
+                    width: 105,
+                    dataType: 'Number'
+                }
+            ]
+        }
+    };
+
+    evaluators = {
+        'Evaluator_ServerConstraint_Detail_GetData': {
+            EvaluatorName: 'EvaluatorQueryLoadChild',
+            ConstraintKey: 'DocDate,Stt',
+            Command: 'usp_LLTC_BaoCaoTaiChinhCongTruong_THQT_LoadForm',
+            OutputTable: 0
+        },
+       
+        'Evaluator_UpdateInfo_WhenApproveSend': {
+            EvaluatorName: 'EvaluatorQuery',
+            ConstraintKey: 'Stt',
+            Command: 'usp_PlanTracking_UpdateWhenSave'
+        },
+
+        // Thêm dòng mới -> chép sẵn giá trị của dòng liền trên, CHỈ những cột liệt kê ở DataMember.
+        // Chạy đúng một lần lúc thêm dòng. Muốn tắt: đặt zExpr: '1==0' (hoặc bỏ tên này khỏi rowAdded).
+        // Muốn chép đè cả khi ô đích đã có giá trị: thêm overwrite: true.
+        'Evaluator_Detail_CopiedValue': {
+            EvaluatorName: 'EvaluatorCopiedValues',
+            DataMember: 'ProductCostId0,ProductName0',
+            Tables: 0
+        }
+
+    };
+
+    rowAdded = [
+        {
+            Tables: 0,
+            Evaluators: [
+                'Evaluator_Detail_CopiedValue'
+            ]
+        }
+    ];
+
+    serverConstraint = [
+       
+    ];
+
+    serverUpdating = [
+       
+    ]
+
+    serverUpdated = [
+        'Evaluator_UpdateInfo_WhenApproveSend'
+    ];
+
+    buttonLoadChild = [
+       'Evaluator_ServerConstraint_Detail_GetData'
+    ];
+
+    buttonCommand: string[] = [
+       
+    ];
+
+    importCommand: string[] = [
+        
+    ]
+
+    columnChanged = {
+       
+    };
+
+    columnChangedChild = [
+        {
+            Tables: 0,
+            columnChanged: {
+             
+            }
+        },
+    ];
+
+    columnsReadOnly = [];
+
+    linkReporter = {
+        'btnBaoCao': {
+            directory: 'reporterplantrackingpayment',
+            type: 'view',
+            key: 'NEW_PlanTrackingPayment',
+            parameter: { 'Commandkey': 'NEW_PlanTrackingPayment'}
+        }
+    }
+
+    panels: PanelBase[] = [
+        new TablePanel({
+            label: 'Panel 1',
+            col: 12,
+            controls: [
+                new DateBoxInput({
+                    key: 'DocDate',
+                    label: 'Ngày lập',
+                    type: 'date',
+                    format: 'dd/MM/yyyy',
+                    validators: [Validators.required],
+                    col: 6
+                }),
+               
+                // new LookupBoxInput({
+                //     key: 'TypeXDME',
+                //     label: 'Loại hình',
+                //     lookupKey: 'Class',
+          
+                //     lookupfilter: "IsGroup=0 AND IsActive=1 AND ParentCode='INCURRED' AND Code IN ('XD','ME')",
+                //     hideValueMember: false,
+                //     validators: [Validators.required],
+                //     col: 6
+                // }, this.srv, this.parentData),
+                new LookupBoxInput({
+                    key: 'ProductCostId',
+                    label: 'Gói thầu',
+                    lookupKey: 'ProductCost',
+                    lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductType IN (1,3) AND BranchCode='{VAR=Branch.Ma_Dvcs}'",
+                    //lookupfilter: "IsGroup=0 AND IsActive=1 AND ProductType=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}' AND ('{VAR=User.IsAdmin}'='True' OR (RowId = '{VAR=Filter.ProductCostId}' AND RowId IN (SELECT RowId FROM dbo.ufn_Coteccons_GoiThau_Theo_NhanVien('{VAR=User.Ma_CbNv}'))))",
+                    validators: [Validators.required],
+                    hideValueMember: true,
+                    col: 6
+                }, this.srv, this.parentData),
+               
+                new TextBoxInput({
+                    key: 'Description',
+                    label: 'Ghi chú',
+                    type: 'text',
+                    isNewRow: true,
+                    col: 12
+                }),
+                new TextBoxInput({
+                    key: 'Stt',
+                    label: 'Số HĐ ký với NH',
+                    type: 'text',
+                    
+                    col: 12,
+                    isReadOnly: 'true',
+                    visible: 'false',
+                    style: 'background-color:#F1EDED;border-radius:8px;',
+                    labelCol: 5
+                }),
+                new ButtonInput({
+                    key: 'btnBaoCao',
+                    label: 'Báo cáo theo dõi hợp đồng và tạm ứng đầu',
+                    col: 6
+                }),
+            ]
+        })
+    ];
+
+    childColumns = [
+        {
+            header: 'STT',
+            binding: 'ItemNo',
+            isRequired: true,
+            width: 100
+        },
+        {
+            header: 'Id dự án',
+            dataType: 'Array',
+            binding: 'ProductCostId0',
+            lookupKey: 'ProductCost',
+            bindingList: {
+                ProductCostInfo: 'ProductName0'
+            },
+            lookupfilter: "ProductType IN (1,3) AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
+            hideValueMember: true,
+            width: 150
+        },
+        {
+            header: 'Tên dự án',
+            binding: 'ProductName0',
+            width: 250,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 200,
+            dataType: 'Array',
+            lookupKey: 'BizDoc2',
+            bindingList: {
+                DocInfo: 'DocInfo',
+                CustomerCode: 'CustomerCode',
+                CUstomerName: 'CustomerName',
+            },
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1)) AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "((DocCode = 'C3' AND FilePath IS NOT NULL AND (ProductCostId='{EXPR=ProductCostId0}' OR ProductCostId0='{EXPR=ProductCostId0}')) OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
+        },
+          {
+            header: 'Nội dung hợp đồng',
+            binding: 'DocInfo',
+            width: 200,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Loại HĐ',
+            binding: 'ContractType',
+            width: 100,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Mã NTP/NCC',
+            binding: 'CustomerCode',
+            isRequired: true,
+            dataType: 'Array',
+            lookupKey: 'Customer_CCM2',
+            bindingList: {
+                NameBinding: 'CustomerName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1 AND List_BranchCode LIKE '%'+'{VAR=Branch.Ma_Dvcs}'+'%'",
+            width: 100,
+            // validators: "{EXPR=CustomerCode} == ''",
+            // validatorMessage: 'Mã đối tượng, không được bỏ trắng giá trị',
+            // ignoreError: 1
+        },
+        {
+            header: 'Tên NTP/NCC',
+            binding: 'CustomerName',
+            width: 300,
+            isReadOnly: 'true'
+        },
+      {
+            header: 'Ngày ký HĐ',
+            binding: 'SignDate',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy',
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Ngày thanh toán gần nhất',
+            binding: 'PaymentDate',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy',
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Số bill đang trình',
+            binding: 'BillNo',
+            width: 150,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Số ngày chưa thanh toán',
+            binding: 'SoNgayChuaThanhToan',
+            dataType: 'Number',
+            isRequired: true,
+            width: 150,
+            isReadOnly: 'true'
+        },
+       {
+            header: 'Mốc quyết toán',
+            binding: 'EstimatedTimeDelivery',
+            isRequired: false,
+            width: 100,
+            dataType: 'Date',
+            format: 'dd/MM/yyyy'
+        },
+        {
+            header: 'Số ngày chưa hoàn thành QT',
+            binding: 'SoNgayChuaHTQT',
+            dataType: 'Number',
+            isRequired: true,
+            width: 150,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Tình trạng',
+            dataType: 'Array',
+            binding: 'TinhTrang',
+            lookupKey: 'Class',
+            bindingList: {
+                Name: 'TenTinhTrang'
+            },
+            lookupfilter: "IsGroup = 0 AND IsActive = 1 AND ParentCode = 'TINHTRANG'",
+            hideValueMember: true,
+            width: 150
+        },
+        {
+            header: 'Tình trạng',
+            binding: 'TenTinhTrang',
+            width: 150,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Ghi chú',
+            binding: 'Remark',
+            width: 250,
+        },
+         {
+            header: 'Link',
+            binding: 'IsLink',
+            width: 80,
+            dataType: 'Boolean',
+            textAlign: 'center'
+        },
+        
+    ]
+
+    childColumns1 = [
+         {
+            header: 'Id dự án',
+            dataType: 'Array',
+            binding: 'ProductCostId',
+            lookupKey: 'ProductCost',
+            bindingList: {
+                ProductCostInfo: 'ProjectName'
+            },
+            lookupfilter: "ProductType IN (1,3) AND IsGroup = 0 AND IsActive = 1 AND BranchCode = '{VAR=Branch.Ma_Dvcs}'",
+            hideValueMember: true,
+            width: 150
+        },
+        {
+            header: 'Tên dự án',
+            binding: 'ProjectName',
+            width: 250,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Link',
+            binding: 'IsLink',
+            width: 80,
+            dataType: 'Boolean',
+            textAlign: 'center'
+        },
+    ]
+
+    childColumns2 = [
+         {
+            header: 'Số HĐ',
+            binding: 'DocNo',
+            width: 200
+        },
+          {
+            header: 'Id hợp đồng',
+            binding: 'BizDocId_C1',
+            width: 200,
+            dataType: 'Array',
+            lookupKey: 'BizDoc2',
+            bindingList: {
+                DocInfo: 'DocInfo',
+                CustomerCode: 'CustomerCode',
+                CustomerName: 'CustomerName',
+            },
+            // lookupfilter: "BranchCode = '{VAR=Branch.Ma_Dvcs}' AND CompletedApprove=1 AND CustomerCode = '{EXPR=CustomerCode}' AND (DocCode = 'C3' OR (DocCode='C4' AND IsSubContractPay=1)) AND (((ProductCostId = '{EXPR=ProductCostId}' OR ProductCostId0 = '{EXPR=ProductCostId}')) OR (ContractType IN ('HD-14','HD-08','HD-16')))"
+            lookupfilter: "((DocCode = 'C3' AND FilePath IS NOT NULL) OR (DocCode='C3' AND IsFinishLC = 1) AND (Closed = 0 AND CompletedApprove=1 AND BranchCode='{VAR=Branch.Ma_Dvcs}'))"
+        },
+          {
+            header: 'Nội dung hợp đồng',
+            binding: 'DocInfo',
+            width: 200,
+            isReadOnly: 'true'
+        },
+         {
+            header: 'Mã NTP/NCC',
+            binding: 'CustomerCode',
+            isRequired: true,
+            dataType: 'Array',
+            lookupKey: 'Customer_CCM2',
+            bindingList: {
+                NameBinding: 'CustomerName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            width: 100,
+            // validators: "{EXPR=CustomerCode} == ''",
+            // validatorMessage: 'Mã đối tượng, không được bỏ trắng giá trị',
+            // ignoreError: 1
+        },
+        {
+            header: 'Tên NTP/NCC',
+            binding: 'CustomerName',
+            width: 300,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Link',
+            binding: 'IsLink',
+            width: 80,
+            dataType: 'Boolean',
+            textAlign: 'center'
+        },
+    ]
+
+    childColumns3 = [
+          {
+            header: 'Mã NTP/NCC',
+            binding: 'CustomerCode',
+            isRequired: true,
+            dataType: 'Array',
+            lookupKey: 'Customer_CCM2',
+            bindingList: {
+                NameBinding: 'CustomerName'
+            },
+            lookupfilter: "IsGroup=0 AND IsActive=1",
+            width: 100,
+            // validators: "{EXPR=CustomerCode} == ''",
+            // validatorMessage: 'Mã đối tượng, không được bỏ trắng giá trị',
+            // ignoreError: 1
+        },
+        {
+            header: 'Tên NTP/NCC',
+            binding: 'CustomerName',
+            width: 300,
+            isReadOnly: 'true'
+        },
+          {
+            header: 'Link',
+            binding: 'IsLink',
+            width: 80,
+            dataType: 'Boolean',
+            textAlign: 'center'
+        },
+    ]
+  
+}
